@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PremiereApplication</string>
+    <string name="titre">Ouverture de session</string>
+    <string name="titre_annexe2">Virement Interac</string>
+    <string name="from_label">De : </string>
+    <string name="sold_label">Solde : </string>
+    <string name="sold_amount">0.00$</string>
+    <string name="to_label">A : </string>
+    <string name="validate_label">Valider</string>
+    <string name="transfer_from_label">Transfert de : </string>
+    <string name="send_label">Envoyer</string>
 </resources>
