@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Annexe3_Exercices</string>
     <string name="obj_quantity">2 litres</string>
+    <string name="obj_drunk">0 ml</string>
 </resources>
