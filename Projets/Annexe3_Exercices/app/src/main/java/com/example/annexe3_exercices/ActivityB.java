@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
 public class ActivityB extends AppCompatActivity {
 
     ImageView imgPlane, imgHotel, imgBeach;
@@ -15,6 +17,11 @@ public class ActivityB extends AppCompatActivity {
     TextView nbBillets, nbJours, total;
 
     Ecouteur ec;
+
+    int ticketCount = 0, dayCount = 0;
+    double cost = 0;
+
+    DecimalFormat decimalFormat = new DecimalFormat("0.00$");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +44,54 @@ public class ActivityB extends AppCompatActivity {
         btnTotal.setOnClickListener(ec);
         nbBillets.setOnClickListener(ec);
         nbJours.setOnClickListener(ec);
-        total.setOnClickListener(ec);
+
+        nbBillets.setText(Integer.toString(ticketCount));
+        nbJours.setText(Integer.toString(dayCount));
     }
 
     private class Ecouteur implements View.OnClickListener
     {
         @Override
         public void onClick(View v) {
+            if(v.equals(nbBillets))
+            {
+                ++ticketCount;
+            }
 
+            if(v.equals(nbJours))
+            {
+                ++dayCount;
+            }
+
+            if(v.equals(imgPlane))
+            {
+                --ticketCount;
+            }
+
+            if(v.equals(imgHotel))
+            {
+                --dayCount;
+            }
+
+            if(v.equals(imgBeach))
+            {
+                ticketCount = 0;
+                dayCount = 0;
+            }
+
+            if(v.equals(btnTotal))
+            {
+                BilletAvion billetAvion = new BilletAvion(ticketCount);
+                HebergementHotel hebergementHotel = new HebergementHotel(dayCount);
+                Commande commande = new Commande();
+                commande.ajouterProduit(billetAvion);
+                commande.ajouterProduit(hebergementHotel);
+                cost = commande.grandTotal();
+                total.setText(decimalFormat.format(cost));
+            }
+
+            nbBillets.setText(Integer.toString(ticketCount));
+            nbJours.setText(Integer.toString(dayCount));
         }
     }
 }

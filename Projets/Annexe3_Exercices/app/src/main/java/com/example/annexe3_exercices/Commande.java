@@ -18,16 +18,22 @@ public class Commande {
 
     public double total ()
     {
-	double total =0;
-      // compléter : total de la commande
+        double total =0;
+          // compléter : total de la commande
+            for (Produit i: listeCommande)
+            {
+                total += i.getPrixUnitaire() * i.getQte();
+            }
 
-
-	return total;
+        return total;
     }
 
     public double taxes()
     {
         double taxes = 0;
+        double tps = 0.05;
+        double tvq = 0.09975;
+        double montant = this.total();
   
 	// compléter : montant des taxes sur le total de la commande
 
@@ -37,19 +43,21 @@ public class Commande {
         
         // taxes total = tps + tvq
 
-	
+	    taxes += montant * tps;
+        taxes += montant * tvq;
 
         return taxes;
     }
 
-    public double grandTotal(){
+    public double grandTotal()
+    {
 	
-	double grTotal = 0;
-	
-	// compléter
+        double grTotal = 0;
 
+        // compléter
+        grTotal += this.total() + this.taxes();
 
-	return grTotal;
+        return grTotal;
 	
 
     }
