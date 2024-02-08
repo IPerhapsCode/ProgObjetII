@@ -63,12 +63,12 @@ public class ActivityB extends AppCompatActivity {
                 ++dayCount;
             }
 
-            if(v.equals(imgPlane))
+            if(v.equals(imgPlane) && ticketCount > 0)
             {
                 --ticketCount;
             }
 
-            if(v.equals(imgHotel))
+            if(v.equals(imgHotel) && dayCount > 0)
             {
                 --dayCount;
             }
