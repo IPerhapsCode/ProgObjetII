@@ -58,28 +58,28 @@ public class ActivityB extends AppCompatActivity {
                 ++ticketCount;
             }
 
-            if(v.equals(nbJours))
+            else if(v.equals(nbJours))
             {
                 ++dayCount;
             }
 
-            if(v.equals(imgPlane) && ticketCount > 0)
+            else if(v.equals(imgPlane) && ticketCount > 0)
             {
                 --ticketCount;
             }
 
-            if(v.equals(imgHotel) && dayCount > 0)
+            else if(v.equals(imgHotel) && dayCount > 0)
             {
                 --dayCount;
             }
 
-            if(v.equals(imgBeach))
+            else if(v.equals(imgBeach))
             {
                 ticketCount = 0;
                 dayCount = 0;
             }
 
-            if(v.equals(btnTotal))
+            else if(v.equals(btnTotal))
             {
                 BilletAvion billetAvion = new BilletAvion(ticketCount);
                 HebergementHotel hebergementHotel = new HebergementHotel(dayCount);
