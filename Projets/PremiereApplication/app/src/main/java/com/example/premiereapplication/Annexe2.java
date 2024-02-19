@@ -4,10 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.regex.*;
 
 public class Annexe2 extends AppCompatActivity {
@@ -15,7 +21,7 @@ public class Annexe2 extends AppCompatActivity {
     Ecouteur ec;
     Button boutonValider;
 
-    EditText champNomCompte;
+    Spinner spinnerNomCompte;
     TextView champSolde;
 
     Button boutonEnvoyer;
@@ -23,10 +29,12 @@ public class Annexe2 extends AppCompatActivity {
     EditText champCourriel;
 
     EditText champMontant;
-
+    String nomCompte;
     String[] comptePossible = {"Cheque", "Epargne", "EpargnePlus"};
-    String compteInvalide = "Nom de compte invalide!";
     double[] valeurComptesPossible = {34.43, 491.01, 98.75};
+    String compteInvalide = "Nom de compte invalide!";
+    //Compte[] comptes = {new Compte(valeurComptesPossible[0], comptePossible[0]), new Compte(valeurComptesPossible[1], comptePossible[1]), new Compte(valeurComptesPossible[2], comptePossible[2])};
+    Hashtable<String, Compte> comptes = new Hashtable();
     boolean compteValide = false;
 
     String courrielVide = "Veuillez choisir un destinataire!";
@@ -36,6 +44,8 @@ public class Annexe2 extends AppCompatActivity {
     boolean courrielValide = false;
     boolean montantValide = false;
 
+    DecimalFormat input;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,12 +53,21 @@ public class Annexe2 extends AppCompatActivity {
 
         //Initialiser variables
         boutonValider = findViewById(R.id.ValidateButton);
-        champNomCompte = findViewById(R.id.FromField);
+        spinnerNomCompte = findViewById(R.id.FromSpinner);
         champSolde = findViewById(R.id.SoldField);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, comptePossible);
+        spinnerNomCompte.setAdapter(adapter);
 
         boutonEnvoyer = findViewById(R.id.SendButton);
         champCourriel = findViewById(R.id.ToField);
         champMontant = findViewById(R.id.TransferAmountField);
+
+        input = new DecimalFormat("0.00$");
+
+        for(int i = 0; i < comptePossible.length; ++i)
+        {
+            comptes.put(comptePossible[i], new Compte(valeurComptesPossible[i], comptePossible[i]));
+        }
 
         //1er étape : création de l'écouteur
         ec = new Ecouteur();
@@ -56,42 +75,19 @@ public class Annexe2 extends AppCompatActivity {
         //2ième étape : inscrire la source à l'écouteur
         boutonValider.setOnClickListener(ec);
         boutonEnvoyer.setOnClickListener(ec);
+        spinnerNomCompte.setOnItemSelectedListener(ec);
     }
 
     //3ième étape : code une classe pour notre écouteur/listener
-    private class Ecouteur implements View.OnClickListener
+    private class Ecouteur implements View.OnClickListener, AdapterView.OnItemSelectedListener
     {
         @Override
         public void onClick(View v)
         {
             if(v.equals(boutonValider))
             {
-                compteValide = false;
-
-                for (String i:comptePossible)
-                {
-                    if(i.toUpperCase().equals(champNomCompte.getText().toString().toUpperCase()))
-                    {
-                        compteValide = true;
-                        break;
-                    }
-                }
-
-                if(!compteValide)
-                {
-                    champSolde.setText(compteInvalide);
-                    champNomCompte.setText("");
-                }
-                else
-                {
-                    for (int i = 0; i < comptePossible.length; ++i)
-                    {
-                        if(comptePossible[i].toUpperCase().equals(champNomCompte.getText().toString().trim().toUpperCase()))
-                        {
-                            champSolde.setText(String.valueOf(valeurComptesPossible[i])+"$");
-                        }
-                    }
-                }
+                champSolde.setText(input.format(comptes.get(nomCompte).getSolde()));
+                compteValide = true;
             }
 
             if(v.equals(boutonEnvoyer))
@@ -126,20 +122,12 @@ public class Annexe2 extends AppCompatActivity {
                 if(montantValide && compteValide)
                 {
                     double montant = new Double(champMontant.getText().toString()).doubleValue();
-                    int accountNb = 0;
-                    for (int i = 0; i < comptePossible.length; ++i)
-                    {
-                        if(comptePossible[i].equals(champNomCompte.getText().toString()))
-                        {
-                            accountNb = i;
-                            break;
-                        }
-                    }
+                    Compte account = comptes.get(nomCompte);
 
-                    if(valeurComptesPossible[accountNb] >= montant)
+                    if(account.getSolde() >= montant)
                     {
-                        valeurComptesPossible[accountNb] -= montant;
-                        champSolde.setText(String.valueOf(valeurComptesPossible[accountNb]));
+                        account.transfert(montant);
+                        champSolde.setText(String.valueOf(input.format(account.getSolde())));
                     }
                     else
                     {
@@ -149,6 +137,20 @@ public class Annexe2 extends AppCompatActivity {
                     }
                 }
             }
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            nomCompte = comptePossible[position];
+
+            //Autre méthode
+            TextView temp = (TextView) view;
+            nomCompte = temp.getText().toString();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
         }
     }
 }
