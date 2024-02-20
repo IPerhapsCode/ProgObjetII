@@ -2,6 +2,7 @@ package com.example.premiereapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,8 +14,6 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.util.Hashtable;
-import java.util.Map;
-import java.util.regex.*;
 
 public class Annexe2 extends AppCompatActivity {
 
@@ -39,12 +38,15 @@ public class Annexe2 extends AppCompatActivity {
 
     String courrielVide = "Veuillez choisir un destinataire!";
     String montantVide = "Veuillez choisir un montant!";
-    Pattern patternMontant = Pattern.compile("\\d+([.]?)(\\d*)");
+    String patternMontant = "\\d+([.]?)(\\d*)";
+    String patternCourriel = ".+@[a-z]+[.][a-z]+([.][a-z])?";
 
     boolean courrielValide = false;
     boolean montantValide = false;
 
     DecimalFormat input;
+
+    AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +57,7 @@ public class Annexe2 extends AppCompatActivity {
         boutonValider = findViewById(R.id.ValidateButton);
         spinnerNomCompte = findViewById(R.id.FromSpinner);
         champSolde = findViewById(R.id.SoldField);
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, comptePossible);
-        spinnerNomCompte.setAdapter(adapter);
+        //ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, comptePossible);
 
         boutonEnvoyer = findViewById(R.id.SendButton);
         champCourriel = findViewById(R.id.ToField);
@@ -68,6 +69,11 @@ public class Annexe2 extends AppCompatActivity {
         {
             comptes.put(comptePossible[i], new Compte(valeurComptesPossible[i], comptePossible[i]));
         }
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, comptes.keySet().toArray(new String[0]));
+        spinnerNomCompte.setAdapter(adapter);
+
+        builder = new AlertDialog.Builder(this);
 
         //1er étape : création de l'écouteur
         ec = new Ecouteur();
@@ -97,29 +103,38 @@ public class Annexe2 extends AppCompatActivity {
                     champCourriel.setHint(courrielVide);
                     courrielValide = false;
                 }
-                else
+                else if(champCourriel.getText().toString().matches(patternCourriel))
                 {
                     courrielValide = true;
                 }
+                else
+                {
+                    champCourriel.setText("");
+                    builder.setMessage("Courriel invalide!").setTitle("Erreur");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    courrielValide = false;
+                }
 
-                Matcher m = patternMontant.matcher(champMontant.getText().toString().trim());
                 if(champMontant.getText().toString().length() == 0)
                 {
                     champMontant.setHint(montantVide);
                     montantValide = false;
                 }
-                else if(m.matches())
+                else if(champMontant.getText().toString().trim().matches(patternMontant))
                 {
                     montantValide = true;
                 }
                 else
                 {
                     champMontant.setText("");
-                    champMontant.setHint("Montant invalide!");
+                    builder.setMessage("Montant invalide!").setTitle("Erreur");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                     montantValide = false;
                 }
 
-                if(montantValide && compteValide)
+                if(montantValide && compteValide && courrielValide)
                 {
                     double montant = new Double(champMontant.getText().toString()).doubleValue();
                     Compte account = comptes.get(nomCompte);
@@ -132,7 +147,9 @@ public class Annexe2 extends AppCompatActivity {
                     else
                     {
                         champMontant.setText("");
-                        champMontant.setHint("Montant plus grand que le solde!");
+                        builder.setMessage("Montant plus grand que le solde!").setTitle("Erreur");
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
                         montantValide = false;
                     }
                 }

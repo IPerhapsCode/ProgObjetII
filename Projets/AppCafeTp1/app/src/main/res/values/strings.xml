@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">AppCafe</string>
+    <string name="text_caf_filtre_fr">Café filtre</string>
+    <string name="text_caf_americano_fr">Americano</string>
+    <string name="text_caf_glace_fr">Café glacé</string>
+    <string name="text_caf_latte_fr">Latté</string>
+    <string name="text_small_size_fr">Petit</string>
+    <string name="text_medium_size_fr">Moyen</string>
+    <string name="text_large_size_fr">Grand</string>
+</resources>
