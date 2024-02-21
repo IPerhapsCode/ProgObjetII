@@ -7,4 +7,8 @@
     <string name="text_small_size_fr">Petit</string>
     <string name="text_medium_size_fr">Moyen</string>
     <string name="text_large_size_fr">Grand</string>
+    <string name="text_total_fr">Total:</string>
+    <string name="text_add_button_fr">Ajouter</string>
+    <string name="text_erase_button_fr">Effacer</string>
+    <string name="text_order_button_fr">Commander</string>
 </resources>
