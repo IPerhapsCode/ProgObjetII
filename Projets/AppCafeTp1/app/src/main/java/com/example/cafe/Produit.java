@@ -6,14 +6,16 @@ public abstract class Produit {
         moyen,
         grand
     }
+    private String nom;
     private double prix;
     private double prixPetit;
     private double calories;
     private double caloriesPetit;
     private Tailles taille;
 
-    public Produit(Double prixPetit, Double caloriesPetit, Tailles taille)
+    public Produit(String nom, Double prixPetit, Double caloriesPetit, Tailles taille)
     {
+        this.nom = nom;
         this.prixPetit = prixPetit;
         this.caloriesPetit = caloriesPetit;
 
@@ -22,14 +24,17 @@ public abstract class Produit {
             case petit:{
                 this.prix = this.prixPetit;
                 this.calories = this.caloriesPetit;
+                break;
             }
             case moyen:{
                 this.prix = this.findPrixMoyen(this.prixPetit);
                 this.calories = this.findCaloriesMoyen(this.caloriesPetit);
+                break;
             }
             case grand:{
                 this.prix = this.findPrixGrand(this.prixPetit);
                 this.calories = this.findCaloriesGrand(this.caloriesPetit);
+                break;
             }
         }
     }
@@ -48,6 +53,10 @@ public abstract class Produit {
 
     public double getCalories() {
         return calories;
+    }
+
+    public String getNom() {
+        return nom;
     }
 }
 

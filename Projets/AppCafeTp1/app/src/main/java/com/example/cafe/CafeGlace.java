@@ -2,12 +2,12 @@ package com.example.cafe;
 
 public class CafeGlace extends Produit{
     public CafeGlace(Tailles taille) {
-        super(2.5, 10.0, taille);
+        super("Café Glacé",2.5, 10.0, taille);
     }
 
     @Override
     protected double findPrixMoyen(double prixPetit) {
-        return 5/3 * prixPetit;
+        return (5.0/3.0) * prixPetit;
     }
 
     @Override
@@ -17,11 +17,11 @@ public class CafeGlace extends Produit{
 
     @Override
     protected double findCaloriesMoyen(double caloriesPetit) {
-        return 2 + caloriesPetit;
+        return 2.0 + caloriesPetit;
     }
 
     @Override
     protected double findCaloriesGrand(double caloriesPetit) {
-        return 2 * caloriesPetit;
+        return 2.0 * caloriesPetit;
     }
 }
