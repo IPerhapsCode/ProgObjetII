@@ -3,8 +3,11 @@ package com.example.appcafe;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,6 +22,7 @@ import com.google.android.material.chip.ChipGroup;
 
 import java.text.DecimalFormat;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout orderLayout;
     ListeProduits listeProduits;
     Commande commande;
+    Vector<Integer> nbChaque;
+    Vector<TextView> nbChaqueText;
+    boolean changerLayout = false;
     String nomProduit = "";
     String tailleProduit = "Petit";
     Produit produitSelectionner = null;
@@ -56,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
 
         listeProduits = new ListeProduits();
         commande = new Commande();
+        nbChaque = new Vector<>(4,1); //CafFiltre, Americano, CafGlace, Latte
+        nbChaqueText = new Vector<>(4, 1);
+        for(int i = 0; i < images.size(); ++i)
+        {
+            nbChaque.add(0);
+        }
         commandeEnvoye = new AlertDialog.Builder(this);
     }
 
@@ -116,8 +129,59 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private ImageView findImgProduit()
+    {
+        ImageView produit = new ImageView(getApplicationContext());
+
+        switch (produitSelectionner.getNom())
+        {
+            case "Café Filtre":
+            {
+                produit.setImageResource(R.drawable.cafe_filtre);
+                nbChaque.set(0, nbChaque.get(0) + 1);
+                if(nbChaqueText.size() > 0)
+                {
+                    nbChaqueText.get(0).setText(nbChaque.get(0).toString());
+                }
+                break;
+            }
+            case "Americano" :
+            {
+                produit.setImageResource(R.drawable.americano);
+                nbChaque.set(1, nbChaque.get(1) + 1);
+                if(nbChaqueText.size() > 0)
+                {
+                    nbChaqueText.get(1).setText(nbChaque.get(1).toString());
+                }
+                break;
+            }
+            case "Café Glacé" :
+            {
+                produit.setImageResource(R.drawable.cafe_glace);
+                nbChaque.set(2, nbChaque.get(2) + 1);
+                if(nbChaqueText.size() > 0)
+                {
+                    nbChaqueText.get(2).setText(nbChaque.get(2).toString());
+                }
+                break;
+            }
+            case "Latté" :
+            {
+                produit.setImageResource(R.drawable.latte);
+                nbChaque.set(3, nbChaque.get(3) + 1);
+                if(nbChaqueText.size() > 0)
+                {
+                    nbChaqueText.get(3).setText(nbChaque.get(3).toString());
+                }
+                break;
+            }
+        }
+        return produit;
+    }
+
     private class Ecouteur implements View.OnClickListener
     {
+        @SuppressLint("ResourceAsColor")
         @Override
         public void onClick(View v) {
             boolean produitChange = false;
@@ -164,36 +228,73 @@ public class MainActivity extends AppCompatActivity {
                     //Changes the visible order total
                     text.get("currentPriceText").setText(prixFormat.format(commande.getTotal()));
 
-                    ImageView produit = new ImageView(getApplicationContext());
                     //Choose the appropriate icon
-                    switch (produitSelectionner.getNom())
+                    if(orderLayout.getChildCount() < 10 && !changerLayout)
                     {
-                        case "Café Filtre":
+                        ImageView produit = findImgProduit();
+
+                        //Changes the size of the icon
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, RelativeLayout.LayoutParams.WRAP_CONTENT); //Values here are in pixel
+                        produit.setLayoutParams(layoutParams);
+                        //Adds the product icon to the appropriate layout
+                        orderLayout.addView(produit);
+                    }
+                    else if(!changerLayout)//New layout if the size of the order is too big
+                    {
+                        changerLayout = true;
+                        orderLayout.removeAllViewsInLayout();
+
+                        for(int i = 0; i < images.size(); ++i)
                         {
-                            produit.setImageResource(R.drawable.cafe_filtre);
-                            break;
-                        }
-                        case "Americano" :
-                        {
-                            produit.setImageResource(R.drawable.americano);
-                            break;
-                        }
-                        case "Café Glacé" :
-                        {
-                            produit.setImageResource(R.drawable.cafe_glace);
-                            break;
-                        }
-                        case "Latté" :
-                        {
-                            produit.setImageResource(R.drawable.latte);
-                            break;
+                            ImageView produit = new ImageView(getApplicationContext());
+                            nbChaqueText.add(new TextView(getApplicationContext()));
+                            nbChaqueText.lastElement().setText(nbChaque.get(i).toString());
+
+                            switch(i)
+                            {
+                                case 0:
+                                {
+                                    produit.setImageResource(R.drawable.cafe_filtre);
+                                    break;
+                                }
+                                case 1:
+                                {
+                                    produit.setImageResource(R.drawable.americano);
+                                    break;
+                                }
+                                case 2:
+                                {
+                                    produit.setImageResource(R.drawable.cafe_glace);
+                                    break;
+                                }
+                                case 3:
+                                {
+                                    produit.setImageResource(R.drawable.latte);
+                                    break;
+                                }
+                            }
+
+                            //Changes the size of the icon
+                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT); //Values here are in pixel
+                            layoutParams.weight = 0.15f;
+                            produit.setLayoutParams(layoutParams);
+                            //Changes the size, color, gravity, and margins of the text
+                            layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            layoutParams.setMargins(0, 0, 20, 0);
+                            layoutParams.weight = 0.1f;
+                            nbChaqueText.lastElement().setLayoutParams(layoutParams);
+                            nbChaqueText.lastElement().setTextSize(30);
+                            nbChaqueText.lastElement().setTextColor(Color.BLACK);
+                            nbChaqueText.lastElement().setGravity(Gravity.CENTER);
+                            //Adds the product icon to the appropriate layout
+                            orderLayout.addView(produit);
+                            orderLayout.addView( nbChaqueText.lastElement());
                         }
                     }
-                    //Changes the size of the icon
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, RelativeLayout.LayoutParams.WRAP_CONTENT); //Values here are in pixel
-                    produit.setLayoutParams(layoutParams);
-                    //Adds the product icon to the appropriate layout
-                    orderLayout.addView(produit);
+                    else
+                    {
+                        findImgProduit();
+                    }
                 }
                 else if(buttons.get("eraseButton").equals(v) && commande.getCommande().size() > 0)
                 {
@@ -206,6 +307,14 @@ public class MainActivity extends AppCompatActivity {
                     orderLayout.removeAllViewsInLayout();
                     //Creates a new Commande
                     commande = new Commande();
+                    //Resets the number of each item to 0
+                    for(int i = 0; i < images.size(); ++i)
+                    {
+                        nbChaque.set(i, 0);
+                    }
+                    nbChaqueText = new Vector<>(4, 1);
+                    //Resets the order layout to its default state
+                    changerLayout = false;
                     //Resets the modifiable text fields
                     text.get("currentSelectionText").setText("");
                     text.get("currentPriceText").setText(prixFormat.format(commande.getTotal()));
@@ -213,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                 else if(buttons.get("orderButton").equals(v))
                 {
                     //Shows the transaction confirmation
-                    commandeEnvoye.setMessage("Paiement de " + prixFormat.format(commande.getTotal()) + " en cours...").setTitle("Commande envoyé!");
+                    commandeEnvoye.setMessage("Paiement de " + prixFormat.format(commande.getTotal()) + " en cours...").setTitle("Commande envoyée!");
                     AlertDialog dialog = commandeEnvoye.create();
                     dialog.show();
                 }
