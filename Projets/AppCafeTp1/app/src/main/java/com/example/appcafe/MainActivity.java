@@ -23,7 +23,6 @@ import com.google.android.material.chip.ChipGroup;
 import java.text.DecimalFormat;
 import java.util.Hashtable;
 import java.util.Vector;
-
 public class MainActivity extends AppCompatActivity {
 
     Ecouteur ec;
@@ -32,19 +31,19 @@ public class MainActivity extends AppCompatActivity {
     Hashtable<String, Button> buttons;
     Hashtable<String, Chip> chips;
 
-    LinearLayout parentLayout;
-    LinearLayout orderLayout;
-    ListeProduits listeProduits;
-    Commande commande;
-    Vector<Integer> nbChaque;
-    Vector<TextView> nbChaqueText;
-    boolean changerLayout = false;
-    String nomProduit = "";
-    String tailleProduit = "Petit";
-    Produit produitSelectionner = null;
-    DecimalFormat caloriesFormat = new DecimalFormat("## cal");
-    DecimalFormat prixFormat = new DecimalFormat("0.00$");
-    AlertDialog.Builder commandeEnvoye;
+    LinearLayout parentLayout; //Layout containing our app
+    LinearLayout orderLayout; //Layout containing the icons for our order
+    ListeProduits listeProduits; //List containing all possible products to be added to an order
+    Commande commande; //Contains a copy of every item the user has ordered as well as their total after tax
+    Vector<Integer> nbChaque; //Contains the number of each type of drink the user ordered (Filtre, Americano, Glace, Latte)
+    Vector<TextView> nbChaqueText; //Contains the text field for the big order layout that will show the amount of each drink (Filtre, Americano, Glace, Latte)
+    boolean changerLayout = false; //Lets us keep track if we have changed from the small order layout to the big order layout
+    String nomProduit = ""; //Lets us know which type of product the user has selected
+    String tailleProduit = "Petit"; //Lets us know the size of the product the user has selected
+    Produit produitSelectionner = null; //Lets us know which product the user has added to their order
+    DecimalFormat caloriesFormat = new DecimalFormat("## cal"); //Text format for the calories
+    DecimalFormat prixFormat = new DecimalFormat("0.00$"); //Text format for the price
+    AlertDialog.Builder commandeEnvoye; //Alert dialog when the order has been sent
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         parentLayout = findViewById(R.id.ParentLayout);
         orderLayout = findViewById(R.id.OrderLayout);
+        //Let's us obtain the children of every parent container in the main activity
         this.findChildren(parentLayout);
 
         listeProduits = new ListeProduits();
@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         {
             nbChaque.add(0);
         }
+
         commandeEnvoye = new AlertDialog.Builder(this);
     }
 
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
+    //Returns the image to be added to our small order, also increments the counter for each product
     private ImageView findImgProduit()
     {
         ImageView produit = new ImageView(getApplicationContext());
@@ -184,8 +185,8 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("ResourceAsColor")
         @Override
         public void onClick(View v) {
-            boolean produitChange = false;
-            if(images.contains(v))
+            boolean produitChange = false; //Lets us know if the product has changed after the user clicked
+            if(images.contains(v)) //If an image has been pressed
             {
                 //Changes the product based on the image clicked
                 if (images.get("imgCafFiltre").equals(v))
@@ -213,26 +214,26 @@ public class MainActivity extends AppCompatActivity {
 
                 produitChange = true;
             }
-            else if(chips.contains(v))
+            else if(chips.contains(v)) //If a chip has been pressed
             {
                 //Changes the size of the product
                 tailleProduit = ((Chip) v).getText().toString();
                 produitChange = true;
             }
-            else if(buttons.contains(v))
+            else if(buttons.contains(v)) //If a button has been pressed
             {
-                if(buttons.get("addButton").equals(v))
+                if(buttons.get("addButton").equals(v)) //Logic for Ajouter button
                 {
                     //Adds the product to the command
                     commande.ajouterProduit(produitSelectionner);
                     //Changes the visible order total
                     text.get("currentPriceText").setText(prixFormat.format(commande.getTotal()));
+                    //Choose the appropriate icon to be added to the small order, still usefull in the big order to add 1 to one of product counters
+                    ImageView produit = findImgProduit();
 
-                    //Choose the appropriate icon
+                    //Choose the appropriate icon to add to the order if it is small enough
                     if(orderLayout.getChildCount() < 10 && !changerLayout)
                     {
-                        ImageView produit = findImgProduit();
-
                         //Changes the size of the icon
                         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, RelativeLayout.LayoutParams.WRAP_CONTENT); //Values here are in pixel
                         produit.setLayoutParams(layoutParams);
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
                         for(int i = 0; i < images.size(); ++i)
                         {
-                            ImageView produit = new ImageView(getApplicationContext());
+                            ImageView produitIcon = new ImageView(getApplicationContext());
                             nbChaqueText.add(new TextView(getApplicationContext()));
                             nbChaqueText.lastElement().setText(nbChaque.get(i).toString());
 
@@ -254,22 +255,22 @@ public class MainActivity extends AppCompatActivity {
                             {
                                 case 0:
                                 {
-                                    produit.setImageResource(R.drawable.cafe_filtre);
+                                    produitIcon.setImageResource(R.drawable.cafe_filtre);
                                     break;
                                 }
                                 case 1:
                                 {
-                                    produit.setImageResource(R.drawable.americano);
+                                    produitIcon.setImageResource(R.drawable.americano);
                                     break;
                                 }
                                 case 2:
                                 {
-                                    produit.setImageResource(R.drawable.cafe_glace);
+                                    produitIcon.setImageResource(R.drawable.cafe_glace);
                                     break;
                                 }
                                 case 3:
                                 {
-                                    produit.setImageResource(R.drawable.latte);
+                                    produitIcon.setImageResource(R.drawable.latte);
                                     break;
                                 }
                             }
@@ -277,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
                             //Changes the size of the icon
                             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT); //Values here are in pixel
                             layoutParams.weight = 0.15f;
-                            produit.setLayoutParams(layoutParams);
+                            produitIcon.setLayoutParams(layoutParams);
                             //Changes the size, color, gravity, and margins of the text
                             layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT);
                             layoutParams.setMargins(0, 0, 20, 0);
@@ -287,16 +288,12 @@ public class MainActivity extends AppCompatActivity {
                             nbChaqueText.lastElement().setTextColor(Color.BLACK);
                             nbChaqueText.lastElement().setGravity(Gravity.CENTER);
                             //Adds the product icon to the appropriate layout
-                            orderLayout.addView(produit);
+                            orderLayout.addView(produitIcon);
                             orderLayout.addView( nbChaqueText.lastElement());
                         }
                     }
-                    else
-                    {
-                        findImgProduit();
-                    }
                 }
-                else if(buttons.get("eraseButton").equals(v) && commande.getCommande().size() > 0)
+                else if(buttons.get("eraseButton").equals(v) && commande.getCommande().size() > 0) //Logic when the Effacer button is pressed
                 {
                     //Disables the add button
                     buttons.get("addButton").setEnabled(false);
@@ -319,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                     text.get("currentSelectionText").setText("");
                     text.get("currentPriceText").setText(prixFormat.format(commande.getTotal()));
                 }
-                else if(buttons.get("orderButton").equals(v))
+                else if(buttons.get("orderButton").equals(v)) //Logic if the Commander button is pressed
                 {
                     //Shows the transaction confirmation
                     commandeEnvoye.setMessage("Paiement de " + prixFormat.format(commande.getTotal()) + " en cours...").setTitle("Commande envoyée!");
