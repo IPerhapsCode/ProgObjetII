@@ -25,6 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Café filtre"
                 app:srcCompat="@drawable/cafe_filtre" />
 
             <ImageView
@@ -32,6 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Americano"
                 app:srcCompat="@drawable/americano" />
         </LinearLayout>
 
@@ -83,6 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Café glacé"
                 app:srcCompat="@drawable/cafe_glace" />
 
             <ImageView
@@ -90,6 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Latté"
                 app:srcCompat="@drawable/latte" />
         </LinearLayout>
 
@@ -146,38 +150,18 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSmall"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:text="@string/text_small_size_fr"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                app:checkedIcon="@drawable/crochet"
-                app:chipBackgroundColor="@color/green_500"
-                app:chipIcon="@drawable/crochet" />
+                style="@style/chipStyle"
+                android:text="@string/text_small_size_fr" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipMedium"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:text="@string/text_medium_size_fr"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                app:checkedIcon="@drawable/crochet"
-                app:chipBackgroundColor="@color/green_500" />
+                style="@style/chipStyle"
+                android:text="@string/text_medium_size_fr" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipLarge"
-                style="@style/Widget.MaterialComponents.Chip.Filter"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:text="@string/text_large_size_fr"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                app:checkedIcon="@drawable/crochet"
-                app:chipBackgroundColor="@color/green_500"
-                app:chipIcon="@drawable/crochet" />
+                style="@style/chipStyle"
+                android:text="@string/text_large_size_fr" />
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 

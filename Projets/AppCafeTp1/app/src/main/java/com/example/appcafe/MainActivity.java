@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -189,22 +190,7 @@ public class MainActivity extends AppCompatActivity {
             if(images.contains(v)) //If an image has been pressed
             {
                 //Changes the product based on the image clicked
-                if (images.get("imgCafFiltre").equals(v))
-                {
-                    nomProduit = "Café filtre";
-                }
-                else if (images.get("imgAmericano").equals(v))
-                {
-                    nomProduit = "Americano";
-                }
-                else if (images.get("imgCafGlace").equals(v))
-                {
-                    nomProduit = "Café glacé";
-                }
-                else if (images.get("imgLatte").equals(v))
-                {
-                    nomProduit = "Latté";
-                }
+                nomProduit = v.getTag().toString();
 
                 //Enables the add button if it isnt already
                 if(!buttons.get("addButton").isEnabled())
@@ -244,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         changerLayout = true;
                         orderLayout.removeAllViewsInLayout();
+                        LinearLayout.LayoutParams layoutParams;
 
                         for(int i = 0; i < images.size(); ++i)
                         {
@@ -276,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             //Changes the size of the icon
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT); //Values here are in pixel
+                            layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT); //Values here are in pixel
                             layoutParams.weight = 0.15f;
                             produitIcon.setLayoutParams(layoutParams);
                             //Changes the size, color, gravity, and margins of the text
@@ -285,7 +272,8 @@ public class MainActivity extends AppCompatActivity {
                             layoutParams.weight = 0.1f;
                             nbChaqueText.lastElement().setLayoutParams(layoutParams);
                             nbChaqueText.lastElement().setTextSize(30);
-                            nbChaqueText.lastElement().setTextColor(Color.BLACK);
+                            nbChaqueText.lastElement().setTypeface(null, Typeface.BOLD);
+                            nbChaqueText.lastElement().setTextColor(getResources().getColor(R.color.green_500));
                             nbChaqueText.lastElement().setGravity(Gravity.CENTER);
                             //Adds the product icon to the appropriate layout
                             orderLayout.addView(produitIcon);
