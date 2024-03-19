@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/zoneCouleurs"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.125"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/design_default_color_primary"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp">
+
+        <Button
+            android:id="@+id/color_darkorange"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/darkorange"
+            android:tag="darkorange"
+            android:text="" />
+
+        <Button
+            android:id="@+id/color_yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/yellow"
+            android:tag="yellow"
+            android:text="" />
+
+        <Button
+            android:id="@+id/color_white"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/white"
+            android:tag="white"
+            android:text="" />
+
+        <Button
+            android:id="@+id/color_black"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/black"
+            android:tag="black"
+            android:text="" />
+
+        <Button
+            android:id="@+id/color_pink"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/pink"
+            android:tag="pink"
+            android:text="" />
+
+        <Button
+            android:id="@+id/color_red"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/red"
+            android:tag="red"
+            android:text="" />
+
+        <Button
+            android:id="@+id/color_turquoise"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/turquoise"
+            android:tag="turquoise"
+            android:text="" />
+
+        <Button
+            android:id="@+id/color_lightgreen"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/lightgreen"
+            android:tag="lightgreen"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/zoneDessin"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.75"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.125">
+
+        <LinearLayout
+            android:id="@+id/zoneOutils"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/outil_crayon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="crayon"
+                app:srcCompat="@drawable/crayon" />
+
+            <ImageView
+                android:id="@+id/outil_efface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="efface"
+                app:srcCompat="@drawable/efface" />
+
+            <ImageView
+                android:id="@+id/outil_cercle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="cercle"
+                app:srcCompat="@drawable/cercle" />
+
+            <ImageView
+                android:id="@+id/outil_triangle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="triangle"
+                app:srcCompat="@drawable/triangle" />
+
+            <ImageView
+                android:id="@+id/outil_rectangle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="rectangle"
+                app:srcCompat="@drawable/rectangle" />
+
+            <ImageView
+                android:id="@+id/outil_largeur_trait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="largeur_trait"
+                app:srcCompat="@drawable/largeur_trait" />
+
+            <ImageView
+                android:id="@+id/outil_remplir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="remplir"
+                app:srcCompat="@drawable/remplir" />
+
+            <ImageView
+                android:id="@+id/outil_palette"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="palette"
+                app:srcCompat="@drawable/palette" />
+
+            <ImageView
+                android:id="@+id/outil_pipette"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="pipette"
+                app:srcCompat="@drawable/pipette" />
+
+            <ImageView
+                android:id="@+id/outil_undo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="undo"
+                app:srcCompat="@drawable/undo" />
+
+            <ImageView
+                android:id="@+id/outil_redo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="redo"
+                app:srcCompat="@drawable/redo" />
+
+            <ImageView
+                android:id="@+id/outil_enregistrer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="enregistrer"
+                app:srcCompat="@drawable/enregistrer" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>
