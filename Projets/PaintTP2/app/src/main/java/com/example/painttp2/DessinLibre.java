@@ -10,6 +10,7 @@ public class DessinLibre extends Formes {
     public DessinLibre(Context context, int color, int sizeTrace, Paint.Style style)
     {
         super(context, color, sizeTrace, style);
+        this.path = new Path();
     }
 
     @Override
@@ -27,5 +28,11 @@ public class DessinLibre extends Formes {
 
     public Path getPath() {
         return path;
+    }
+
+    //Permet de fermer une forme libre
+    public void closePath()
+    {
+        this.path.close();
     }
 }
