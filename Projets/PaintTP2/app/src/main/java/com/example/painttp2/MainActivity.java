@@ -3,9 +3,13 @@ package com.example.painttp2;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,34 +18,50 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.example.painttp2.shapes.Cercle;
+import com.example.painttp2.shapes.DessinLibre;
+import com.example.painttp2.shapes.Efface;
+import com.example.painttp2.shapes.Formes;
+import com.example.painttp2.shapes.Rectangle;
+import com.example.painttp2.shapes.Remplir;
+import com.example.painttp2.shapes.Triangle;
+
 import java.util.Hashtable;
 import java.util.Vector;
 //Il serait important de pouvoir maintenir notre doigt enfoncer sur l'image defface pour qu'on puisse alors changer la taille du trait de l'efface et
-//peut être pouvoir changer la forme de l'efface genre un carré
+//peut être pouvoir changer la forme de l'efface genre un carré ou un cercle
 //Peut être retoucher la taille du cercle de l'efface j'aime la manière dont fonctionne, peut être même que l'efface ne devrait pas utiliser un path :/
 //Puisqu'on va coder l'outil remplir pour de vrai il nous faut un moyen de changer la couleur de fond,
 //je propose de faire cela en maintenant le bouton enfoncer sur l'outil remplir ou avec l'outil pipette
 //Créer une option qui permet de fermer une forme libre, on peut sélectionner l'option en enfoncant le crayon
+//PS finalement on va faire un scoll view dans l'alert dialog de largeur du trait pour changer les dites options
+//Il me faut un moyen de savoir que la couleur que la pipette me donne est équivalente à une couleur préfette
 public class MainActivity extends AppCompatActivity {
 
-    EcouteurOnTouch ecot;
-    SurfaceDessin sd;
-    Vector<Formes> formes;
-    Hashtable<String, Integer> couleurs;
-    Hashtable<String, ImageView> outils;
-    LinearLayout zoneCouleurs, zoneDessin, zoneOutils;
+    private EcouteurOnTouch ecot;
+    private SurfaceDessin sd;
+    private Vector<Formes> formes;
+    private Vector<Formes> formesUndone;
+    public static Hashtable<String, Integer> couleurs;
+    private Hashtable<String, ImageView> outils;
+    private LinearLayout zoneCouleurs, zoneDessin, zoneOutils;
 
     //Variables
-    int couleur = R.color.black;
-    int backgroundColor = R.color.white;
-    int sizeTrace = 5;
-    Paint.Style style = Paint.Style.STROKE;
+    private int couleur = R.color.black;
+    private int backgroundColor = R.color.white;
+    private static int sizeTrace = 5;
+    private Paint.Style style = Paint.Style.STROKE;
 
-    int currentEvent;
-    float x, y;
-    ImageView outil;
+    private int currentEvent;
+    private float x, y;
+    private ImageView outil;
+    private ImageView lastOutil;
+    public static Bitmap bitmap = null;
 
-    boolean fermerForme = false;
+    private boolean fermerForme = false;
+
+    //Alert Dialogs
+    private Dialog_Largeur_Trait dialogLargeurTrait;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Mise en place de nos vecteurs et de nos hashtables
         formes = new Vector<>(1, 1);
+        formesUndone = new Vector<>(1, 1);
         couleurs = new Hashtable<>();
         outils = new Hashtable<>();
 
@@ -61,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         zoneCouleurs = findViewById(R.id.zoneCouleurs);
         zoneDessin = findViewById(R.id.zoneDessin);
         zoneOutils = findViewById(R.id.zoneOutils);
+
+        //Alert Dialogs
+        dialogLargeurTrait = new Dialog_Largeur_Trait(this);
 
         //Obtention des enfants contenu dans nos linear layouts
             //Bouton des couleurs
@@ -112,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class EcouteurOnTouch implements View.OnTouchListener
     {
+        @SuppressLint("ResourceAsColor")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             currentEvent = event.getAction();
@@ -120,21 +145,49 @@ public class MainActivity extends AppCompatActivity {
                     && currentEvent == MotionEvent.ACTION_DOWN)
             {
                 couleur = couleurs.get(v.getTag().toString());
-                System.out.println(couleur);
             }
             //Si un outil est cliqué
             else if(outils.containsKey(v.getTag().toString())
-                    && currentEvent == MotionEvent.ACTION_DOWN)
+                    && currentEvent == MotionEvent.ACTION_UP)
             {
+                lastOutil = outil;
                 outil = outils.get(v.getTag().toString());
-                System.out.println(outil);
+                System.out.println(outil.getTag().toString());
+                switch(outil.getTag().toString())
+                {
+                    case "largeur_trait":{
+                        dialogLargeurTrait.show();
+                        outil = lastOutil;
+                        break;
+                    }
+                    case "undo":{
+                        if(!formes.isEmpty())
+                        {
+                            formesUndone.add(formes.lastElement());
+                            formes.remove(formes.lastElement());
+                            sd.invalidate();
+                        }
+                        outil = lastOutil;
+                        break;
+                    }
+                    case "redo":{
+                        if(!formesUndone.isEmpty())
+                        {
+                            formes.add(formesUndone.lastElement());
+                            formesUndone.remove(formesUndone.lastElement());
+                            sd.invalidate();
+                        }
+                        outil = lastOutil;
+                        break;
+                    }
+                }
             }
             //Si l'utilisateur dessine sur la surface de dessin
             else if(v instanceof SurfaceDessin)
             {
                 x = event.getX();
                 y = event.getY();
-                System.out.println(v);
+
                 switch(outil.getTag().toString())
                 {
                     case "crayon":{
@@ -154,7 +207,8 @@ public class MainActivity extends AppCompatActivity {
                     case "efface":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
-                            formes.add(new Efface(MainActivity.this, backgroundColor, Efface.sizeTraceEfface, style));
+                            formes.add(new Efface(MainActivity.this, backgroundColor,
+                                    Efface.getSizeTraceEfface(), style));
                         }
                         break;
                     }
@@ -170,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                         {
                             formes.add(new Rectangle(MainActivity.this, couleur, sizeTrace, style));
                         }
+                        break;
                     }
                     case "triangle":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
@@ -180,11 +235,35 @@ public class MainActivity extends AppCompatActivity {
                         {
                             ((Triangle) formes.lastElement()).setCurrentEvent(currentEvent);
                         }
+                        break;
+                    }
+                    case "pipette":{
+                        if(currentEvent == MotionEvent.ACTION_DOWN)
+                        {
+                            bitmap = sd.getBitmapImage();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                couleur = bitmap.getColor((int)x, (int)y).toArgb();
+                            }
+                        }
+                        break;
+                    }
+                    case "remplir":{
+                        if(currentEvent == MotionEvent.ACTION_DOWN)
+                        {
+                            bitmap = sd.getBitmapImage();
+                            formes.add(new Remplir(MainActivity.this, couleur, 0, style));
+                            formes.lastElement().draw(x, y);
+                            sd.invalidate();
+                        }
                     }
                 }
 
-                formes.lastElement().draw(x, y);
-                sd.invalidate();
+                if(!outil.getTag().toString().equals("pipette")
+                        && !outil.getTag().toString().equals("remplir"))
+                {
+                    formes.lastElement().draw(x, y);
+                    sd.invalidate();
+                }
             }
             return true;
         }
@@ -210,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
                     if(i instanceof Efface && currentEvent != MotionEvent.ACTION_UP
                             && outil == outils.get("efface"))
                     {
-                        canvas.drawCircle(x, y, Efface.sizeTraceEfface, ((Efface) i).getBorderPaint());
+                        canvas.drawCircle(x, y, Efface.getSizeTraceEfface() * 0.65f, ((Efface) i).getBorderPaint());
                     }
                 }
                 else if(i instanceof Cercle && !(i instanceof Rectangle))
@@ -232,7 +311,37 @@ public class MainActivity extends AppCompatActivity {
                     canvas.drawLine(((Triangle) i).getA(), ((Triangle) i).getB(),
                             ((Triangle) i).getC(), ((Triangle) i).getD(), i.getPaint());
                 }
+                else if(i instanceof Remplir)
+                {
+                    canvas.drawBitmap(((Remplir) i).getBitmap(), 0, 0, i.getPaint());
+                }
             }
         }
+
+        public Bitmap getBitmapImage() {
+            Bitmap bitmapImage;
+
+            this.buildDrawingCache();
+            bitmapImage = Bitmap.createBitmap(this.getDrawingCache());
+            this.destroyDrawingCache();
+
+            return bitmapImage;
+        }
+
+    }
+
+    public static int getSizeTrace()
+    {
+        return sizeTrace;
+    }
+
+    public static void setSizeTrace(int newSizeTrace)
+    {
+        sizeTrace = newSizeTrace;
+    }
+
+    public static Bitmap getBitmap()
+    {
+        return bitmap;
     }
 }

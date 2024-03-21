@@ -1,9 +1,9 @@
-package com.example.painttp2;
+package com.example.painttp2.shapes;
 
 import android.content.Context;
 import android.graphics.Paint;
 
-public class Cercle extends Formes{
+public class Cercle extends Formes {
     private float xDepart = -1, yDepart = -1, x = -1, y = -1;
 
     public Cercle(Context context, int color, int sizeTrace, Paint.Style style) {

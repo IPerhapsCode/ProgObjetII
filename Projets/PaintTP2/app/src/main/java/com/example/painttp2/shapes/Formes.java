@@ -1,4 +1,4 @@
-package com.example.painttp2;
+package com.example.painttp2.shapes;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -18,7 +18,16 @@ public abstract class Formes {
         this.sizeTrace = sizeTrace;
         this.style = style;
 
-        this.paint.setColor(ContextCompat.getColor(context, this.color));
+        try
+        {
+            //Permet d'assigner une couleur à partir de nos couleurs prédéfinies
+            this.paint.setColor(ContextCompat.getColor(context, this.color));
+        }
+        catch(Exception e)
+        {
+            //Permet d'assigner une couleur obtenu à travers la pipette ou encore la pallette de couleur
+            this.paint.setColor(this.color);
+        }
         this.paint.setStrokeWidth(this.sizeTrace);
         this.paint.setStyle(this.style);
         this.paint.setAntiAlias(true);

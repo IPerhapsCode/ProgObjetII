@@ -1,4 +1,4 @@
-package com.example.painttp2;
+package com.example.painttp2.shapes;
 
 import android.content.Context;
 import android.graphics.Paint;
