@@ -14,12 +14,14 @@ import com.example.painttp2.R;
 
 
 //So what are we taking away from this.
-//1. The algorithm clearly doesnt work
-//That's it you a dumbass get gud
+//1. Parfois certain pixel de la même couleur sont considéré comme étant de couleur différentes?
+//2. La condition d'arrêt de l'algorithme est clairement insuffisante
+// Elle ne sert pas a rien, mais il doit clairement y avoir un second failsafe
 public class Remplir extends Formes{
     private Bitmap bitmap;
     private int color;
     private int initialColor = 1;
+    private boolean[][] check;
 
     private Context context;
     public Remplir(Context context, int color, int sizeTrace, Paint.Style style) {
@@ -27,6 +29,15 @@ public class Remplir extends Formes{
         this.context = context;
         this.bitmap = MainActivity.bitmap;
         this.color = color;
+        this.check = new boolean[this.bitmap.getHeight()][this.bitmap.getWidth()];
+
+        for(int i = 0; i < this.bitmap.getHeight(); ++i)
+        {
+            for(int j = 0; j < this.bitmap.getWidth(); ++j)
+            {
+                this.check[i][j] = true;
+            }
+        }
     }
 
     @Override
@@ -38,44 +49,42 @@ public class Remplir extends Formes{
         int perimeter = (int)(Math.pow(3 + 2 * (perimeterThickness - 1), 2)
                 - Math.pow(3 + 2 * (perimeterThickness - 2), 2));
         int tempX = defaultX, tempY = defaultY;
-        boolean[] corners = {false, false, false, false};
         int count = 0;
+        int side = 0;
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
         {
             while(iteration < max)
             {
-                if(count < perimeter)
+                //Determines the next pixel to be potentielly color changed
+                if(count == 0 && side == 0)
                 {
-                    if(count == 0)
-                    {
-                        tempX = defaultX - perimeterThickness + 1;
-                        tempY = defaultY + perimeterThickness;
-                    }
-                    else if(!corners[0])
-                    {
-                        tempX += 1;
-                    }
-                    else if(!corners[1])
-                    {
-                        tempY += 1;
-                    }
-                    else if(!corners[2])
-                    {
-                        tempX -= 1;
-                    }
-                    else if(!corners[3])
-                    {
-                        tempY -= 1;
-                    }
-
-                    ++count;
+                    tempX = defaultX - perimeterThickness + 1;
+                    tempY = defaultY + perimeterThickness;
                 }
+                else if(count < perimeter / 4 && side == 0)
+                {
+                    tempX += 1;
+                }
+                else if(count < perimeter / 4 && side == 1)
+                {
+                    tempY -= 1;
+                }
+                else if(count < perimeter / 4 && side == 2)
+                {
+                    tempX -= 1;
+                }
+                else if(count < perimeter / 4 && side == 3)
+                {
+                    tempY += 1;
+                }
+                ++count;
 
                 //Change la couleur du pixel pour celle désiré
                 if(this.initialColor == 1)
                 {
                     this.initialColor = this.bitmap.getColor(tempX, tempY).toArgb();
+
                     if(MainActivity.couleurs.contains(this.color))
                     {
                         this.bitmap.setPixel(tempX, tempY, ContextCompat.getColor(this.context, this.color));
@@ -99,62 +108,49 @@ public class Remplir extends Formes{
                         {
                             this.bitmap.setPixel(tempX, tempY, this.color);
                         }
-                        ++iteration;
                     }
+                    else
+                    {
+                        this.check[tempY][tempX] = false;
+                    }
+
+                    ++iteration;
                 }
                 else
                 {
                     ++wrongCount;
-                    ++iteration;
                     if(wrongCount >= perimeter)
                     {
                         break;
                     }
-                }
 
-                if(tempX == defaultX + perimeterThickness && tempY == defaultY + perimeterThickness)
-                {
-                    corners[0] = true;
-                }
-                else if(tempX == defaultX + perimeterThickness && tempY == defaultY - perimeterThickness)
-                {
-                    corners[1] = true;
-                }
-                else if(tempX == defaultX - perimeterThickness && tempY == defaultY - perimeterThickness)
-                {
-                    corners[2] = true;
-                }
-                else if(tempX == defaultX - perimeterThickness && tempY == defaultY + perimeterThickness)
-                {
-                    corners[3] = true;
+                    if(this.bitmap.getWidth() > tempX  && tempX >= 0
+                            && this.bitmap.getHeight() > tempY && tempY >= 0)
+                        ++iteration; //nb iteration reach max too fast parce qu'on compte les point out
                 }
 
                 //Met en place les variables pour le prochain cycle
-                if(count >= perimeter)
+                if(count >= perimeter / 4 && side >= 3)
                 {
                     count = 0;
+                    side = 0;
+                    wrongCount = 0;
 
                     ++perimeterThickness;
-
-                    for(boolean i : corners)
-                    {
-                        i = false;
-                    }
 
                     //Calculer le nombre de pixel composant le périmètre
                     perimeter = (int)(Math.pow(3 + 2 * (perimeterThickness - 1), 2)
                             - Math.pow(3 + 2 * (perimeterThickness - 2), 2));
                 }
+
+                //Met en place les variables pour le prochain côté
+                if(count >= perimeter / 4)
+                {
+                    count = 0;
+                    ++side;
+                }
             }
         }
-
-//        for(int i = 0; i < this.bitmap.getHeight(); ++i)
-//        {
-//            for(int j = 0; j < this.bitmap.getWidth(); ++j)
-//            {
-//                this.bitmap.setPixel(j, i, Color.RED);
-//            }
-//        }
     }
 
     public Bitmap getBitmap() {
