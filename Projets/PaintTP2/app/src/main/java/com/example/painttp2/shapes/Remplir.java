@@ -17,6 +17,13 @@ import com.example.painttp2.R;
 //1. Parfois certain pixel de la même couleur sont considéré comme étant de couleur différentes?
 //2. La condition d'arrêt de l'algorithme est clairement insuffisante
 // Elle ne sert pas a rien, mais il doit clairement y avoir un second failsafe
+
+// Je pense qu'il faut une hashmap qui contient deux clés
+// Une pour tout les pixels de la même couleur que celle initiale et une pour toutes les autres
+//Chaque objet va contenir un tableau multimensionnel, dans chaque tableau de deuxième dimension représente un groupe
+//Il se peut que certain pixel qui devrait être dans un autre groupe ne le soit pas
+//Il faut alors regarder chaque pixel de chaque tableau pour savoir s'il sont voisin
+//S'il le sont on ajoute le groupe dans l'autre groupe something like that
 public class Remplir extends Formes{
     private Bitmap bitmap;
     private int color;
