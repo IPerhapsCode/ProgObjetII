@@ -21,6 +21,7 @@ import java.util.Vector;
 //Je pense que je check possiblement pas suffisement de point, faudrait checker les diagonales aussi pour certain niche cases
 //Also live ça crash si aucune forme est présente parce qu'il y a trop de pixel à changer
 //Potentiellement une solution serait de séparer nos groupes dans plusieurs hashmaps de roughly 100 000 ou 1 000 000 pixels (en soit la valeur la plus grande possible sans que ça crash)
+//Je pense qu'une meilleure solution serait de ne pas copier un a un chaque valeur, simplement copier la hashmap dans une autre hashmap qui représenterait le groupe, pis on passerait à travers chacune des copies comme étant le groupe
 
 //I just want to say that vectors are so slow holy shit
 //Secondly hashmaps are better for single threads then hashtables, where hashtable are better for thread collections
@@ -147,7 +148,6 @@ public class Remplir extends Formes{
             {
                 if(i.containsKey(myPoints[0]))
                 {
-                    System.out.println("man tf");
                     myGroup = i;
                     break;
                 }
