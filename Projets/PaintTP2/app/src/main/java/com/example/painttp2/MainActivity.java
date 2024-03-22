@@ -45,6 +45,7 @@ import java.util.Vector;
 //Créer une option qui permet de fermer une forme libre, on peut sélectionner l'option en enfoncant le crayon
 //PS finalement on va faire un scoll view dans l'alert dialog de largeur du trait pour changer les dites options
 //Il me faut un moyen de savoir que la couleur que la pipette me donne est équivalente à une couleur préfette
+//Un empty canvas button serait le fun
 public class MainActivity extends AppCompatActivity {
 
     private EcouteurOnTouch ecot;

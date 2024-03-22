@@ -57,7 +57,7 @@ public class Remplir extends Formes{
         boolean newGroup = true;
         //Contains into potential groups at first every pixel that is the same color as initial color
         HashMap<Integer, HashMap<Point, Point>> groups = new HashMap<>();
-        HashMap<Integer, HashMap<Point, Point>> finalGroups = new HashMap<>();
+        HashMap<Integer, HashMap<Integer, HashMap<Point, Point>>> finalGroups = new HashMap<>();
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
         {
@@ -87,10 +87,10 @@ public class Remplir extends Formes{
                     }
                 }
             }
-            System.out.println(groups.size());
 
             boolean breakTime = false;
-            Point[] myPoints = new Point[4];
+            Point[] myPoints = new Point[8];
+            Vector<Integer> groupsRemoved = new Vector<>();
             for(int i = 0; i < myPoints.length; ++i)
             {
                 myPoints[i] = new Point();
@@ -105,26 +105,35 @@ public class Remplir extends Formes{
                     myPoints[0].set(j.x + 1, j.y);
                     myPoints[1].set(j.x - 1, j.y);
                     myPoints[2].set(j.x, j.y + 1);
-                    myPoints[3].set(j.x + 1, j.y - 1);
+                    myPoints[3].set(j.x, j.y - 1);
+                    myPoints[4].set(j.x + 1, j.y + 1);
+                    myPoints[5].set(j.x - 1, j.y - 1);
+                    myPoints[6].set(j.x - 1, j.y + 1);
+                    myPoints[7].set(j.x + 1, j.y - 1);
 
-                    for(HashMap<Point, Point> k : finalGroups.values())
+                    for(HashMap<Integer, HashMap<Point, Point>> k : finalGroups.values())
                     {
-                        if(k.containsKey(myPoints[0])
-                                || k.containsKey(myPoints[1])
-                                || k.containsKey(myPoints[2])
-                                || k.containsKey(myPoints[3]))
+                        for(HashMap<Point, Point> l : k.values())
                         {
-                            for(Point m : groups.get(i).values())
+                            for(Point m : myPoints)
                             {
-                                k.put(m, m);
+                                if(l.containsKey(m))
+                                {
+                                    k.put(k.size(), groups.get(i));
+                                    groupsRemoved.add(i);
+                                    breakTime = true;
+                                }
+
+                                if(breakTime)
+                                {
+                                    break;
+                                }
                             }
 
-                            breakTime = true;
-                        }
-
-                        if(breakTime)
-                        {
-                            break;
+                            if(breakTime)
+                            {
+                                break;
+                            }
                         }
                     }
 
@@ -136,38 +145,235 @@ public class Remplir extends Formes{
 
                 if(!breakTime)
                 {
-                    finalGroups.put(finalGroups.size(), groups.get(i));
+                    HashMap<Integer, HashMap<Point, Point>> temp = new HashMap<>();
+                    temp.put(0, groups.get(i));
+                    finalGroups.put(finalGroups.size(), temp);
                 }
             }
 
-            System.out.println(finalGroups.size());
+            //On peut pas juste le faire dans cette ordre la, les groupes ne sont pas retiré en ordre :/ il nous faut donc une liste des groupes à retirer et une liste de ceux qu'ils ne le seront pas
+            for(Integer i : groupsRemoved)
+            {
+                groups.remove(i);
+            }
+
+//            for(int i = groups.size() - 1; i >= 0; --i)
+//            {
+//                breakTime = false;
+//
+//                for(Point j : groups.get(i).values())
+//                {
+//                    myPoints[0].set(j.x + 1, j.y);
+//                    myPoints[1].set(j.x - 1, j.y);
+//                    myPoints[2].set(j.x, j.y + 1);
+//                    myPoints[3].set(j.x, j.y - 1);
+//                    myPoints[4].set(j.x + 1, j.y + 1);
+//                    myPoints[5].set(j.x - 1, j.y - 1);
+//                    myPoints[6].set(j.x - 1, j.y + 1);
+//                    myPoints[7].set(j.x + 1, j.y - 1);
+//
+//                    for(HashMap<Integer, HashMap<Point, Point>> k : finalGroups.values())
+//                    {
+//                        for(HashMap<Point, Point> l : k.values())
+//                        {
+//                            for(Point m : myPoints)
+//                            {
+//                                if(l.containsKey(m))
+//                                {
+//                                    k.put(k.size(), groups.get(i));
+//                                    groupsRemoved.add(i);
+//                                    breakTime = true;
+//                                }
+//
+//                                if(breakTime)
+//                                {
+//                                    break;
+//                                }
+//                            }
+//
+//                            if(breakTime)
+//                            {
+//                                break;
+//                            }
+//                        }
+//                    }
+//
+//                    if(breakTime)
+//                    {
+//                        break;
+//                    }
+//                }
+//
+//                if(!breakTime)
+//                {
+//                    HashMap<Integer, HashMap<Point, Point>> temp = new HashMap<>();
+//                    temp.put(0, groups.get(i));
+//                    finalGroups.put(finalGroups.size(), temp);
+//                }
+//            }
 
             myPoints[0].set(defaultX, defaultY);
-            HashMap<Point, Point> myGroup = new HashMap<>();
-            for(HashMap<Point, Point> i : finalGroups.values())
+            breakTime = false;
+            HashMap<Integer, HashMap<Point, Point>> myGroup = new HashMap<>();
+            for(HashMap<Integer, HashMap<Point, Point>> i : finalGroups.values())
             {
-                if(i.containsKey(myPoints[0]))
+                for(HashMap<Point, Point> j : i.values())
                 {
-                    myGroup = i;
+                    if(j.containsKey(myPoints[0]))
+                    {
+                        myGroup = i;
+                        breakTime = true;
+                    }
+
+                    if(breakTime)
+                    {
+                        break;
+                    }
+                }
+
+                if(breakTime)
+                {
                     break;
                 }
             }
 
-            System.out.println(myGroup.size());
-
-            for(Point i : myGroup.values())
+            for(HashMap<Point, Point> i : myGroup.values())
             {
-                if(MainActivity.couleurs.contains(this.color))
+                for(Point j : i.values())
                 {
-                    this.bitmap.setPixel(i.x, i.y, ContextCompat.getColor(this.context, this.color));
-                }
-                else
-                {
-                    this.bitmap.setPixel(i.x, i.y, this.color);
+                    if(MainActivity.couleurs.contains(this.color))
+                    {
+                        this.bitmap.setPixel(j.x, j.y, ContextCompat.getColor(this.context, this.color));
+                    }
+                    else
+                    {
+                        this.bitmap.setPixel(j.x, j.y, this.color);
+                    }
                 }
             }
         }
     }
+
+//    @Override
+//    public void draw(float x, float y) {
+//        int defaultX = (int)x, defaultY = (int)y;
+//        //Guides us through our hashmap group
+//        Integer nbGroup = 0;
+//        //Let's us know if we need to create a new hashmap in groups
+//        boolean newGroup = true;
+//        //Contains into potential groups at first every pixel that is the same color as initial color
+//        HashMap<Integer, HashMap<Point, Point>> groups = new HashMap<>();
+//        HashMap<Integer, HashMap<Point, Point>> finalGroups = new HashMap<>();
+//
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+//        {
+//            this.initialColor = this.bitmap.getColor(defaultX, defaultY).toArgb();
+//
+//            for(int i = 0; i < this.bitmap.getHeight(); ++i)
+//            {
+//                for(int j = 0; j < this.bitmap.getWidth(); ++j)
+//                {
+//                    if(this.bitmap.getColor(j, i).toArgb() == this.initialColor)
+//                    {
+//                        if(!groups.containsKey(nbGroup))
+//                        {
+//                            groups.put(nbGroup, new HashMap<>());
+//                            newGroup = false;
+//                        }
+//
+//                        groups.get(nbGroup).put(new Point(j, i), new Point(j, i));
+//                    }
+//                    else
+//                    {
+//                        if(!newGroup)
+//                        {
+//                            ++nbGroup;
+//                            newGroup = true;
+//                        }
+//                    }
+//                }
+//            }
+//            System.out.println(groups.size());
+//
+//            boolean breakTime = false;
+//            Point[] myPoints = new Point[4];
+//            for(int i = 0; i < myPoints.length; ++i)
+//            {
+//                myPoints[i] = new Point();
+//            }
+//
+//            for(int i = 0; i < groups.size(); ++i)
+//            {
+//                breakTime = false;
+//
+//                for(Point j : groups.get(i).values())
+//                {
+//                    myPoints[0].set(j.x + 1, j.y);
+//                    myPoints[1].set(j.x - 1, j.y);
+//                    myPoints[2].set(j.x, j.y + 1);
+//                    myPoints[3].set(j.x + 1, j.y - 1);
+//
+//                    for(HashMap<Point, Point> k : finalGroups.values())
+//                    {
+//                        if(k.containsKey(myPoints[0])
+//                                || k.containsKey(myPoints[1])
+//                                || k.containsKey(myPoints[2])
+//                                || k.containsKey(myPoints[3]))
+//                        {
+//                            for(Point m : groups.get(i).values())
+//                            {
+//                                k.put(m, m);
+//                            }
+//
+//                            breakTime = true;
+//                        }
+//
+//                        if(breakTime)
+//                        {
+//                            break;
+//                        }
+//                    }
+//
+//                    if(breakTime)
+//                    {
+//                        break;
+//                    }
+//                }
+//
+//                if(!breakTime)
+//                {
+//                    finalGroups.put(finalGroups.size(), groups.get(i));
+//                }
+//            }
+//
+//            System.out.println(finalGroups.size());
+//
+//            myPoints[0].set(defaultX, defaultY);
+//            HashMap<Point, Point> myGroup = new HashMap<>();
+//            for(HashMap<Point, Point> i : finalGroups.values())
+//            {
+//                if(i.containsKey(myPoints[0]))
+//                {
+//                    myGroup = i;
+//                    break;
+//                }
+//            }
+//
+//            System.out.println(myGroup.size());
+//
+//            for(Point i : myGroup.values())
+//            {
+//                if(MainActivity.couleurs.contains(this.color))
+//                {
+//                    this.bitmap.setPixel(i.x, i.y, ContextCompat.getColor(this.context, this.color));
+//                }
+//                else
+//                {
+//                    this.bitmap.setPixel(i.x, i.y, this.color);
+//                }
+//            }
+//        }
+//    }
 
 //    @Override
 //    public void draw(float x, float y) {
