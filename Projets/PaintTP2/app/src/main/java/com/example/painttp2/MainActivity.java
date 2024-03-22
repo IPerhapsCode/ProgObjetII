@@ -4,19 +4,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.painttp2.shapes.Cercle;
 import com.example.painttp2.shapes.DessinLibre;
@@ -26,6 +30,11 @@ import com.example.painttp2.shapes.Rectangle;
 import com.example.painttp2.shapes.Remplir;
 import com.example.painttp2.shapes.Triangle;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Vector;
 //Il serait important de pouvoir maintenir notre doigt enfoncer sur l'image defface pour qu'on puisse alors changer la taille du trait de l'efface et
@@ -59,9 +68,14 @@ public class MainActivity extends AppCompatActivity {
     public static Bitmap bitmap = null;
 
     private boolean fermerForme = false;
+    private int nbImgSaved = 0;
 
     //Alert Dialogs
     private Dialog_Largeur_Trait dialogLargeurTrait;
+
+    //Toasts
+    Toast toastSaved;
+    Toast toastChangedColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Alert Dialogs
         dialogLargeurTrait = new Dialog_Largeur_Trait(this);
+
+        //Toasts
+        toastSaved = Toast.makeText(this, "Image saved successfully!", Toast.LENGTH_SHORT);
+        toastChangedColor = Toast.makeText(this, "Color changed!", Toast.LENGTH_SHORT);
 
         //Obtention des enfants contenu dans nos linear layouts
             //Bouton des couleurs
@@ -145,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     && currentEvent == MotionEvent.ACTION_DOWN)
             {
                 couleur = couleurs.get(v.getTag().toString());
+                toastChangedColor.show();
             }
             //Si un outil est cliqué
             else if(outils.containsKey(v.getTag().toString())
@@ -179,6 +198,30 @@ public class MainActivity extends AppCompatActivity {
                         }
                         outil = lastOutil;
                         break;
+                    }
+                    case "enregistrer":{
+                        ContentValues values = new ContentValues();
+                        values.put(MediaStore.MediaColumns.DISPLAY_NAME, "myDrawing" + nbImgSaved);
+                        values.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+                        values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+
+                        Uri uri = MainActivity.this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                        if(uri != null)
+                        {
+                            try(OutputStream stream = MainActivity.this.getContentResolver().openOutputStream(uri)){
+                                bitmap = sd.getBitmapImage();
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                stream.close();
+                                ++nbImgSaved;
+                                toastSaved.show();
+                            }
+                            catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        outil = lastOutil;
                     }
                 }
             }
@@ -243,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
                             bitmap = sd.getBitmapImage();
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                 couleur = bitmap.getColor((int)x, (int)y).toArgb();
+                                toastChangedColor.show();
                             }
                         }
                         break;

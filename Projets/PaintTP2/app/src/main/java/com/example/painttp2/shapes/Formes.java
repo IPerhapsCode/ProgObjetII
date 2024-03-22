@@ -30,7 +30,7 @@ public abstract class Formes {
         }
         this.paint.setStrokeWidth(this.sizeTrace);
         this.paint.setStyle(this.style);
-        this.paint.setAntiAlias(true);
+        this.paint.setAntiAlias(false);
 
     }
 
