@@ -63,6 +63,7 @@ public class Remplir extends Formes{
         {
             this.initialColor = this.bitmap.getColor(defaultX, defaultY).toArgb();
 
+            //Making of initial groups
             for(int i = 0; i < this.bitmap.getHeight(); ++i)
             {
                 for(int j = 0; j < this.bitmap.getWidth(); ++j)
@@ -87,15 +88,17 @@ public class Remplir extends Formes{
                     }
                 }
             }
-
+            System.out.println(groups.size());
             boolean breakTime = false;
             Point[] myPoints = new Point[8];
             Vector<Integer> groupsRemoved = new Vector<>();
+            int initialGroupsSize = groups.size() - 1;
             for(int i = 0; i < myPoints.length; ++i)
             {
                 myPoints[i] = new Point();
             }
 
+            //Making aglomeration of most conjointed groups
             for(int i = 0; i < groups.size(); ++i)
             {
                 breakTime = false;
@@ -150,71 +153,18 @@ public class Remplir extends Formes{
                     finalGroups.put(finalGroups.size(), temp);
                 }
             }
-
-            //On peut pas juste le faire dans cette ordre la, les groupes ne sont pas retiré en ordre :/ il nous faut donc une liste des groupes à retirer et une liste de ceux qu'ils ne le seront pas
+            System.out.println(finalGroups.size());
+            //Removal of groups which have already been added to other groups
             for(Integer i : groupsRemoved)
             {
                 groups.remove(i);
             }
 
-//            for(int i = groups.size() - 1; i >= 0; --i)
-//            {
-//                breakTime = false;
-//
-//                for(Point j : groups.get(i).values())
-//                {
-//                    myPoints[0].set(j.x + 1, j.y);
-//                    myPoints[1].set(j.x - 1, j.y);
-//                    myPoints[2].set(j.x, j.y + 1);
-//                    myPoints[3].set(j.x, j.y - 1);
-//                    myPoints[4].set(j.x + 1, j.y + 1);
-//                    myPoints[5].set(j.x - 1, j.y - 1);
-//                    myPoints[6].set(j.x - 1, j.y + 1);
-//                    myPoints[7].set(j.x + 1, j.y - 1);
-//
-//                    for(HashMap<Integer, HashMap<Point, Point>> k : finalGroups.values())
-//                    {
-//                        for(HashMap<Point, Point> l : k.values())
-//                        {
-//                            for(Point m : myPoints)
-//                            {
-//                                if(l.containsKey(m))
-//                                {
-//                                    k.put(k.size(), groups.get(i));
-//                                    groupsRemoved.add(i);
-//                                    breakTime = true;
-//                                }
-//
-//                                if(breakTime)
-//                                {
-//                                    break;
-//                                }
-//                            }
-//
-//                            if(breakTime)
-//                            {
-//                                break;
-//                            }
-//                        }
-//                    }
-//
-//                    if(breakTime)
-//                    {
-//                        break;
-//                    }
-//                }
-//
-//                if(!breakTime)
-//                {
-//                    HashMap<Integer, HashMap<Point, Point>> temp = new HashMap<>();
-//                    temp.put(0, groups.get(i));
-//                    finalGroups.put(finalGroups.size(), temp);
-//                }
-//            }
-
             myPoints[0].set(defaultX, defaultY);
             breakTime = false;
             HashMap<Integer, HashMap<Point, Point>> myGroup = new HashMap<>();
+
+            //Finding the group containing the pixel clicked by the user
             for(HashMap<Integer, HashMap<Point, Point>> i : finalGroups.values())
             {
                 for(HashMap<Point, Point> j : i.values())
@@ -236,7 +186,66 @@ public class Remplir extends Formes{
                     break;
                 }
             }
+            System.out.println(myGroup.size());
 
+            //Adding stragglers back to the group where user clicked (So this works, it is horribly slow tho) :(
+            //Potential optimization would be to reformat the way myGroup is made
+            //So that we can just ctrl+c ctrl+v the group that needs to be added added instead of adding each value one by one
+            //Could also potentially reduce the number of points checked back to 4?
+            for(HashMap<Integer, HashMap<Point, Point>> i : finalGroups.values())
+            {
+                breakTime = false;
+                if(i != myGroup)
+                {
+                    for(HashMap<Point, Point> j : i.values())
+                    {
+                        for(Point k : j.values())
+                        {
+                            myPoints[0].set(k.x + 1, k.y);
+                            myPoints[1].set(k.x - 1, k.y);
+                            myPoints[2].set(k.x, k.y + 1);
+                            myPoints[3].set(k.x, k.y - 1);
+                            myPoints[4].set(k.x + 1, k.y + 1);
+                            myPoints[5].set(k.x - 1, k.y - 1);
+                            myPoints[6].set(k.x - 1, k.y + 1);
+                            myPoints[7].set(k.x + 1, k.y - 1);
+
+                            for(HashMap<Point, Point> l : myGroup.values())
+                            {
+                                for(Point m : myPoints)
+                                {
+                                    if(l.containsKey(m))
+                                    {
+                                        for(HashMap<Point, Point> n : i.values())
+                                        {
+                                            myGroup.put(-myGroup.size(), n); //Needs to be negative to avoid overwritting
+                                        }
+                                        breakTime = true;
+                                        break;
+                                    }
+                                }
+
+                                if(breakTime)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if(breakTime)
+                            {
+                                break;
+                            }
+                        }
+
+                        if(breakTime)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            System.out.println(myGroup.size());
+            //Changing the color of the group the user clicked
             for(HashMap<Point, Point> i : myGroup.values())
             {
                 for(Point j : i.values())
