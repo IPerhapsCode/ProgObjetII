@@ -8,6 +8,7 @@ public class Triangle extends Formes {
     int currentEvent = -1;
     public Triangle(Context context, int color, int sizeTrace, Paint.Style style) {
         super(context, color, sizeTrace, style);
+        this.getPaint().setStrokeCap(Paint.Cap.ROUND);
     }
 
     @Override

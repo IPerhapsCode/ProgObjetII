@@ -31,7 +31,6 @@ public abstract class Formes {
         this.paint.setStrokeWidth(this.sizeTrace);
         this.paint.setStyle(this.style);
         this.paint.setAntiAlias(false);
-
     }
 
     public abstract void draw(float x, float y);

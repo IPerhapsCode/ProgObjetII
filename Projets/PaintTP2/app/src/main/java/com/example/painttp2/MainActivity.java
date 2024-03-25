@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     //Toasts
     Toast toastSaved;
     Toast toastChangedColor;
-
+//Couleurs, remplir speed, buttons edge, triangle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
