@@ -37,6 +37,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Vector;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
+
 //Il serait important de pouvoir maintenir notre doigt enfoncer sur l'image defface pour qu'on puisse alors changer la taille du trait de l'efface et
 //peut être pouvoir changer la forme de l'efface genre un carré ou un cercle
 //Peut être retoucher la taille du cercle de l'efface j'aime la manière dont fonctionne, peut être même que l'efface ne devrait pas utiliser un path :/
@@ -46,6 +49,8 @@ import java.util.Vector;
 //PS finalement on va faire un scoll view dans l'alert dialog de largeur du trait pour changer les dites options
 //Il me faut un moyen de savoir que la couleur que la pipette me donne est équivalente à une couleur préfette
 //Un empty canvas button serait le fun
+//Basically, différentes options de triangle, empty canvas, fermer le trait libre, trois options de fill, utiliser des spinners tho
+
 public class MainActivity extends AppCompatActivity {
 
     private EcouteurOnTouch ecot;
@@ -77,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     //Toasts
     Toast toastSaved;
     Toast toastChangedColor;
+    Toast toastFill;
 //Couleurs, remplir speed, buttons edge, triangle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         //Toasts
         toastSaved = Toast.makeText(this, "Image saved successfully!", Toast.LENGTH_SHORT);
         toastChangedColor = Toast.makeText(this, "Color changed!", Toast.LENGTH_SHORT);
+        toastFill = Toast.makeText(this, "Please wait, this operation is slow...", Toast.LENGTH_LONG);
 
         //Obtention des enfants contenu dans nos linear layouts
             //Bouton des couleurs
@@ -223,6 +230,25 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         outil = lastOutil;
+                        break;
+                    }
+                    case "palette":{
+                        AmbilWarnaDialog dialog = new AmbilWarnaDialog(MainActivity.this, couleur, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                            @Override
+                            public void onCancel(AmbilWarnaDialog dialog) {
+
+                            }
+
+                            @Override
+                            public void onOk(AmbilWarnaDialog dialog, int color) {
+                                couleur = color;
+                                toastChangedColor.show();
+                            }
+                        });
+                        dialog.show();
+
+                        outil = lastOutil;
+                        break;
                     }
                 }
             }
@@ -295,6 +321,7 @@ public class MainActivity extends AppCompatActivity {
                     case "remplir":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
+                            toastFill.show();
                             bitmap = sd.getBitmapImage();
                             formes.add(new Remplir(MainActivity.this, couleur, 0, style));
                             formes.lastElement().draw(x, y);

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.painttp2'
+    namespace 'com.example.annexe8'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.painttp2"
+        applicationId "com.example.annexe8"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -36,6 +36,4 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
-    implementation 'com.github.yukuku:ambilwarna:2.0.1'
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ public class Dialog_Largeur_Trait extends Dialog {
 
     Ecouteur ec;
 
+    ScrollView parent;
     TextView largeurTrait;
     SeekBar seekBar;
     Button confirm;
@@ -37,6 +39,7 @@ public class Dialog_Largeur_Trait extends Dialog {
 
         ec = new Ecouteur();
 
+        parent = findViewById(R.id.scrollview_dialog);
         largeurTrait = findViewById(R.id.largeur_trait_text);
         seekBar = findViewById(R.id.seekBar);
         confirm = findViewById(R.id.confirm);
@@ -75,6 +78,6 @@ public class Dialog_Largeur_Trait extends Dialog {
 
     private void closeAlertDialog()
     {
-        this.cancel();
+        this.dismiss();
     }
 }

@@ -163,16 +163,6 @@
                 app:srcCompat="@drawable/rectangle" />
 
             <ImageView
-                android:id="@+id/outil_largeur_trait"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:tag="largeur_trait"
-                app:srcCompat="@drawable/largeur_trait" />
-
-            <ImageView
                 android:id="@+id/outil_remplir"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -221,6 +211,16 @@
                 android:layout_weight="1"
                 android:tag="redo"
                 app:srcCompat="@drawable/redo" />
+
+            <ImageView
+                android:id="@+id/outil_largeur_trait"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:tag="largeur_trait"
+                app:srcCompat="@drawable/cogwheel" />
 
             <ImageView
                 android:id="@+id/outil_enregistrer"
