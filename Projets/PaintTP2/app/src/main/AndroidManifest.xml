@@ -12,6 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.PaintTP2"
+        android:largeHeap="true"
         tools:targetApi="31">
         <activity
             android:name=".Dialog_Largeur_Trait"
