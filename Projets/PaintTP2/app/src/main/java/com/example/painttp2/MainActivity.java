@@ -30,9 +30,6 @@ import com.example.painttp2.shapes.Rectangle;
 import com.example.painttp2.shapes.Remplir;
 import com.example.painttp2.shapes.Triangle;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Hashtable;
@@ -40,23 +37,15 @@ import java.util.Vector;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-//Il serait important de pouvoir maintenir notre doigt enfoncer sur l'image defface pour qu'on puisse alors changer la taille du trait de l'efface et
-//peut être pouvoir changer la forme de l'efface genre un carré ou un cercle
-//Peut être retoucher la taille du cercle de l'efface j'aime la manière dont fonctionne, peut être même que l'efface ne devrait pas utiliser un path :/
-//Puisqu'on va coder l'outil remplir pour de vrai il nous faut un moyen de changer la couleur de fond,
-//je propose de faire cela en maintenant le bouton enfoncer sur l'outil remplir ou avec l'outil pipette
-//Créer une option qui permet de fermer une forme libre, on peut sélectionner l'option en enfoncant le crayon
-//PS finalement on va faire un scoll view dans l'alert dialog de largeur du trait pour changer les dites options
-//Il me faut un moyen de savoir que la couleur que la pipette me donne est équivalente à une couleur préfette
-//Un empty canvas button serait le fun
 //Basically, différentes options de triangle, empty canvas, fermer le trait libre, trois options de fill, utiliser des spinners tho
+//Relire le code, peut être changer les constructeurs s'assurer qu'uniquement les paramètres nécessaires soit inclus
 
 public class MainActivity extends AppCompatActivity {
 
     private EcouteurOnTouch ecot;
-    private SurfaceDessin sd;
-    private Vector<Formes> formes;
-    private Vector<Formes> formesUndone;
+    private static SurfaceDessin sd;
+    private static Vector<Formes> formes;
+    private static Vector<Formes> formesUndone;
     public static Hashtable<String, Integer> couleurs;
     private Hashtable<String, ImageView> outils;
     private LinearLayout zoneCouleurs, zoneDessin, zoneOutils;
@@ -71,13 +60,15 @@ public class MainActivity extends AppCompatActivity {
     private float x, y;
     private ImageView outil;
     private ImageView lastOutil;
-    public static Bitmap bitmap = null;
+    private static Bitmap bitmap = null;
 
     private boolean fermerForme = false;
     private int nbImgSaved = 0;
 
+    private static int styleDessin = 0, styleTriangle = 0, styleFill = 0;
+
     //Alert Dialogs
-    private Dialog_Largeur_Trait dialogLargeurTrait;
+    private DialogSettings dialogSettings;
 
     //Toasts
     Toast toastSaved;
@@ -105,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         zoneOutils = findViewById(R.id.zoneOutils);
 
         //Alert Dialogs
-        dialogLargeurTrait = new Dialog_Largeur_Trait(this);
+        dialogSettings = new DialogSettings(this);
 
         //Toasts
         toastSaved = Toast.makeText(this, "Image saved successfully!", Toast.LENGTH_SHORT);
@@ -182,8 +173,8 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(outil.getTag().toString());
                 switch(outil.getTag().toString())
                 {
-                    case "largeur_trait":{
-                        dialogLargeurTrait.show();
+                    case "settings":{
+                        dialogSettings.show();
                         outil = lastOutil;
                         break;
                     }
@@ -228,7 +219,6 @@ public class MainActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
-
                         outil = lastOutil;
                         break;
                     }
@@ -246,11 +236,11 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         dialog.show();
-
                         outil = lastOutil;
                         break;
                     }
                 }
+                System.out.println(outil.getTag().toString());
             }
             //Si l'utilisateur dessine sur la surface de dessin
             else if(v instanceof SurfaceDessin)
@@ -265,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
                         {
                             formes.add(new DessinLibre(MainActivity.this, couleur, sizeTrace, style));
                         }
-                        else if(currentEvent == MotionEvent.ACTION_UP && fermerForme)
+                        else if(currentEvent == MotionEvent.ACTION_UP && styleDessin == 1)
                         {
                             if(formes.lastElement() instanceof DessinLibre)
                             {
@@ -299,16 +289,12 @@ public class MainActivity extends AppCompatActivity {
                     case "triangle":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
-                            formes.add(new Triangle(MainActivity.this, couleur, sizeTrace, style));
-                        }
-                        if(formes.lastElement() instanceof Triangle)
-                        {
-                            ((Triangle) formes.lastElement()).setCurrentEvent(currentEvent);
+                            formes.add(new Triangle(MainActivity.this, couleur, sizeTrace, style, styleTriangle));
                         }
                         break;
                     }
                     case "pipette":{
-                        if(currentEvent == MotionEvent.ACTION_DOWN)
+                        if(currentEvent == MotionEvent.ACTION_UP)
                         {
                             bitmap = sd.getBitmapImage();
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -319,14 +305,18 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case "remplir":{
-                        if(currentEvent == MotionEvent.ACTION_DOWN)
+                        if(currentEvent == MotionEvent.ACTION_UP)
                         {
-                            toastFill.show();
+                            if(styleFill == 0)
+                            {
+                                toastFill.show();
+                            }
                             bitmap = sd.getBitmapImage();
-                            formes.add(new Remplir(MainActivity.this, couleur, 0, style));
+                            formes.add(new Remplir(MainActivity.this, couleur, 0, style, styleFill));
                             formes.lastElement().draw(x, y);
                             sd.invalidate();
                         }
+                        break;
                     }
                 }
 
@@ -335,6 +325,10 @@ public class MainActivity extends AppCompatActivity {
                 {
                     formes.lastElement().draw(x, y);
                     sd.invalidate();
+                }
+                else if(outil.getTag().toString().equals("pipette") && event.getAction() == MotionEvent.ACTION_UP)
+                {
+                    outil = outils.get("crayon");
                 }
             }
             return true;
@@ -351,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onDraw(Canvas canvas)
         {
             super.onDraw(canvas);
-
+            //Affichages des formes
             for(Formes i: formes)
             {
                 if(i instanceof DessinLibre)
@@ -389,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
+        //Obtention de la bitmap
         public Bitmap getBitmapImage() {
             Bitmap bitmapImage;
 
@@ -402,18 +396,44 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //Retourne la taille du tracer
     public static int getSizeTrace()
     {
         return sizeTrace;
     }
 
+    //Modifie la taille du tracer
     public static void setSizeTrace(int newSizeTrace)
     {
         sizeTrace = newSizeTrace;
     }
 
+    //Retourne la bitmap dans d'autre classes
     public static Bitmap getBitmap()
     {
         return bitmap;
+    }
+
+    //Vide la surface de dessin
+    public static void clearScreen(){
+        formes = new Vector<>();
+        formesUndone = new Vector<>();
+        sd.invalidate();
+    }
+
+    //Change les paramètres de certaines formes
+    public static void setStyleDessinLibre(int style)
+    {
+        styleDessin = style;
+    }
+
+    public static void setStyleTriangle(int style)
+    {
+        styleTriangle = style;
+    }
+
+    public static void setStyleFill(int style)
+    {
+        styleFill = style;
     }
 }

@@ -33,15 +33,13 @@ public abstract class Formes {
         this.paint.setAntiAlias(false);
     }
 
+    //Fonction permettant de dessinner variant d'une forme à l'autre
     public abstract void draw(float x, float y);
 
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    public void setSizeTrace(int sizeTrace) {
-        this.sizeTrace = sizeTrace;
-    }
+//    //Permet de changer la couleur de notre peinture
+//    public void setColor(int color) {
+//        this.color = color;
+//    }
 
     public void setStyle(Paint.Style style) {
         this.style = style;

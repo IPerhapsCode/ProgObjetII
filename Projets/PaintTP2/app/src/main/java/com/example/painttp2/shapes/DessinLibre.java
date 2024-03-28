@@ -13,6 +13,7 @@ public class DessinLibre extends Formes {
         this.path = new Path();
     }
 
+    //Dessine la forme libre
     @Override
     public void draw(float x, float y)
     {
@@ -26,6 +27,7 @@ public class DessinLibre extends Formes {
         }
     }
 
+    //Permet d'afficher la forme
     public Path getPath() {
         return path;
     }

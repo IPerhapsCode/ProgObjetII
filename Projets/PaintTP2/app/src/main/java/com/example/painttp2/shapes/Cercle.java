@@ -10,6 +10,7 @@ public class Cercle extends Formes {
         super(context, color, sizeTrace, style);
     }
 
+    //Dessine le cercle
     @Override
     public void draw(float x, float y) {
         if(this.xDepart == -1 && this.yDepart == -1)
@@ -21,6 +22,7 @@ public class Cercle extends Formes {
         this.y = y;
     }
 
+    //Permet d'afficher le cercle
     public float getxDepart() {
         return xDepart;
     }

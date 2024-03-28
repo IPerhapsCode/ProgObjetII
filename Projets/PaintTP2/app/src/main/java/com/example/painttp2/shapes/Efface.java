@@ -20,14 +20,17 @@ public class Efface extends DessinLibre {
         borderPaint.setStyle(Paint.Style.STROKE);
     }
 
+    //Permet d'afficher la couleur autour de l'efface
     public Paint getBorderPaint() {
         return borderPaint;
     }
 
+    //Retourne la taille de l'efface
     public static int getSizeTraceEfface() {
         return sizeTraceEfface;
     }
 
+    //Change la taille de l'efface en relation avec la taille du trait
     public static void setSizeTraceEfface(int newSizeTraceEfface) {
         sizeTraceEfface = newSizeTraceEfface;
     }

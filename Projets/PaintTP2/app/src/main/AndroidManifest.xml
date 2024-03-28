@@ -15,7 +15,7 @@
         android:largeHeap="true"
         tools:targetApi="31">
         <activity
-            android:name=".Dialog_Largeur_Trait"
+            android:name=".DialogSettings"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

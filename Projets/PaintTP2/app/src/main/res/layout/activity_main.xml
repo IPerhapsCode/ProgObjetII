@@ -213,13 +213,13 @@
                 app:srcCompat="@drawable/redo" />
 
             <ImageView
-                android:id="@+id/outil_largeur_trait"
+                android:id="@+id/outil_settings"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:tag="largeur_trait"
+                android:tag="settings"
                 app:srcCompat="@drawable/cogwheel" />
 
             <ImageView
