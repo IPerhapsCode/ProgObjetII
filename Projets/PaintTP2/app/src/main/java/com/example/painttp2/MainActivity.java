@@ -40,6 +40,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 //Basically, différentes options de triangle, empty canvas, fermer le trait libre, trois options de fill, utiliser des spinners tho
 //Relire le code, peut être changer les constructeurs s'assurer qu'uniquement les paramètres nécessaires soit inclus
 
+//Sévérité code répété, délai nécessaire, quoi amélioré
 public class MainActivity extends AppCompatActivity {
 
     private EcouteurOnTouch ecot;

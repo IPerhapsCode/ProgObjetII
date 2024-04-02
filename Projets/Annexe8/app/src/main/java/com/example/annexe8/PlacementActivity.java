@@ -81,10 +81,19 @@ public class PlacementActivity extends AppCompatActivity {
         public void onClick(View v) {
             if(v.equals(bouton))
             {
-                placement = new Placement(Double.parseDouble(champMontant.getText().toString()),
-                        numberPicker.getValue() * 12);
+                try{
+                    placement = new Placement(Double.parseDouble(champMontant.getText().toString()),
+                            numberPicker.getValue() * 12);
 
-                labelReponse.setText(format.format(placement.calculerMontantFinal()));
+                    labelReponse.setText(format.format(placement.calculerMontantFinal()));
+                }
+                catch(Exception nfe){
+                   creerAlertDialog("Veuillez entrer un nombre svp! " + champMontant.getText().toString() +
+                           " n'est pas un montant valide :(");
+                   champMontant.setText("");
+                   champMontant.setHint("exemple : écrire 1000 ou 23");
+                   champMontant.requestFocus();
+                }
             }
         }
     }

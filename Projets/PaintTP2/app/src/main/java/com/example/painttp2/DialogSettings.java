@@ -21,18 +21,19 @@ import com.example.painttp2.shapes.Efface;
 //Cette classe va devenir un scrollview vertical contenant toutes les modifications pour toutes classes
 public class DialogSettings extends Dialog {
 
-    Ecouteur ec;
-    EcouteurSpinner ecSpinner;
+    private Ecouteur ec;
+    private EcouteurSpinner ecSpinner;
+    private EcouteurSeekBar ecSeekBar;
 
-    ScrollView parent;
-    TextView largeurTrait;
-    SeekBar seekBarLargeurTrait;
-    Button boutonConfirmLargeurTrait, boutonByebye;
-    Spinner spinnerDessinLibre, spinnerTriangle, spinnerFill;
+    private ScrollView parent;
+    private TextView largeurTrait;
+    private SeekBar seekBarLargeurTrait;
+    private Button boutonConfirmLargeurTrait, boutonByebye;
+    private Spinner spinnerDessinLibre, spinnerTriangle, spinnerFill;
 
-    int progress = MainActivity.getSizeTrace();
-    String largeurTraitText = "";
-    final Handler handler = new Handler();
+    private int myProgress = MainActivity.getSizeTrace();
+    private String largeurTraitText = "";
+    private final Handler handler = new Handler();
 
     public DialogSettings(@NonNull Context context) {
         super(context);
@@ -45,6 +46,7 @@ public class DialogSettings extends Dialog {
 
         ec = new Ecouteur();
         ecSpinner = new EcouteurSpinner();
+        ecSeekBar = new EcouteurSeekBar();
 
         parent = findViewById(R.id.scrollview_dialog);
         largeurTrait = findViewById(R.id.largeur_trait_text);
@@ -55,13 +57,13 @@ public class DialogSettings extends Dialog {
         spinnerTriangle = findViewById(R.id.spinner_triangle);
         spinnerFill = findViewById(R.id.spinner_fill);
 
-        progress = MainActivity.getSizeTrace();
+        myProgress = MainActivity.getSizeTrace();
         seekBarLargeurTrait.setMax(50);
-        seekBarLargeurTrait.setProgress(progress);
-        seekBarLargeurTrait.setOnTouchListener(ec);
+        seekBarLargeurTrait.setProgress(myProgress);
+        seekBarLargeurTrait.setOnSeekBarChangeListener(ecSeekBar);
 
         largeurTraitText = largeurTrait.getText().toString();
-        largeurTrait.setText(largeurTraitText + progress);
+        largeurTrait.setText(largeurTraitText + myProgress);
 
         boutonConfirmLargeurTrait.setOnTouchListener(ec);
         boutonByebye.setOnTouchListener(ec);
@@ -84,21 +86,8 @@ public class DialogSettings extends Dialog {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            //Change la taille du trait des formes
-            if(v.equals(seekBarLargeurTrait) && (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE))
-            {
-                //Basically for god only knows what reason
-                //Si on clique sur le seek bar, la valeur n'a pas le temps d'être mis à jour avant que ce code ne soit lancé
-                //Il est donc nécessaire de mettre un délai ici pour s'assurer que la valeur soit enregistré si l'utilisateur clique sur la seek bar
-                handler.postDelayed(() -> {
-                    progress = seekBarLargeurTrait.getProgress();
-                    MainActivity.setSizeTrace(progress);
-                    Efface.setSizeTraceEfface(Math.min(2 * progress, 50));
-                    largeurTrait.setText(largeurTraitText + progress);
-                    System.out.println(progress);
-                }, 100);
-            } //Ferme la fenêtre de dialogue lorsque le joueur confirme la taille de son trait
-            else if(v.equals(boutonConfirmLargeurTrait) && event.getAction() == MotionEvent.ACTION_UP)
+            //Ferme la fenêtre de dialogue lorsque le joueur confirme la taille de son trait
+            if(v.equals(boutonConfirmLargeurTrait) && event.getAction() == MotionEvent.ACTION_UP)
             {
                 closeAlertDialog();
             } //Vide la zone de dessin
@@ -131,6 +120,28 @@ public class DialogSettings extends Dialog {
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    }
+
+    private class EcouteurSeekBar implements SeekBar.OnSeekBarChangeListener
+    {
+        //Change la taille du trait des formes ainsi que l'efface indirectement
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            myProgress = progress;
+            MainActivity.setSizeTrace(myProgress);
+            Efface.setSizeTraceEfface(Math.min(2 * myProgress, 80));
+            largeurTrait.setText(largeurTraitText + myProgress);
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
 
         }
     }
