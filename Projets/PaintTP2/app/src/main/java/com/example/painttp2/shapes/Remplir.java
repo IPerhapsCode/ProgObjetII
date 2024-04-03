@@ -34,12 +34,11 @@ public class Remplir extends Formes{
     private int color;
     private int initialColor = 1;
     private int fillStyle;
-    private int currentColor = 1;
-    private boolean[][] check;
 
     private Context context;
-    public Remplir(Context context, int color, int sizeTrace, Paint.Style style, int fillStyle) {
-        super(context, color, sizeTrace, style);
+    public Remplir(Context context, int color, int fillStyle) {
+        //N'a pas réellement besoin qu'on lui assigne la bonne taille de tracer
+        super(context, color, 5);
         this.context = context;
         this.bitmap = MainActivity.getBitmap();
         this.color = color;
@@ -60,11 +59,9 @@ public class Remplir extends Formes{
                 Integer nbGroup = 0;
                 //Let's us know if we need to create a new hashmap in groups
                 boolean newGroup = true;
-                //Contains into potential groups at first every pixel that is the same color as initial color
-                //HashMap<Point, int[]> pixels = new HashMap<>();
+                //Contains potential groups at first, composed of every pixel that is the same color as initial color
                 HashMap<Integer, HashMap<Point, Point>> groups = new HashMap<>();
                 HashMap<Integer, HashMap<Integer, HashMap<Point, Point>>> finalGroups = new HashMap<>();
-                Point currentPoint;
 
                 //Making of initial groups
                 for(int i = 0; i < this.bitmap.getHeight(); ++i)
@@ -92,11 +89,9 @@ public class Remplir extends Formes{
                     }
                 }
 
-
                 boolean breakTime = false;
                 Point[] myPoints = new Point[8];
                 Vector<Integer> groupsRemoved = new Vector<>();
-                int initialGroupsSize = groups.size() - 1;
                 for(int i = 0; i < myPoints.length; ++i)
                 {
                     myPoints[i] = new Point();
@@ -158,16 +153,10 @@ public class Remplir extends Formes{
                     }
                 }
 
-                //Removal of groups which have already been added to other groups (the fuck is this for?)
-                for(Integer i : groupsRemoved)
-                {
-                    groups.remove(i);
-                }
-
                 myPoints[0].set(defaultX, defaultY);
                 breakTime = false;
                 HashMap<Integer, HashMap<Integer, HashMap<Point, Point>>> myGroup = new HashMap<>();
-                HashMap<Point, Point> pixels = new HashMap<>(10000, 10000);
+                HashMap<Point, Point> pixels = new HashMap<>(100000, 100000);
                 //Finding the group containing the pixel clicked by the user
                 for(Integer i : finalGroups.keySet())
                 {

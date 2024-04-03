@@ -6,8 +6,8 @@ import android.graphics.Paint;
 public class Triangle extends Formes {
     private float x = -1, y = -1, a = -1, b = -1, c = -1, d = -1;
     private int styleTriangle;
-    public Triangle(Context context, int color, int sizeTrace, Paint.Style style, int styleTriangle) {
-        super(context, color, sizeTrace, style);
+    public Triangle(Context context, int color, int sizeTrace, int styleTriangle) {
+        super(context, color, sizeTrace);
         this.getPaint().setStrokeCap(Paint.Cap.ROUND);
         this.styleTriangle = styleTriangle;
     }
@@ -15,6 +15,7 @@ public class Triangle extends Formes {
     //Permet de dessiner les différents triangles
     @Override
     public void draw(float x, float y) {
+        //Point de base pour plusieurs triangles qui ne doivent pas être changé lors du rappel de cette fonction
         if(this.x == -1 && this.y == -1)
         {
             this.x = x;
@@ -34,6 +35,7 @@ public class Triangle extends Formes {
                 this.a = x;
             }
         }
+        //Triangle équilatéral de base
         if(this.styleTriangle == 0)
         {
             this.a = x;
@@ -45,17 +47,20 @@ public class Triangle extends Formes {
             this.c = (float)(this.x + distance * Math.cos(newAngle));
             this.d = (float)(this.y + distance * Math.sin(newAngle));
         }
+        //Triangle rectangle
         else if(this.styleTriangle == 1)
         {
             this.a = x;
             this.d = y;
         }
+        //Triangle équilatéral horizontal libre
         else if(this.styleTriangle == 2)
         {
             this.a = x;
             this.d = y;
             this.c = (this.x + this.a) / 2;
         }
+        //Triangle équilatéral vertical libre
         else if(this.styleTriangle == 3)
         {
             this.b = y;

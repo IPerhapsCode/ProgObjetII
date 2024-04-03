@@ -33,7 +33,6 @@ public class DialogSettings extends Dialog {
 
     private int myProgress = MainActivity.getSizeTrace();
     private String largeurTraitText = "";
-    private final Handler handler = new Handler();
 
     public DialogSettings(@NonNull Context context) {
         super(context);

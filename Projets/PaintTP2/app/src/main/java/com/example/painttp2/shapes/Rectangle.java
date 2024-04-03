@@ -5,8 +5,8 @@ import android.graphics.Paint;
 
 public class Rectangle extends Cercle {
 
-    public Rectangle(Context context, int color, int sizeTrace, Paint.Style style) {
-        super(context, color, sizeTrace, style);
+    public Rectangle(Context context, int color, int sizeTrace) {
+        super(context, color, sizeTrace);
     }
 
     //Utilise la même fonction draw que les cercles pour affiche un différent polygone

@@ -10,9 +10,10 @@ import com.example.painttp2.R;
 public class Efface extends DessinLibre {
     private static int sizeTraceEfface = 20;
     private Paint borderPaint;
-    public Efface(Context context, int color, int sizeTrace, Paint.Style style) {
-        super(context, color, sizeTrace, style);
+    public Efface(Context context, int color, int sizeTrace) {
+        super(context, color, sizeTrace);
 
+        //Utilisé pour afficher un cercle autour de la zone qui va être effacé
         borderPaint = new Paint();
         borderPaint.setAntiAlias(true);
         borderPaint.setColor(ContextCompat.getColor(context, R.color.black));

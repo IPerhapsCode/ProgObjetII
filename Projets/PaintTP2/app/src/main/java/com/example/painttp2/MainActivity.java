@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,10 +38,6 @@ import java.util.Vector;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-//Basically, différentes options de triangle, empty canvas, fermer le trait libre, trois options de fill, utiliser des spinners tho
-//Relire le code, peut être changer les constructeurs s'assurer qu'uniquement les paramètres nécessaires soit inclus
-
-//Sévérité code répété, délai nécessaire, quoi amélioré
 public class MainActivity extends AppCompatActivity {
 
     private EcouteurOnTouch ecot;
@@ -58,12 +55,10 @@ public class MainActivity extends AppCompatActivity {
     private Paint.Style style = Paint.Style.STROKE;
 
     private int currentEvent;
-    private float x, y;
+    private Point position = new Point();
     private ImageView outil;
     private ImageView lastOutil;
     private static Bitmap bitmap = null;
-
-    private boolean fermerForme = false;
     private int nbImgSaved = 0;
 
     private static int styleDessin = 0, styleTriangle = 0, styleFill = 0;
@@ -243,18 +238,17 @@ public class MainActivity extends AppCompatActivity {
                 }
                 System.out.println(outil.getTag().toString());
             }
-            //Si l'utilisateur dessine sur la surface de dessin
+            //Si l'utilisateur dessine sur la surface de dessin avec un des outils
             else if(v instanceof SurfaceDessin)
             {
-                x = event.getX();
-                y = event.getY();
+                position.set((int)event.getX(), (int)event.getY());
 
                 switch(outil.getTag().toString())
                 {
                     case "crayon":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
-                            formes.add(new DessinLibre(MainActivity.this, couleur, sizeTrace, style));
+                            formes.add(new DessinLibre(MainActivity.this, couleur, sizeTrace));
                         }
                         else if(currentEvent == MotionEvent.ACTION_UP && styleDessin == 1)
                         {
@@ -269,28 +263,28 @@ public class MainActivity extends AppCompatActivity {
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
                             formes.add(new Efface(MainActivity.this, backgroundColor,
-                                    Efface.getSizeTraceEfface(), style));
+                                    Efface.getSizeTraceEfface()));
                         }
                         break;
                     }
                     case "cercle":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
-                            formes.add(new Cercle(MainActivity.this, couleur, sizeTrace, style));
+                            formes.add(new Cercle(MainActivity.this, couleur, sizeTrace));
                         }
                         break;
                     }
                     case "rectangle":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
-                            formes.add(new Rectangle(MainActivity.this, couleur, sizeTrace, style));
+                            formes.add(new Rectangle(MainActivity.this, couleur, sizeTrace));
                         }
                         break;
                     }
                     case "triangle":{
                         if(currentEvent == MotionEvent.ACTION_DOWN)
                         {
-                            formes.add(new Triangle(MainActivity.this, couleur, sizeTrace, style, styleTriangle));
+                            formes.add(new Triangle(MainActivity.this, couleur, sizeTrace, styleTriangle));
                         }
                         break;
                     }
@@ -299,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                         {
                             bitmap = sd.getBitmapImage();
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                couleur = bitmap.getColor((int)x, (int)y).toArgb();
+                                couleur = bitmap.getColor(position.x, position.y).toArgb();
                                 toastChangedColor.show();
                             }
                         }
@@ -313,18 +307,20 @@ public class MainActivity extends AppCompatActivity {
                                 toastFill.show();
                             }
                             bitmap = sd.getBitmapImage();
-                            formes.add(new Remplir(MainActivity.this, couleur, 0, style, styleFill));
-                            formes.lastElement().draw(x, y);
+                            formes.add(new Remplir(MainActivity.this, couleur, styleFill));
+                            //Nécessaire car on ne veut pas que l'utilisateur rappelle constament la fonction fill en gardant la souris enfoncée
+                            formes.lastElement().draw(position.x, position.y);
                             sd.invalidate();
                         }
                         break;
                     }
                 }
 
+                //À faire pour presque tous les outils (mis à part la pipette et remplir)
                 if(!outil.getTag().toString().equals("pipette")
                         && !outil.getTag().toString().equals("remplir"))
                 {
-                    formes.lastElement().draw(x, y);
+                    formes.lastElement().draw(position.x, position.y);
                     sd.invalidate();
                 }
                 else if(outil.getTag().toString().equals("pipette") && event.getAction() == MotionEvent.ACTION_UP)
@@ -356,7 +352,8 @@ public class MainActivity extends AppCompatActivity {
                     if(i instanceof Efface && currentEvent != MotionEvent.ACTION_UP
                             && outil == outils.get("efface"))
                     {
-                        canvas.drawCircle(x, y, Efface.getSizeTraceEfface() * 0.65f, ((Efface) i).getBorderPaint());
+                        canvas.drawCircle(position.x, position.y, Efface.getSizeTraceEfface() * 0.65f,
+                                ((Efface) i).getBorderPaint());
                     }
                 }
                 else if(i instanceof Cercle && !(i instanceof Rectangle))
@@ -371,12 +368,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if(i instanceof Triangle)
                 {
-                    canvas.drawLine(((Triangle) i).getX(), ((Triangle) i).getY(),
-                            ((Triangle) i).getA(), ((Triangle) i).getB(), i.getPaint());
-                    canvas.drawLine(((Triangle) i).getX(), ((Triangle) i).getY(),
-                            ((Triangle) i).getC(), ((Triangle) i).getD(), i.getPaint());
-                    canvas.drawLine(((Triangle) i).getA(), ((Triangle) i).getB(),
-                            ((Triangle) i).getC(), ((Triangle) i).getD(), i.getPaint());
+                    float x = ((Triangle) i).getX(), y = ((Triangle) i).getY(),
+                                a = ((Triangle) i).getA(), b = ((Triangle) i).getB(),
+                                c = ((Triangle) i).getC(), d = ((Triangle) i).getD();
+                    Paint paint = i.getPaint();
+
+                    canvas.drawLine(x, y, a, b, paint);
+                    canvas.drawLine(x, y, c, d, paint);
+                    canvas.drawLine(a, b, c, d, paint);
                 }
                 else if(i instanceof Remplir)
                 {

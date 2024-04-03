@@ -11,12 +11,12 @@ public abstract class Formes {
     private int sizeTrace;
     private Paint.Style style;
 
-    public Formes(Context context, int color, int sizeTrace, Paint.Style style)
+    public Formes(Context context, int color, int sizeTrace)
     {
         this.paint = new Paint();
         this.color = color;
         this.sizeTrace = sizeTrace;
-        this.style = style;
+        this.style = Paint.Style.STROKE;
 
         try
         {
@@ -36,15 +36,7 @@ public abstract class Formes {
     //Fonction permettant de dessinner variant d'une forme à l'autre
     public abstract void draw(float x, float y);
 
-//    //Permet de changer la couleur de notre peinture
-//    public void setColor(int color) {
-//        this.color = color;
-//    }
-
-    public void setStyle(Paint.Style style) {
-        this.style = style;
-    }
-
+    //Nous retourne la peinture utilisé par notre forme
     public Paint getPaint() {
         return paint;
     }

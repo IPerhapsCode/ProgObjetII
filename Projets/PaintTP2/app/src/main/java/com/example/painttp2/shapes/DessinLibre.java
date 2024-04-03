@@ -7,9 +7,9 @@ import android.graphics.Path;
 public class DessinLibre extends Formes {
     private Path path;
 
-    public DessinLibre(Context context, int color, int sizeTrace, Paint.Style style)
+    public DessinLibre(Context context, int color, int sizeTrace)
     {
-        super(context, color, sizeTrace, style);
+        super(context, color, sizeTrace);
         this.path = new Path();
     }
 

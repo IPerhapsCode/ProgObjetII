@@ -6,18 +6,20 @@ import android.graphics.Paint;
 public class Cercle extends Formes {
     private float xDepart = -1, yDepart = -1, x = -1, y = -1;
 
-    public Cercle(Context context, int color, int sizeTrace, Paint.Style style) {
-        super(context, color, sizeTrace, style);
+    public Cercle(Context context, int color, int sizeTrace) {
+        super(context, color, sizeTrace);
     }
 
     //Dessine le cercle
     @Override
     public void draw(float x, float y) {
+        //Valeurs qui ne doivent être changé uniquement lorsque l'utilisateur clique
         if(this.xDepart == -1 && this.yDepart == -1)
         {
             this.xDepart = x;
             this.yDepart = y;
         }
+        //Valeurs changées lorsque l'utilisateur bouge la souris
         this.x = x;
         this.y = y;
     }
