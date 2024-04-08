@@ -87,6 +87,13 @@ public class PlacementActivity extends AppCompatActivity {
 
                     labelReponse.setText(format.format(placement.calculerMontantFinal()));
                 }
+                catch(NegativeNumberException nne)
+                {
+                    creerAlertDialog(nne.getMessage());
+                    champMontant.setText("");
+                    champMontant.setHint("exemple : écrire 1000 ou 23");
+                    champMontant.requestFocus();
+                }
                 catch(Exception nfe){
                    creerAlertDialog("Veuillez entrer un nombre svp! " + champMontant.getText().toString() +
                            " n'est pas un montant valide :(");
