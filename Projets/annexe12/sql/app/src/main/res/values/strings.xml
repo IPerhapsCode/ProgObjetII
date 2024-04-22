@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">AppSql</string>
+    <string name="bonne_reponse">Bonne réponse!!!</string>
+    <string name="mauvaise_reponse">Mauvaise réponse!!!</string>
+    <string name="victoire">Vous avez gagné!!!</string>
 </resources>

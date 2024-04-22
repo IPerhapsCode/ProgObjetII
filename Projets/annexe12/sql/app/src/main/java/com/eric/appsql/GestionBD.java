@@ -26,7 +26,7 @@ public class GestionBD extends SQLiteOpenHelper {
 
 
     private GestionBD(Context context) {
-        super(context, "db", null, 1);
+        super(context, "db", null, 2);
 
     }
 
@@ -45,16 +45,17 @@ public class GestionBD extends SQLiteOpenHelper {
     public void ajouterInventeur(Inventeur i, SQLiteDatabase db)
     {
         ContentValues cv = new ContentValues();
-        cv.put("nom", i.getNom().toLowerCase());
-        cv.put("origine", i.getOrigine().toLowerCase());
-        cv.put("invention", i.getInvention().toLowerCase());
+        cv.put("nom", i.getNom());
+        cv.put("origine", i.getOrigine());
+        cv.put("invention", i.getInvention());
         cv.put("annee", i.getAnnee());
         db.insert("inventeur", null, cv);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL("drop table if exists inventeur");
+        this.onCreate(db);
     }
 
     public void ouvrirConnexion()
@@ -84,7 +85,7 @@ public class GestionBD extends SQLiteOpenHelper {
 
     public boolean aBonneReponse(String nom, String invention)
     {
-        String[] tab = {nom.toLowerCase(), invention.toLowerCase()};
+        String[] tab = {nom, invention};
         Cursor requete = database.rawQuery("SELECT nom, invention FROM inventeur WHERE nom = ? AND invention = ?", tab);
 
 //        while(requete.moveToNext()) //Fonctionne si on fait query qui prend toutes les rangées de nos colonnes
