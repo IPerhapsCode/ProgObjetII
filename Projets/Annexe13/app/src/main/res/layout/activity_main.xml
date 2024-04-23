@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".MainActivity" >
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:text="@string/titre_app" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/goToRankingButton"
+            style="@style/buttons_style"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:text="@string/bouton_add_eval"/>
+
+        <Button
+            android:id="@+id/goToLeaderboardButton"
+            style="@style/buttons_style"
+            android:layout_width="260dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="75dp"
+            android:text="@string/bouton_leaderboard"/>
+    </LinearLayout>
+
+</LinearLayout>

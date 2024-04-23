@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Annexe13</string>
+    <string name="titre_app">Dégustation de bières</string>
+    <string name="bouton_add_eval">Ajouter une évaluation</string>
+    <string name="bouton_leaderboard">Voir les 3 mieux évaluées</string>
+    <string name="input_nom_bière">Nom de la bière</string>
+    <string name="input_microbrasserie">Microbrasserie</string>
+    <string name="bouton_save">Enregistrer</string>
+</resources>
