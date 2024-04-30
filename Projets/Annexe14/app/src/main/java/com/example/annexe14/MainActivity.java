@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
     EcouteurOnTouch ecot;
     EcouteurOnDrag ecod;
 
-    DragEvent currentDrag;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +61,9 @@ public class MainActivity extends AppCompatActivity {
             if(event.getAction() == MotionEvent.ACTION_DOWN)
             {
                 v.setVisibility(View.INVISIBLE);
+                v.startDragAndDrop(null, new View.DragShadowBuilder(v), v, 0);
             }
-            v.startDragAndDrop(null, new View.DragShadowBuilder(v), v, 0);
-            if(event.getAction() == MotionEvent.ACTION_UP)
+            else if(event.getAction() == MotionEvent.ACTION_UP)
             {
                 v.setVisibility(View.VISIBLE);
             }
