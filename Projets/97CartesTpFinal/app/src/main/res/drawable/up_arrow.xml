@@ -10,11 +10,12 @@
         android:name="down_arrow">
         <path
             android:name="down_triangle"
-            android:strokeWidth="2"
+            android:strokeWidth="8"
             android:strokeColor="@color/black"
             android:strokeLineCap="round"
+            android:strokeLineJoin="round"
             android:fillColor="@color/black"
-            android:pathData="M 0,100 L 50,0 100,100 z ">
+            android:pathData="M 5,95 L 50,5 95,95 z">
         </path>
     </group>
 </vector>
