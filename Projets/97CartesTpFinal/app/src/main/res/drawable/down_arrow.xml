@@ -7,9 +7,9 @@
     android:viewportHeight="100"
     android:viewportWidth="100">
     <group
-        android:name="up_arrow">
+        android:name="down_arrow">
         <path
-            android:name="up_triangle"
+            android:name="down_triangle"
             android:strokeWidth="8"
             android:strokeColor="@color/black"
             android:strokeLineCap="round"

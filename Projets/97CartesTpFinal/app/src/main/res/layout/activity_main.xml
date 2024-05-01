@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_grey"
@@ -38,6 +39,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
+                android:tag="ui_cartes"
                 android:text="97"
                 android:textColor="@color/light_grey"
                 android:textSize="20sp"
@@ -67,6 +69,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
+                android:tag="ui_time"
                 android:text="00:00"
                 android:textColor="@color/light_grey"
                 android:textSize="20sp"
@@ -96,6 +99,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
+                android:tag="ui_score"
                 android:text="0"
                 android:textColor="@color/light_grey"
                 android:textSize="20sp"
@@ -123,6 +127,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:tag="button_param"
                 android:text="Paramètres"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -142,6 +147,7 @@
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:tag="button_menu"
                 android:text="Menu"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -165,7 +171,8 @@
             android:background="@drawable/background_piles"
             android:orientation="horizontal"
             android:paddingTop="10dp"
-            android:paddingRight="20dp">
+            android:paddingRight="20dp"
+            android:tag="pile_asc">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -179,7 +186,7 @@
             <TextView
                 android:id="@+id/textView7"
                 style="@style/cartes_pile_alt"
-                android:text="1"/>
+                android:text="1" />
         </LinearLayout>
 
         <LinearLayout
@@ -191,12 +198,13 @@
             android:background="@drawable/background_piles"
             android:orientation="horizontal"
             android:paddingLeft="20dp"
-            android:paddingTop="10dp">
+            android:paddingTop="10dp"
+            android:tag="pile_asc">
 
             <TextView
                 android:id="@+id/textView8"
                 style="@style/cartes_pile"
-                android:text="1"/>
+                android:text="1" />
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -221,7 +229,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@drawable/redo_black" />
+            android:tag="button_redo"
+            app:srcCompat="@drawable/redo_grey" />
     </LinearLayout>
 
     <LinearLayout
@@ -239,7 +248,8 @@
             android:background="@drawable/background_piles"
             android:orientation="horizontal"
             android:paddingTop="10dp"
-            android:paddingRight="20dp">
+            android:paddingRight="20dp"
+            android:tag="pile_desc">
 
             <ImageView
                 android:id="@+id/imageView4"
@@ -253,7 +263,7 @@
             <TextView
                 android:id="@+id/textView9"
                 style="@style/cartes_pile_alt"
-                android:text="100"/>
+                android:text="100" />
         </LinearLayout>
 
         <LinearLayout
@@ -265,12 +275,13 @@
             android:background="@drawable/background_piles"
             android:orientation="horizontal"
             android:paddingLeft="20dp"
-            android:paddingTop="10dp">
+            android:paddingTop="10dp"
+            android:tag="pile_desc">
 
             <TextView
                 android:id="@+id/textView10"
                 style="@style/cartes_pile"
-                android:text="100"/>
+                android:text="100" />
 
             <ImageView
                 android:id="@+id/imageView5"
@@ -293,44 +304,48 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView11"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView12"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView13"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView14"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
     </LinearLayout>
 
@@ -344,44 +359,48 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView15"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView16"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView17"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:tag="main">
 
             <TextView
                 android:id="@+id/textView18"
-                style="@style/cartes_main"/>
+                style="@style/cartes_main" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
