@@ -19,7 +19,7 @@ public class Cartes {
     private TextView carte;
     private Handler timer;
 
-    public Cartes(int value, int maxValue, Context context)
+    protected Cartes(int value, int maxValue, Context context)
     {
         this.value = value;
         this.couleur = Color.rgb(255, 255 - (255 * value / maxValue), 0);

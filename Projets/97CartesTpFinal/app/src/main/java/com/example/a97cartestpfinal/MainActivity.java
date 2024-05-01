@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.a97cartestpfinal.logique.Cartes;
+import com.example.a97cartestpfinal.logique.Partie;
 
 import java.util.Vector;
 
@@ -21,51 +22,51 @@ public class MainActivity extends AppCompatActivity {
     private EcouteurOnTouch ecot;
     private EcouteurOnDrag ecod;
 
-    LinearLayout parent;
+    private LinearLayout parent;
     private Vector<LinearLayout> piles;
     private Vector<LinearLayout> main;
     private Vector<View> buttons;
     private Vector<TextView> ui;
+
+    //Game related variables
+    Partie partie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        marginsMain = new int[]{(int)(22.5 * getResources().getDisplayMetrics().density),
+        //Permet de créer et de déplacer les cartes sans que leur apparence ne change
+        this.marginsMain = new int[]{(int)(22.5 * getResources().getDisplayMetrics().density),
                 (int)(20 * getResources().getDisplayMetrics().density),
                 (int)(22.5 * getResources().getDisplayMetrics().density),
                 (int)(32 * getResources().getDisplayMetrics().density)};
-        marginsPile = new int[]{(int)(20 * getResources().getDisplayMetrics().density),
+        this.marginsPile = new int[]{(int)(20 * getResources().getDisplayMetrics().density),
                 (int)(20 * getResources().getDisplayMetrics().density),
                 (int)(10 * getResources().getDisplayMetrics().density),
                 (int)(40 * getResources().getDisplayMetrics().density)};
-        marginsPileAlt = new int[]{(int)(10 * getResources().getDisplayMetrics().density),
+        this.marginsPileAlt = new int[]{(int)(10 * getResources().getDisplayMetrics().density),
                 (int)(20 * getResources().getDisplayMetrics().density),
                 (int)(20 * getResources().getDisplayMetrics().density),
                 (int)(40 * getResources().getDisplayMetrics().density)};
 
+        //Création des écouteurs
         ecot = new EcouteurOnTouch();
         ecod = new EcouteurOnDrag();
 
-        piles = new Vector<>(1, 1);
-        main = new Vector<>(1, 1);
-        buttons = new Vector<>(1, 1);
-        ui = new Vector<>(1, 1);
+        //Zone de stockage des views manipulés lors de l'utilisation
+        this.piles = new Vector<>(1, 1);
+        this.main = new Vector<>(1, 1);
+        this.buttons = new Vector<>(1, 1);
+        this.ui = new Vector<>(1, 1);
 
-        parent = findViewById(R.id.parent);
-
+        //Assignation des views à des écouteurs et mise en stockage
+        this.parent = findViewById(R.id.parent);
         this.findChildren(parent);
 
-        //Appliquer un style à une nouvelle vu:
-//        ContextThemeWrapper themedContext = new ContextThemeWrapper(this, R.style.MyTextViewStyle);
-//        TextView textView = new TextView(themedContext);
-
-        //Changer la couleur du background et l'opacité de la vu
-//        TextView testing = findViewById(R.id.textView8);
-//        GradientDrawable bruh = (GradientDrawable) testing.getBackground();
-//        bruh.setColor(Color.rgb(255, 0,0));
-//        testing.setAlpha(0);
+        //Début de la partie
+        this.partie = new Partie();
+        this.partie.gameStart(this.main, this, ecot);
     }
 
     private void findChildren(LinearLayout parent)
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < parent.getChildCount(); ++i)
         {
             View child = parent.getChildAt(i);
+            //Étape à suivre si la vu enfant est un linear layout
             if(child instanceof LinearLayout)
             {
                 try
@@ -87,16 +89,17 @@ public class MainActivity extends AppCompatActivity {
                     else if(tag.matches("main"))
                     {
                         main.add((LinearLayout) child);
-                        main.lastElement().setOnTouchListener(ecot);
                     }
                 }
                 catch(Exception e)
                 {
+                    //Uniquement les linears layouts qui n'ont pas de tag peuvent avoir des enfants pertinent
                     this.findChildren((LinearLayout) child);
                 }
             }
             else
             {
+                //Ajout des enfants pertinent en stockage
                 try
                 {
                     String tag = child.getTag().toString();
@@ -113,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch(Exception e)
                 {
+                    //Rien à faire si l'enfant n'est pas nécessaire
                     System.out.println("Unecessary child");
                 }
             }
@@ -124,13 +128,24 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if(main.contains(v) && event.getAction() == MotionEvent.ACTION_DOWN)
+            System.out.println("bnrun");
+            switch(event.getAction())
             {
-                LinearLayout test = (LinearLayout)v;
-                test.removeAllViewsInLayout();
-                Cartes testing = new Cartes(45, 97, getApplicationContext());
-                test.addView(testing.getCarte());
+                case MotionEvent.ACTION_DOWN:{
+                    if(!buttons.contains(v))
+                    {
+                        v.setVisibility(View.INVISIBLE);
+                        v.startDragAndDrop(null, new View.DragShadowBuilder(v), v, 0);
+                    }
+                }
             }
+//            if(main.contains(v) && event.getAction() == MotionEvent.ACTION_DOWN) //For testing
+//            {
+//                LinearLayout test = (LinearLayout)v;
+//                test.removeAllViewsInLayout();
+//                Cartes testing = new Cartes(45, 97, getApplicationContext());
+//                test.addView(testing.getCarte());
+//            }
 
             return true;
         }
@@ -141,6 +156,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onDrag(View v, DragEvent event) {
+            switch(event.getAction())
+            {
+                case DragEvent.ACTION_DRAG_ENTERED:{
+                    v.setBackground(getResources().getDrawable(R.drawable.background_piles_selected));
+                    break;
+                }
+                case DragEvent.ACTION_DRAG_ENDED:{
+                    if(!event.getResult())
+                    {
+                        View carte = (View)event.getLocalState();
+                        carte.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                }
+                case DragEvent.ACTION_DROP:{
+
+                }
+                case DragEvent.ACTION_DRAG_EXITED:{
+                    v.setBackground(getResources().getDrawable(R.drawable.background_piles));
+                    break;
+                }
+            }
             return true;
         }
     }

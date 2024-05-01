@@ -307,9 +307,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView11"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView11"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -319,9 +319,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView12"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView12"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -331,9 +331,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView13"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView13"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -343,9 +343,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView14"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView14"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
     </LinearLayout>
 
@@ -362,9 +362,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView15"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView15"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -374,9 +374,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView16"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView16"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -386,9 +386,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView17"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView17"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -398,9 +398,9 @@
             android:orientation="horizontal"
             android:tag="main">
 
-            <TextView
-                android:id="@+id/textView18"
-                style="@style/cartes_main" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView18"-->
+<!--                style="@style/cartes_main" />-->
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
