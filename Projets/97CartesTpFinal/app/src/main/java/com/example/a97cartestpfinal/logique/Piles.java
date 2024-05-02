@@ -31,7 +31,7 @@ public class Piles {
             }
 
             Cartes temp;
-            if(i.getTag().toString().matches(".*alt"))
+            if(i.getTag().toString().contains("alt"))
             {
                 temp = new Cartes(value, context, R.style.cartes_pile_alt);
                 this.pilesCartes.put(temp.getCarte(), temp);
@@ -46,17 +46,13 @@ public class Piles {
         }
     }
 
-    public void addToPile(View.OnTouchListener ecot, Vector<LinearLayout> main, LinearLayout pile, TextView carte, Partie partie)
+    public boolean addToPile(LinearLayout pile, TextView carte, Partie partie)
     {
         //Trouve l'emplacement de l'ancienne carte
         int index = 0;
-        for(int i = 0; i < pile.getChildCount(); ++i)
+        if(pile.getTag().toString().contains("alt"))
         {
-            if(pile.getChildAt(i) instanceof TextView)
-            {
-                index = i;
-                break;
-            }
+            index = 1;
         }
 
         if(this.confirmAddition(partie.findCard(this.pilesCartes, pile.getChildAt(index)),
@@ -64,7 +60,7 @@ public class Piles {
         {
             //Applique les modifications nécessaires pour l'affichage de la carte dans le nouveau linear layout
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.7f);
-            if(pile.getTag().toString().matches(".*alt"))
+            if(pile.getTag().toString().contains("alt"))
             {
                 params.setMargins(MainActivity.marginsPileAlt[0],
                         MainActivity.marginsPileAlt[1],
@@ -79,28 +75,21 @@ public class Piles {
                         MainActivity.marginsPile[3]);
             }
 
-            //Déplace la carte d'un linear layout à l'autre
+            //Retire la carte de son linear layout original et applique les nouveau layout params
             ((LinearLayout)carte.getParent()).removeView(carte);
             carte.setOnTouchListener(null);
             carte.setLayoutParams(params);
-            this.pilesCartes.remove(pile.getChildAt(index));
-            this.pilesCartes.put(carte, partie.findCard(partie.getMainCartes(), carte));
-            partie.getMainCartes().remove(carte);
-            pile.removeView(pile.getChildAt(index));
-            pile.addView(carte, index);
+            carte.setVisibility(View.VISIBLE);
 
-            //Fait piger le joueur s'il leur manque au moins deux cartes
-            if(partie.getMainCartes().size() <= main.size() - 2)
-            {
-                partie.drawCards(main, ecot);
-            }
+            return true;
         }
 
-        //Que la carte soit mis dans la pile ou non, elle redevient visible
+        //Si la carte n'est pas mis dans une pile elle doit redevenir visible
         carte.setVisibility(View.VISIBLE);
+        return false;
     }
 
-    public boolean confirmAddition(Cartes pile, Cartes main, boolean direction)
+    private boolean confirmAddition(Cartes pile, Cartes main, boolean direction)
     {
         //Si la pile est ascendante
         if(direction)
@@ -112,5 +101,9 @@ public class Piles {
         {
             return pile.getValue() > main.getValue() || main.getValue() - pile.getValue() == 10;
         }
+    }
+
+    public Hashtable<TextView, Cartes> getPilesCartes() {
+        return pilesCartes;
     }
 }

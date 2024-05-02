@@ -18,7 +18,10 @@ public class Partie {
     private Context gameContext;
     private Piles piles;
     private final int carteMaxValue = 98;
+    private int nbCartes = carteMaxValue - 1;
     private int count = 0;
+    private int score = 0;
+    private int turnStart, turnEnd;
 
     public Partie(Vector<LinearLayout> piles, Context context)
     {
@@ -32,6 +35,7 @@ public class Partie {
             this.carteValues.add(i);
         }
         Collections.shuffle(this.carteValues);
+        System.out.println(this.carteValues.size());
 
         this.piles = new Piles(piles, context);
     }
@@ -83,11 +87,43 @@ public class Partie {
         }
     }
 
+    public int calcNewScore(int valeurCarte, int valeurPile, boolean direction)
+    {
+        int defaultBonus = 5000;
+        System.out.println(this.turnEnd - this.turnStart);
+        if((direction && valeurPile - valeurCarte == 10)
+                || (!direction && valeurCarte - valeurPile == 10))
+        {
+            this.score += (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue))) * 20 * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+        }
+        else
+        {
+            this.score += (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile)) * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+        }
+
+        return this.score;
+    }
+
     public Piles getPiles() {
         return piles;
     }
 
     public Hashtable<TextView, Cartes> getMainCartes() {
         return mainCartes;
+    }
+
+    public int getNbCartes(){
+        return this.nbCartes;
+    }
+    public void setNbCartes(int valeur) {
+        this.nbCartes += valeur;
+    }
+
+    public void setTurnStart(int turnStart) {
+        this.turnStart = turnStart;
+    }
+
+    public void setTurnEnd(int turnEnd) {
+        this.turnEnd = turnEnd;
     }
 }

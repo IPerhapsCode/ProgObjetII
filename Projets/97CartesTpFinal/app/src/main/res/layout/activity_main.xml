@@ -63,17 +63,28 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView4"
+            <Chronometer
+                android:id="@+id/simpleChronometer"
+                android:countDown="false"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:tag="ui_time"
-                android:text="00:00"
                 android:textColor="@color/light_grey"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+<!--            <TextView-->
+<!--                android:id="@+id/textView4"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_weight="0.5"-->
+<!--                android:gravity="center"-->
+<!--                android:tag="ui_time"-->
+<!--                android:text="00:00"-->
+<!--                android:textColor="@color/light_grey"-->
+<!--                android:textSize="20sp"-->
+<!--                android:textStyle="bold" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -172,7 +183,7 @@
             android:orientation="horizontal"
             android:paddingTop="10dp"
             android:paddingRight="20dp"
-            android:tag="pile_asc_alt">
+            android:tag="pile_asc_alt_1">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -199,7 +210,7 @@
             android:orientation="horizontal"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
-            android:tag="pile_asc">
+            android:tag="pile_asc_0">
 
 <!--            <TextView-->
 <!--                android:id="@+id/textView8"-->
@@ -249,7 +260,7 @@
             android:orientation="horizontal"
             android:paddingTop="10dp"
             android:paddingRight="20dp"
-            android:tag="pile_desc_alt">
+            android:tag="pile_desc_alt_1">
 
             <ImageView
                 android:id="@+id/imageView4"
@@ -276,7 +287,7 @@
             android:orientation="horizontal"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
-            android:tag="pile_desc">
+            android:tag="pile_desc_0">
 
 <!--            <TextView-->
 <!--                android:id="@+id/textView10"-->
