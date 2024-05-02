@@ -17,7 +17,14 @@ import com.example.a97cartestpfinal.logique.Partie;
 
 import java.util.Hashtable;
 import java.util.Vector;
-
+//To do:
+//Si jamais il reste moins de 8 cartes, il faut que le bouton redo soit utilisable tant que le joueur a encore des cartes dans sa main
+//Menu principale activity (Un bouton nouvelle partie, un bouton continuer si le joueur a sauvegarder une partie et un txtView du highscore)
+//Stockage des highscores
+//Game over activity
+//Option de continue une partie si le joueur a précèdement save and quit
+//Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
+//On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
 public class MainActivity extends AppCompatActivity {
     public static int[] marginsMain;
     public static int[] marginsPile;
