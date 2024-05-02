@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Début de la partie
         this.partie = new Partie(this.piles, this);
-        this.partie.gameStart(this.main, this, ecot);
+        this.partie.gameStart(this.main, ecot);
     }
 
     private void findChildren(LinearLayout parent)
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //Ajoute à la pile la carte
                 case DragEvent.ACTION_DROP:{
-                    partie.getPiles().addToPile((LinearLayout) v, (TextView) event.getLocalState());
+                    partie.getPiles().addToPile(ecot, main, (LinearLayout) v, (TextView) event.getLocalState(), partie);
                 }
                 //Modifie le background des piles quand le joueur quite la zone affectée
                 case DragEvent.ACTION_DRAG_EXITED:{

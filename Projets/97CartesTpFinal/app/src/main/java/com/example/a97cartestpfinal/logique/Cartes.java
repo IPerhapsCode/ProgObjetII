@@ -22,6 +22,7 @@ public class Cartes {
     //Carte à jouer
     protected Cartes(int value, int maxValue, Context context)
     {
+        //Initialises the card to be placed in the players hand
         this.value = value;
         this.couleur = Color.rgb(255, 255 - (255 * value / maxValue), 0);
         this.carte = new TextView(new ContextThemeWrapper(context, R.style.cartes_main));
@@ -33,17 +34,20 @@ public class Cartes {
         this.carte.setLayoutParams(params);
         this.timer = new Handler();
 
+        //Change the color of the cards background and it's text value
         GradientDrawable background = (GradientDrawable) this.carte.getBackground();
         background.setColor(this.couleur);
-        this.carte.setAlpha(0);
         this.carte.setText(String.valueOf(this.value));
 
+        //Start the spawn animation
+        this.carte.setAlpha(0);
         this.spawnAnim(2);
     }
 
     //Cartes utilisées pour les piles par défaut
     protected Cartes(int value, Context context, int style)
     {
+        //Initialises the card to be placed as one of the initial piles
         this.value = value;
         this.couleur = 0;
         this.carte = new TextView(new ContextThemeWrapper(context, style));
@@ -66,6 +70,7 @@ public class Cartes {
         this.carte.setText(String.valueOf(this.value));
     }
 
+    //Spawn animation consisting of an opacity change
     private void spawnAnim(int delay)
     {
         this.timer.postDelayed(()->{
@@ -79,5 +84,9 @@ public class Cartes {
 
     public TextView getCarte() {
         return carte;
+    }
+
+    public int getValue() {
+        return value;
     }
 }
