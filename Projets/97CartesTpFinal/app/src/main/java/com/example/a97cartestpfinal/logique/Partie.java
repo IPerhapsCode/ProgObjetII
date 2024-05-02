@@ -14,28 +14,30 @@ import java.util.Vector;
 
 public class Partie {
     private Hashtable<TextView, Cartes> mainCartes;
+    private Hashtable<LinearLayout, Cartes> voidCartes;
     private List<Integer> carteValues = new ArrayList<>();
     private Context gameContext;
     private Piles piles;
-    private final int carteMaxValue = 98;
-    private int nbCartes = carteMaxValue - 1;
+    private final int carteMaxValue = 97;
+    private int nbCartes = carteMaxValue;
     private int count = 0;
     private int score = 0;
-    private int turnStart, turnEnd;
+    private int lastScoreAddition = 0;
+    private int turnStart, turnEnd, oldTurnStart;
 
     public Partie(Vector<LinearLayout> piles, Context context)
     {
         //Initialise la partie en donnant des cartes initiales au joueur et en créant les piles
         this.mainCartes = new Hashtable<>(1, 1);
+        this.voidCartes = new Hashtable<>(1, 1);
 
         this.gameContext = context;
 
-        for(int i = 2; i <= this.carteMaxValue; ++i)
+        for(int i = 1; i <= this.carteMaxValue; ++i)
         {
             this.carteValues.add(i);
         }
         Collections.shuffle(this.carteValues);
-        System.out.println(this.carteValues.size());
 
         this.piles = new Piles(piles, context);
     }
@@ -90,18 +92,36 @@ public class Partie {
     public int calcNewScore(int valeurCarte, int valeurPile, boolean direction)
     {
         int defaultBonus = 5000;
-        System.out.println(this.turnEnd - this.turnStart);
+
         if((direction && valeurPile - valeurCarte == 10)
                 || (!direction && valeurCarte - valeurPile == 10))
         {
-            this.score += (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue))) * 20 * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+            this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * 20 * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
         }
         else
         {
-            this.score += (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile)) * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+            this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile)) * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
         }
 
+        this.score += this.lastScoreAddition;
+
         return this.score;
+    }
+
+    public void resetScore() {
+        this.score -= this.lastScoreAddition;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void saveOldTurnStart() {
+        this.oldTurnStart = this.turnStart;
+    }
+
+    public int getOldTurnStart() {
+        return oldTurnStart;
     }
 
     public Piles getPiles() {
@@ -110,6 +130,10 @@ public class Partie {
 
     public Hashtable<TextView, Cartes> getMainCartes() {
         return mainCartes;
+    }
+
+    public Hashtable<LinearLayout, Cartes> getVoidCartes() {
+        return voidCartes;
     }
 
     public int getNbCartes(){

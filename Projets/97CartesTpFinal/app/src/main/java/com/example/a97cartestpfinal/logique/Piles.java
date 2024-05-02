@@ -23,7 +23,7 @@ public class Piles {
         //Crée les piles initiales du jeu
         for(LinearLayout i : zonePiles)
         {
-            int value = 1;
+            int value = 0;
 
             if(i.getTag().toString().contains("desc"))
             {
@@ -73,6 +73,12 @@ public class Piles {
                         MainActivity.marginsPile[1],
                         MainActivity.marginsPile[2],
                         MainActivity.marginsPile[3]);
+            }
+
+            //Si c'est la première carte qu'on retire de la main, alors on enregistre la carte pour le bouton redo
+            if(partie.getVoidCartes().size() < 2)
+            {
+                partie.getVoidCartes().put((LinearLayout) carte.getParent(), partie.findCard(partie.getMainCartes(), carte));
             }
 
             //Retire la carte de son linear layout original et applique les nouveau layout params

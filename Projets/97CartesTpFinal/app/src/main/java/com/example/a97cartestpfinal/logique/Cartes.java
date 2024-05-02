@@ -68,10 +68,11 @@ public class Cartes {
         }
         this.carte.setLayoutParams(params);
         this.carte.setText(String.valueOf(this.value));
+        this.timer = new Handler();
     }
 
     //Spawn animation consisting of an opacity change
-    private void spawnAnim(int delay)
+    public void spawnAnim(int delay)
     {
         this.timer.postDelayed(()->{
             this.carte.setAlpha(this.carte.getAlpha() + 0.01f);
