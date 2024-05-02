@@ -203,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
                     //Ajoute la carte à la pile, si possible change le ui en conséquence
                     if(partie.getPiles().addToPile((LinearLayout) v, (TextView) event.getLocalState(), partie))
                     {
+                        LinearLayout pile = (LinearLayout) v;
+                        TextView carte = (TextView) event.getLocalState();
                         int index = 0;
                         if(v.getTag().toString().contains("alt"))
                         {
@@ -212,9 +214,9 @@ public class MainActivity extends AppCompatActivity {
                         //Affiche le nouveau score
                         partie.setTurnEnd(readTime());
                         ui.get("ui_score").setText(String.valueOf(
-                                partie.calcNewScore(partie.findCard(partie.getMainCartes(), (TextView) event.getLocalState()).getValue(),
-                                partie.findCard(partie.getPiles().getPilesCartes(), ((LinearLayout)v).getChildAt(index)).getValue(),
-                                v.getTag().toString().contains("asc"))));
+                                partie.calcNewScore(partie.findCard(partie.getMainCartes(), carte).getValue(),
+                                partie.findCard(partie.getPiles().getPilesCartes(), pile.getChildAt(index)).getValue(),
+                                pile.getTag().toString().contains("asc"))));
                         partie.setTurnStart(readTime());
 
                         //Affiche le nombre de cartes qu'il reste à jouer
@@ -222,12 +224,12 @@ public class MainActivity extends AppCompatActivity {
                         ui.get("ui_cartes").setText(String.valueOf(partie.getNbCartes()));
 
                         //Mise à jour en mémoire et visuellement de l'emplacement des cartes
-                        partie.getPiles().getPilesCartes().remove(((LinearLayout) v).getChildAt(index));
-                        partie.getPiles().getPilesCartes().put((TextView) event.getLocalState(),
-                                partie.findCard(partie.getMainCartes(), (TextView) event.getLocalState()));
-                        partie.getMainCartes().remove((TextView) event.getLocalState());
-                        ((LinearLayout) v).removeView(((LinearLayout) v).getChildAt(index));
-                        ((LinearLayout) v).addView((TextView) event.getLocalState(), index);
+                        partie.getPiles().getPilesCartes().remove(pile.getChildAt(index));
+                        partie.getPiles().getPilesCartes().put(carte,
+                                partie.findCard(partie.getMainCartes(), carte));
+                        partie.getMainCartes().remove(carte);
+                        pile.removeView(pile.getChildAt(index));
+                        pile.addView(carte, index);
 
                         //Fait piger le joueur s'il leur manque au moins deux cartes
                         if(partie.getMainCartes().size() <= main.size() - 2)
