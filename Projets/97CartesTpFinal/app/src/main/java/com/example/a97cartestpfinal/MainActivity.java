@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         this.findChildren(parent);
 
         //Début de la partie
-        this.partie = new Partie();
+        this.partie = new Partie(this.piles, this);
         this.partie.gameStart(this.main, this, ecot);
     }
 
@@ -128,9 +128,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            System.out.println("bnrun");
             switch(event.getAction())
             {
+                //Démare le drag and drop et rend la carte invisible
                 case MotionEvent.ACTION_DOWN:{
                     if(!buttons.contains(v))
                     {
@@ -139,14 +139,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-//            if(main.contains(v) && event.getAction() == MotionEvent.ACTION_DOWN) //For testing
-//            {
-//                LinearLayout test = (LinearLayout)v;
-//                test.removeAllViewsInLayout();
-//                Cartes testing = new Cartes(45, 97, getApplicationContext());
-//                test.addView(testing.getCarte());
-//            }
-
             return true;
         }
     }
@@ -156,12 +148,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onDrag(View v, DragEvent event) {
+            //Gère les drag event fait par le joueur
             switch(event.getAction())
             {
+                //Modifie le background des piles quand le joueur survol une des zones
                 case DragEvent.ACTION_DRAG_ENTERED:{
                     v.setBackground(getResources().getDrawable(R.drawable.background_piles_selected));
                     break;
                 }
+                //Remet la carte dans la main du joueur lorsqu'elle n'est pas drop dans une zone approprié
                 case DragEvent.ACTION_DRAG_ENDED:{
                     if(!event.getResult())
                     {
@@ -170,9 +165,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 }
+                //Ajoute à la pile la carte
                 case DragEvent.ACTION_DROP:{
-
+                    partie.getPiles().addToPile((LinearLayout) v, (TextView) event.getLocalState());
                 }
+                //Modifie le background des piles quand le joueur quite la zone affectée
                 case DragEvent.ACTION_DRAG_EXITED:{
                     v.setBackground(getResources().getDrawable(R.drawable.background_piles));
                     break;

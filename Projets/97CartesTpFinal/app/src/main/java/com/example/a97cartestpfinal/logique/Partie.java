@@ -13,15 +13,16 @@ import java.util.List;
 import java.util.Vector;
 
 public class Partie {
-    private Vector<LinearLayout> piles, main;
+    private Vector<LinearLayout> main;
     private Vector<Cartes> cartes;
+    private Piles piles;
     private int carteMaxValue = 97;
     private List<Integer> carteValues = new ArrayList<>();
     private int count = 0;
 
-    public Partie()
+    public Partie(Vector<LinearLayout> piles, Context context)
     {
-        this.piles = new Vector<>(1, 1);
+        //Initialise la partie en donnant des cartes initiales au joueur et en créant les piles
         this.main = new Vector<>(1, 1);
         this.cartes = new Vector<>(1, 1);
 
@@ -30,6 +31,8 @@ public class Partie {
             this.carteValues.add(i);
         }
         Collections.shuffle(this.carteValues);
+
+        this.piles = new Piles(piles, context);
     }
 
     public void drawCard()
@@ -61,5 +64,9 @@ public class Partie {
 
     public Vector<Cartes> getCartes() {
         return cartes;
+    }
+
+    public Piles getPiles() {
+        return piles;
     }
 }

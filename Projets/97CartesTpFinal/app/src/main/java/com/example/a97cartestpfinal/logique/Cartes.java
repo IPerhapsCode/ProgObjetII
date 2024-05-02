@@ -19,6 +19,7 @@ public class Cartes {
     private TextView carte;
     private Handler timer;
 
+    //Carte à jouer
     protected Cartes(int value, int maxValue, Context context)
     {
         this.value = value;
@@ -38,6 +39,31 @@ public class Cartes {
         this.carte.setText(String.valueOf(this.value));
 
         this.spawnAnim(2);
+    }
+
+    //Cartes utilisées pour les piles par défaut
+    protected Cartes(int value, Context context, int style)
+    {
+        this.value = value;
+        this.couleur = 0;
+        this.carte = new TextView(new ContextThemeWrapper(context, style));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.7f);
+        if(style == R.style.cartes_pile)
+        {
+            params.setMargins(MainActivity.marginsPile[0],
+                    MainActivity.marginsPile[1],
+                    MainActivity.marginsPile[2],
+                    MainActivity.marginsPile[3]);
+        }
+        else if(style == R.style.cartes_pile_alt)
+        {
+            params.setMargins(MainActivity.marginsPileAlt[0],
+                    MainActivity.marginsPileAlt[1],
+                    MainActivity.marginsPileAlt[2],
+                    MainActivity.marginsPileAlt[3]);
+        }
+        this.carte.setLayoutParams(params);
+        this.carte.setText(String.valueOf(this.value));
     }
 
     private void spawnAnim(int delay)
