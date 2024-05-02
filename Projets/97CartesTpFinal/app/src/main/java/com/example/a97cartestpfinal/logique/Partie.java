@@ -51,7 +51,7 @@ public class Partie {
     {
         for(LinearLayout i : main)
         {
-            if(i.getChildCount() == 0)
+            if(i.getChildCount() == 0 && this.count < this.carteValues.size())
             {
                 Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
                 ++this.count;
