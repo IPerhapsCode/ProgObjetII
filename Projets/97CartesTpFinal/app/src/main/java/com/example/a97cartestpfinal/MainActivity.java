@@ -2,6 +2,7 @@ package com.example.a97cartestpfinal;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -18,7 +19,6 @@ import com.example.a97cartestpfinal.logique.Partie;
 import java.util.Hashtable;
 import java.util.Vector;
 //To do:
-//Si jamais il reste moins de 8 cartes, il faut que le bouton redo soit utilisable tant que le joueur a encore des cartes dans sa main
 //Menu principale activity (Un bouton nouvelle partie, un bouton continuer si le joueur a sauvegarder une partie et un txtView du highscore)
 //Stockage des highscores
 //Game over activity
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             }
                             case "button_menu":{
-                                System.out.println("menu");
+                                startActivity(new Intent(MainActivity.this, MainMenu.class));
                                 break;
                             }
                             case "button_redo":{

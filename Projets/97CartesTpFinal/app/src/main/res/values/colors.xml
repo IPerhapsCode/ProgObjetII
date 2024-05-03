@@ -16,4 +16,6 @@
     <color name="orange">#FF7D00</color>
     <color name="red">#FF0000</color>
     <color name="actual_grey">#7E7E7E</color>
+    <color name="actual_grey_light">#9C9C9C</color>
+    <color name="actual_grey_dark">#515151</color>
 </resources>

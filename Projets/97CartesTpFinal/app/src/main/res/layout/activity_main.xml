@@ -135,15 +135,12 @@
 
             <Button
                 android:id="@+id/button"
+                style="@style/buttons_main_theme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:tag="button_param"
-                android:text="Paramètres"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                app:strokeColor="#000000"
-                app:strokeWidth="3dp" />
+                android:text="Paramètres"/>
         </LinearLayout>
 
         <LinearLayout
@@ -155,15 +152,12 @@
 
             <Button
                 android:id="@+id/button2"
+                style="@style/buttons_main_theme"
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:tag="button_menu"
-                android:text="Menu"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                app:strokeColor="#000000"
-                app:strokeWidth="3dp" />
+                android:text="Menu" />
         </LinearLayout>
     </LinearLayout>
 
