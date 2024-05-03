@@ -18,7 +18,13 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="97 Cartes" />
+            android:fontFamily="@font/lemon"
+            android:shadowColor="@color/black"
+            android:shadowDx="5"
+            android:shadowRadius="5"
+            android:text="97 Cartes"
+            android:textColor="@color/black"
+            android:textSize="50sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -66,7 +72,8 @@
             android:id="@+id/textview_highscore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="HighScore: N/A points" />
+            android:text="HighScore: N/A points"
+            android:textColor="@color/black" />
     </LinearLayout>
 
     <LinearLayout

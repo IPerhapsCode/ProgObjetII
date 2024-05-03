@@ -66,6 +66,10 @@ public class Cartes {
                     MainActivity.marginsPileAlt[2],
                     MainActivity.marginsPileAlt[3]);
         }
+        //On doit rechanger la couleur du background pour fix un bug qui reprend la dernière couleur mémoire pour toutes les piles
+        GradientDrawable background = (GradientDrawable) this.carte.getBackground();
+        background.setColor(MainActivity.backgroundCartesCouleur);
+
         this.carte.setLayoutParams(params);
         this.carte.setText(String.valueOf(this.value));
         this.timer = new Handler();

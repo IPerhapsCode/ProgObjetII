@@ -49,11 +49,7 @@ public class Piles {
     public boolean addToPile(int main, LinearLayout pile, TextView carte, Partie partie)
     {
         //Trouve l'emplacement de l'ancienne carte
-        int index = 0;
-        if(pile.getTag().toString().contains("alt"))
-        {
-            index = 1;
-        }
+        int index = partie.valeurIndex(pile);
 
         if(this.confirmAddition(partie.findCard(this.pilesCartes, pile.getChildAt(index)),
                 partie.findCard(partie.getMainCartes(), carte), pile.getTag().toString().contains("asc")))
@@ -95,7 +91,7 @@ public class Piles {
         return false;
     }
 
-    private boolean confirmAddition(Cartes pile, Cartes main, boolean direction)
+    protected boolean confirmAddition(Cartes pile, Cartes main, boolean direction)
     {
         //Si la pile est ascendante
         if(direction)

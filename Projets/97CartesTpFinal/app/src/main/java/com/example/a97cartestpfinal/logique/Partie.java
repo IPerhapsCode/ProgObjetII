@@ -108,6 +108,36 @@ public class Partie {
         return this.score;
     }
 
+    public boolean gameOver(Vector<LinearLayout> pile)
+    {
+        for(Cartes i : this.getMainCartes().values())
+        {
+            for(LinearLayout j : pile)
+            {
+                int index = this.valeurIndex(j);
+                Cartes cartePile = this.findCard(this.getPiles().getPilesCartes(), j.getChildAt(index));
+
+                if(this.getPiles().confirmAddition(cartePile, i, j.getTag().toString().contains("asc")))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    //Trouve l'index approprié pour placer une nouvelle carte à partir du tag d'un linear layout
+    public int valeurIndex(LinearLayout i)
+    {
+        if(i.getTag().toString().contains("alt"))
+        {
+            return 1;
+        }
+
+        return 0;
+    }
+
     public void resetScore() {
         this.score -= this.lastScoreAddition;
     }

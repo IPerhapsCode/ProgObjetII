@@ -13,14 +13,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.a97cartestpfinal.db.Database;
 import com.example.a97cartestpfinal.logique.Cartes;
 import com.example.a97cartestpfinal.logique.Partie;
 
 import java.util.Hashtable;
 import java.util.Vector;
 //To do:
-//Menu principale activity (Un bouton nouvelle partie, un bouton continuer si le joueur a sauvegarder une partie et un txtView du highscore)
-//Stockage des highscores
+//Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
 //Game over activity
 //Option de continue une partie si le joueur a précèdement save and quit
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
@@ -29,9 +29,10 @@ public class MainActivity extends AppCompatActivity {
     public static int[] marginsMain;
     public static int[] marginsPile;
     public static int[] marginsPileAlt;
-
+    public static int backgroundCartesCouleur;
     private EcouteurOnTouch ecot;
     private EcouteurOnDrag ecod;
+    private Database instance;
 
     private LinearLayout parent;
     private Vector<LinearLayout> piles;
@@ -60,10 +61,16 @@ public class MainActivity extends AppCompatActivity {
                 (int)(20 * getResources().getDisplayMetrics().density),
                 (int)(20 * getResources().getDisplayMetrics().density),
                 (int)(40 * getResources().getDisplayMetrics().density)};
+        //Solution temporaire, faudrait trouver une autre solution
+        backgroundCartesCouleur = getResources().getColor(R.color.dark_grey);
 
         //Création des écouteurs
-        ecot = new EcouteurOnTouch();
-        ecod = new EcouteurOnDrag();
+        this.ecot = new EcouteurOnTouch();
+        this.ecod = new EcouteurOnDrag();
+
+        //Obtient une référence à l'instance de la base de donnée
+        this.instance = Database.getInstance(this);
+        instance.ouvrirConnexion();
 
         //Zone de stockage des views manipulés lors de l'utilisation
         this.piles = new Vector<>(1, 1);
@@ -77,9 +84,16 @@ public class MainActivity extends AppCompatActivity {
 
         //Début de la partie
         this.partie = new Partie(this.piles, this);
-        this.partie.gameStart(this.main, ecot);
+        this.partie.gameStart(this.main, this.ecot);
         this.partie.setTurnStart(this.readTime());
         this.ui.get("ui_cartes").setText(String.valueOf(this.partie.getNbCartes()));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.instance.fermerConnexion();
+        this.finish();
     }
 
     private void findChildren(LinearLayout parent)
@@ -97,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     if(tag.matches("pile.*"))
                     {
                         piles.add((LinearLayout) child);
-                        piles.lastElement().setOnDragListener(ecod);
+                        piles.lastElement().setOnDragListener(this.ecod);
                     }
                     else if(tag.matches("main"))
                     {
@@ -120,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     if(tag.matches("button.*"))
                     {
                         buttons.put(child.getTag().toString(), child);
-                        child.setOnTouchListener(ecot);
+                        child.setOnTouchListener(this.ecot);
                     }
                     else if(tag.matches("ui.*"))
                     {
@@ -171,11 +185,7 @@ public class MainActivity extends AppCompatActivity {
             Cartes carte = this.partie.getVoidCartes().get(i);
 
             //Trouve l'index du layout où devra se situer la carte
-            int index = 0;
-            if(i.getTag().toString().contains("alt"))
-            {
-                index = 1;
-            }
+            int index = this.partie.valeurIndex(i);
 
             //Vérifie que la vue n'a pas déjà un parent
             if(carte.getCarte().getParent() != null)
@@ -192,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                         this.marginsMain[2],
                         this.marginsMain[3]);
                 carte.getCarte().setLayoutParams(params);
-                carte.getCarte().setOnTouchListener(ecot);
+                carte.getCarte().setOnTouchListener(this.ecot);
                 this.partie.getMainCartes().put(carte.getCarte(), carte);
 
                 ++nbCartes;
@@ -296,11 +306,7 @@ public class MainActivity extends AppCompatActivity {
                     TextView carte = (TextView) event.getLocalState();
                     if(partie.getPiles().addToPile(main.size(), pile, carte, partie))
                     {
-                        int index = 0;
-                        if(v.getTag().toString().contains("alt"))
-                        {
-                            index = 1;
-                        }
+                        int index = partie.valeurIndex(pile);
 
                         //Ajout de la pile pour le redo function si jamais il manque une seule carte dans la main du joueur
                         if(partie.getVoidCartes().size() < 2
@@ -343,6 +349,14 @@ public class MainActivity extends AppCompatActivity {
                             //Reset le bouton redo pour le prochain cycle
                             partie.getVoidCartes().clear();
                             ((ImageView)buttons.get("button_redo")).setImageResource(R.drawable.redo_grey);
+                        }
+
+                        //Faudrait ouvrir un alert dialogue qui offre au joueur d'aller voir les highscores ou de retourner au menu et qui le félicite feel me dog
+                        if(partie.gameOver(piles))
+                        {
+                            instance.ouvrirConnexion();
+                            instance.saveHighscore(partie.getScore(), partie.getNbCartes(), ui.get("ui_time").getText().toString());
+                            startActivity(new Intent(MainActivity.this, HighScoresActivity.class));
                         }
                     }
                 }
