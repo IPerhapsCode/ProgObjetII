@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         this.partie = new Partie(this.piles, this);
         this.partie.gameStart(this.main, ecot);
         this.partie.setTurnStart(this.readTime());
+        this.ui.get("ui_cartes").setText(String.valueOf(this.partie.getNbCartes()));
     }
 
     private void findChildren(LinearLayout parent)
@@ -160,25 +161,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void redo()
+    private int redo()
     {
-        //Make sure all the views are empty
-        for(LinearLayout i : this.partie.getVoidCartes().keySet())
-        {
-            //Trouve l'index du layout où se situait la carte
-            int index = 0;
-            if(i.getTag().toString().contains("alt"))
-            {
-                index = 1;
-            }
-
-            //Retire les vues nécessaires s'il y en a
-            if(i.getChildCount() != 0)
-            {
-                i.removeViewAt(index);
-            }
-        }
-
+        //Permet de savoir combien de cartes sont retournées dans la main du joueur
+        int nbCartes = 0;
         //Add the views back to their respective layouts
         for(LinearLayout i : this.partie.getVoidCartes().keySet())
         {
@@ -189,6 +175,12 @@ public class MainActivity extends AppCompatActivity {
             if(i.getTag().toString().contains("alt"))
             {
                 index = 1;
+            }
+
+            //Vérifie que la vue n'a pas déjà un parent
+            if(carte.getCarte().getParent() != null)
+            {
+                ((LinearLayout)carte.getCarte().getParent()).removeView(carte.getCarte());
             }
 
             //Si la carte retourne dans la main
@@ -202,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
                 carte.getCarte().setLayoutParams(params);
                 carte.getCarte().setOnTouchListener(ecot);
                 this.partie.getMainCartes().put(carte.getCarte(), carte);
+
+                ++nbCartes;
             }
             //Si la carte retourne dans une pile
             else
@@ -214,6 +208,8 @@ public class MainActivity extends AppCompatActivity {
             carte.getCarte().setAlpha(0);
             carte.spawnAnim(5);
         }
+
+        return nbCartes;
     }
 
     private class EcouteurOnTouch implements View.OnTouchListener
@@ -243,10 +239,10 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             }
                             case "button_redo":{
-                                if(partie.getVoidCartes().size() == 2)
+                                if(partie.getVoidCartes().size() >= 2)
                                 {
                                     //Replace les cartes dans leur layout respectif visuellement et en mémoire
-                                    redo();
+                                    partie.setNbCartes(redo());
 
                                     //Reset les valeurs à leur état précédent
                                     ((ImageView) buttons.get("button_redo")).setImageResource(R.drawable.redo_grey);
@@ -254,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
                                     partie.setTurnStart(partie.getOldTurnStart());
                                     partie.resetScore();
                                     ui.get("ui_score").setText(String.valueOf(partie.getScore()));
-                                    partie.setNbCartes(1);
                                     ui.get("ui_cartes").setText(String.valueOf(partie.getNbCartes()));
                                 }
                                 break;
@@ -299,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                     //Ajoute la carte à la pile, si possible change le ui en conséquence
                     LinearLayout pile = (LinearLayout) v;
                     TextView carte = (TextView) event.getLocalState();
-                    if(partie.getPiles().addToPile(pile, carte, partie))
+                    if(partie.getPiles().addToPile(main.size(), pile, carte, partie))
                     {
                         int index = 0;
                         if(v.getTag().toString().contains("alt"))
@@ -308,7 +303,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         //Ajout de la pile pour le redo function si jamais il manque une seule carte dans la main du joueur
-                        if(partie.getVoidCartes().size() < 2)
+                        if(partie.getVoidCartes().size() < 2
+                                || (partie.getNbCartes() < main.size() && !partie.getVoidCartes().keySet().contains(pile)))
                         {
                             partie.getVoidCartes().put(pile, partie.findCard(partie.getPiles().getPilesCartes(), pile.getChildAt(index)));
                             partie.saveOldTurnStart();
@@ -335,12 +331,12 @@ public class MainActivity extends AppCompatActivity {
                         pile.addView(carte, index);
 
                         //Change la couleur du bouton redo s'il manque exactement une carte à la main du joueur
-                        if(partie.getMainCartes().size() == main.size() - 1)
+                        if(partie.getMainCartes().size() == main.size() - 1 || partie.getNbCartes() < main.size())
                         {
                             ((ImageView)buttons.get("button_redo")).setImageResource(R.drawable.redo_black);
                         }
                         //Fait piger le joueur s'il leur manque deux cartes
-                        else if(partie.getMainCartes().size() == main.size() - 2)
+                        else if(partie.getMainCartes().size() == main.size() - 2 && partie.getNbCartes() >= main.size())
                         {
                             partie.drawCards(main, ecot);
 

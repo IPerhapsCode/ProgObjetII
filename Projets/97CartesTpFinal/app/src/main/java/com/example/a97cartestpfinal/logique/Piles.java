@@ -46,7 +46,7 @@ public class Piles {
         }
     }
 
-    public boolean addToPile(LinearLayout pile, TextView carte, Partie partie)
+    public boolean addToPile(int main, LinearLayout pile, TextView carte, Partie partie)
     {
         //Trouve l'emplacement de l'ancienne carte
         int index = 0;
@@ -76,7 +76,7 @@ public class Piles {
             }
 
             //Si c'est la première carte qu'on retire de la main, alors on enregistre la carte pour le bouton redo
-            if(partie.getVoidCartes().size() < 2)
+            if(partie.getVoidCartes().size() < 2 || partie.getNbCartes() < main)
             {
                 partie.getVoidCartes().put((LinearLayout) carte.getParent(), partie.findCard(partie.getMainCartes(), carte));
             }

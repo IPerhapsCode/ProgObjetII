@@ -70,7 +70,7 @@ public class Partie {
         {
             handler.postDelayed(()->{
                 //Make sure there are still enough values to create more cards
-                if(this.count < this.carteMaxValue - 1)
+                if(this.count < this.carteValues.size())
                 {
                     //Make sure the linear layout is empty
                     i.removeAllViews();
