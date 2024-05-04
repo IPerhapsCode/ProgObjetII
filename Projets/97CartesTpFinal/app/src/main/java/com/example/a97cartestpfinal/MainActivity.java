@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,7 +23,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 //To do:
 //Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
-//Faire une alerte qui dit genre bravo ta gameover veux tu voir highscore ou retourner menu
 //Option de continue une partie si le joueur a précèdement save and quit
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Obtient une référence à l'instance de la base de donnée
         this.instance = Database.getInstance(this);
-        instance.ouvrirConnexion();
+        this.instance.ouvrirConnexion();
 
         //Zone de stockage des views manipulés lors de l'utilisation
         this.piles = new Vector<>(1, 1);
@@ -89,10 +89,11 @@ public class MainActivity extends AppCompatActivity {
         this.findChildren(parent);
 
         //Début de la partie
-        this.partie = new Partie(this.piles, this);
+        this.partie = new Partie(this.piles, this, false);
         this.partie.gameStart(this.main, this.ecot);
-        this.partie.setTurnStart(this.readTime());
+        this.partie.setTurnStart(this.readTime(this.ui.get("ui_time").getText().toString()));
         this.ui.get("ui_cartes").setText(String.valueOf(this.partie.getNbCartes()));
+        ((Chronometer)this.ui.get("ui_time")).setBase(SystemClock.elapsedRealtime() - this.readTime(this.partie.getBaseTime()) * 1000);
     }
 
     @Override
@@ -161,9 +162,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Retourne la valeur du temps courant en secondes
-    private int readTime()
+    private int readTime(String time)
     {
-        String time = this.ui.get("ui_time").getText().toString();
         String h, m, s;
 
         if(time.matches("\\d{2}:\\d{2}"))
@@ -233,7 +233,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            readTime();
             switch(event.getAction())
             {
                 //Démare le drag and drop et rend la carte invisible
@@ -323,12 +322,12 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         //Affiche le nouveau score
-                        partie.setTurnEnd(readTime());
+                        partie.setTurnEnd(readTime(ui.get("ui_time").getText().toString()));
                         ui.get("ui_score").setText(String.valueOf(
                                 partie.calcNewScore(partie.findCard(partie.getMainCartes(), carte).getValue(),
                                 partie.findCard(partie.getPiles().getPilesCartes(), pile.getChildAt(index)).getValue(),
                                 pile.getTag().toString().contains("asc"))));
-                        partie.setTurnStart(readTime());
+                        partie.setTurnStart(readTime(ui.get("ui_time").getText().toString()));
 
                         //Affiche le nombre de cartes qu'il reste à jouer
                         partie.setNbCartes(-1);

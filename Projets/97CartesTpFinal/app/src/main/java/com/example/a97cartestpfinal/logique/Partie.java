@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.a97cartestpfinal.db.Database;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -15,31 +17,42 @@ import java.util.Vector;
 public class Partie {
     private Hashtable<TextView, Cartes> mainCartes;
     private Hashtable<LinearLayout, Cartes> voidCartes;
-    private List<Integer> carteValues = new ArrayList<>();
+    private Vector<Integer> savedMain;
+    private boolean savedGame;
+    private List<Integer> carteValues;
     private Context gameContext;
     private Piles piles;
-    private final int carteMaxValue = 10;
+    private final int carteMaxValue = 97;
     private int nbCartes = carteMaxValue;
     private int count = 0;
     private int score = 0;
     private int lastScoreAddition = 0;
     private int turnStart, turnEnd, oldTurnStart;
+    private String baseTime = "00:00";
 
-    public Partie(Vector<LinearLayout> piles, Context context)
+    public Partie(Vector<LinearLayout> piles, Context context, boolean saved)
     {
         //Initialise la partie en donnant des cartes initiales au joueur et en créant les piles
         this.mainCartes = new Hashtable<>(1, 1);
         this.voidCartes = new Hashtable<>(1, 1);
+        this.carteValues = new ArrayList<>();
 
         this.gameContext = context;
-
-        for(int i = 1; i <= this.carteMaxValue; ++i)
-        {
-            this.carteValues.add(i);
-        }
-        Collections.shuffle(this.carteValues);
-
+        this.savedGame = saved;
         this.piles = new Piles(piles, context);
+
+        if(!this.savedGame)
+        {
+            for(int i = 1; i <= this.carteMaxValue; ++i)
+            {
+                this.carteValues.add(i);
+            }
+            Collections.shuffle(this.carteValues);
+        }
+        else
+        {
+            Database.getInstance(context).loadGame(this);
+        }
     }
 
     public Cartes findCard(Hashtable<TextView, Cartes> emplacementCarte, View carte)
@@ -146,6 +159,10 @@ public class Partie {
         return score;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public void saveOldTurnStart() {
         this.oldTurnStart = this.turnStart;
     }
@@ -179,5 +196,33 @@ public class Partie {
 
     public void setTurnEnd(int turnEnd) {
         this.turnEnd = turnEnd;
+    }
+
+    public String getBaseTime() {
+        return baseTime;
+    }
+
+    public void setBaseTime(String baseTime) {
+        this.baseTime = baseTime;
+    }
+
+    public int getCarteMaxValue() {
+        return carteMaxValue;
+    }
+
+    public List<Integer> getCarteValues() {
+        return carteValues;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public Vector<Integer> getSavedMain() {
+        return savedMain;
+    }
+
+    public void setSavedMain(Vector<Integer> savedMain) {
+        this.savedMain = savedMain;
     }
 }

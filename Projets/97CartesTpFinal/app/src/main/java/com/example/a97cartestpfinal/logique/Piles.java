@@ -15,6 +15,7 @@ import java.util.Vector;
 public class Piles {
 
     private Hashtable<TextView, Cartes> pilesCartes;
+    private Vector<Integer> savedPiles;
 
     protected Piles(Vector<LinearLayout> zonePiles, Context context)
     {
@@ -107,5 +108,13 @@ public class Piles {
 
     public Hashtable<TextView, Cartes> getPilesCartes() {
         return pilesCartes;
+    }
+
+    public Vector<Integer> getSavedPiles() {
+        return savedPiles;
+    }
+
+    public void setSavedPiles(Vector<Integer> savedPiles) {
+        this.savedPiles = savedPiles;
     }
 }
