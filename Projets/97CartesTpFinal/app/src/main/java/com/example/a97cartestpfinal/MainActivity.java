@@ -21,7 +21,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 //To do:
 //Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
-//Game over activity
+//Faire une alerte qui dit genre bravo ta gameover veux tu voir highscore ou retourner menu
 //Option de continue une partie si le joueur a précèdement save and quit
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
@@ -48,19 +48,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Permet de créer et de déplacer les cartes sans que leur apparence ne change
-        this.marginsMain = new int[]{(int)(22.5 * getResources().getDisplayMetrics().density),
-                (int)(20 * getResources().getDisplayMetrics().density),
-                (int)(22.5 * getResources().getDisplayMetrics().density),
-                (int)(32 * getResources().getDisplayMetrics().density)};
-        this.marginsPile = new int[]{(int)(20 * getResources().getDisplayMetrics().density),
-                (int)(20 * getResources().getDisplayMetrics().density),
-                (int)(10 * getResources().getDisplayMetrics().density),
-                (int)(40 * getResources().getDisplayMetrics().density)};
-        this.marginsPileAlt = new int[]{(int)(10 * getResources().getDisplayMetrics().density),
-                (int)(20 * getResources().getDisplayMetrics().density),
-                (int)(20 * getResources().getDisplayMetrics().density),
-                (int)(40 * getResources().getDisplayMetrics().density)};
+        //Permet de créer et de déplacer les cartes sans que leur apparence ne change<
+        float densite = getResources().getDisplayMetrics().density;
+        this.marginsMain = new int[]{(int)(22.5 * densite),
+                (int)(20 * densite),
+                (int)(22.5 * densite),
+                (int)(32 * densite)};
+        this.marginsPile = new int[]{(int)(20 * densite),
+                (int)(20 * densite),
+                (int)(10 * densite),
+                (int)(40 * densite)};
+        this.marginsPileAlt = new int[]{(int)(10 * densite),
+                (int)(20 * densite),
+                (int)(20 * densite),
+                (int)(40 * densite)};
         //Solution temporaire, faudrait trouver une autre solution
         backgroundCartesCouleur = getResources().getColor(R.color.dark_grey);
 

@@ -103,7 +103,7 @@ public class Database extends SQLiteOpenHelper {
 
         try
         {
-            cursor = this.db.rawQuery("SELECT score, nbCartes, time FROM highscore", null);
+            cursor = this.db.rawQuery("SELECT score, nbCartes, time FROM highscore ORDER BY score DESC", null);
         }
         catch (NullPointerException npe)
         {
