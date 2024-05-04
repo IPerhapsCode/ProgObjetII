@@ -23,7 +23,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 //To do:
 //Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
-//Option de continue une partie si le joueur a précèdement save and quit
+//Option de continue une partie si le joueur a précèdement save and quit (Présentement save and load ne remet pas les cartes au bonne place et les cartes dans les piles n'ont pas la couleur approprié, et le score n'est pas réellement sauvegarder?)
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
 public class MainActivity extends AppCompatActivity {
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         this.findChildren(parent);
 
         //Début de la partie
-        this.partie = new Partie(this.piles, this, false);
+        this.partie = new Partie(this.piles, this, true);
         this.partie.gameStart(this.main, this.ecot);
         this.partie.setTurnStart(this.readTime(this.ui.get("ui_time").getText().toString()));
         this.ui.get("ui_cartes").setText(String.valueOf(this.partie.getNbCartes()));
@@ -202,7 +202,8 @@ public class MainActivity extends AppCompatActivity {
             //Si la carte retourne dans la main
             if(i.getTag().toString().contains("main"))
             {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0.0f);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT, 0.0f);
                 params.setMargins(this.marginsMain[0],
                         this.marginsMain[1],
                         this.marginsMain[2],
@@ -250,7 +251,12 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             }
                             case "button_menu":{
-                                startActivity(new Intent(MainActivity.this, MainMenu.class));
+                                instance.saveGame(partie.getScore(), partie.getNbCartes(),
+                                        ui.get("ui_time").getText().toString(),
+                                        partie.getCarteValues(),
+                                        partie.getMainCartes().values(),
+                                        partie.getPiles().getPilesCartes().values());
+                                //startActivity(new Intent(MainActivity.this, MainMenu.class));
                                 break;
                             }
                             case "button_redo":{

@@ -17,32 +17,56 @@ public class Piles {
     private Hashtable<TextView, Cartes> pilesCartes;
     private Vector<Integer> savedPiles;
 
-    protected Piles(Vector<LinearLayout> zonePiles, Context context)
+    protected Piles(Vector<LinearLayout> zonePiles, Context context, boolean saved)
     {
         this.pilesCartes = new Hashtable<>(1, 1);
 
         //Crée les piles initiales du jeu
-        for(LinearLayout i : zonePiles)
+        if(!saved)
         {
-            int value = 0;
-
-            if(i.getTag().toString().contains("desc"))
+            for(LinearLayout i : zonePiles)
             {
-                value = 100;
+                int value = 0;
+
+                if(i.getTag().toString().contains("desc"))
+                {
+                    value = 100;
+                }
+
+                Cartes temp;
+                if(i.getTag().toString().contains("alt"))
+                {
+                    temp = new Cartes(value, context, R.style.cartes_pile_alt);
+                    this.pilesCartes.put(temp.getCarte(), temp);
+                    i.addView(temp.getCarte());
+                }
+                else
+                {
+                    temp = new Cartes(value, context, R.style.cartes_pile);
+                    this.pilesCartes.put(temp.getCarte(), temp);
+                    i.addView(temp.getCarte(), 0);
+                }
             }
+        }
+    }
 
+    public void loadSavedPiles(Vector<LinearLayout> zonePiles, Context context)
+    {
+        for(int i = 0; i < this.savedPiles.size(); ++i)
+        {
             Cartes temp;
-            if(i.getTag().toString().contains("alt"))
+
+            if(zonePiles.get(i).getTag().toString().contains("alt"))
             {
-                temp = new Cartes(value, context, R.style.cartes_pile_alt);
+                temp = new Cartes(this.savedPiles.get(i), context, R.style.cartes_pile_alt);
                 this.pilesCartes.put(temp.getCarte(), temp);
-                i.addView(temp.getCarte());
+                zonePiles.get(i).addView(temp.getCarte());
             }
             else
             {
-                temp = new Cartes(value, context, R.style.cartes_pile);
+                temp = new Cartes(this.savedPiles.get(i), context, R.style.cartes_pile);
                 this.pilesCartes.put(temp.getCarte(), temp);
-                i.addView(temp.getCarte(), 0);
+                zonePiles.get(i).addView(temp.getCarte(), 0);
             }
         }
     }

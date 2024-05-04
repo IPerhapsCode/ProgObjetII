@@ -39,7 +39,8 @@ public class Partie {
 
         this.gameContext = context;
         this.savedGame = saved;
-        this.piles = new Piles(piles, context);
+
+        this.piles = new Piles(piles, context, this.savedGame);
 
         if(!this.savedGame)
         {
@@ -52,6 +53,7 @@ public class Partie {
         else
         {
             Database.getInstance(context).loadGame(this);
+            this.piles.loadSavedPiles(piles, context);
         }
     }
 
@@ -79,26 +81,57 @@ public class Partie {
     {
         int delay = 5;
         Handler handler = new Handler();
-        for(LinearLayout i : main)
+        if(!this.savedGame)
         {
-            handler.postDelayed(()->{
-                //Make sure there are still enough values to create more cards
-                if(this.count < this.carteValues.size())
-                {
-                    //Make sure the linear layout is empty
-                    i.removeAllViews();
+            for(LinearLayout i : main)
+            {
+                handler.postDelayed(()->{
+                    //Make sure there are still enough values to create more cards
+                    if(this.count < this.carteValues.size())
+                    {
+                        //Make sure the linear layout is empty
+                        i.removeAllViews();
 
-                    //Create the new card
-                    Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
-                    this.mainCartes.put(temp.getCarte(), temp);
-                    ++this.count;
+                        //Create the new card
+                        Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
+                        this.mainCartes.put(temp.getCarte(), temp);
+                        ++this.count;
 
-                    //Add the new card to the view and associates it to a listener
-                    temp.getCarte().setOnTouchListener(ecot);
-                    i.addView(temp.getCarte());
-                }
-            },delay);
-            delay += delay;
+                        //Add the new card to the view and associates it to a listener
+                        temp.getCarte().setOnTouchListener(ecot);
+                        i.addView(temp.getCarte());
+                    }
+                },delay);
+                delay += delay;
+            }
+        }
+        else
+        {
+            for(int i = 0; i < this.savedMain.size(); ++i)
+            {
+                //Expresssion used in lambda function need to be final?
+                int finalI = i;
+                System.out.println("man shit");
+                handler.postDelayed(()->{
+                    //Make sure there are still enough values to create more cards
+                    System.out.println("bonjour");
+                    if(this.count < this.carteValues.size())
+                    {
+                        System.out.println("wtf");
+                        //Make sure the linear layout is empty
+                        main.get(finalI).removeAllViews();
+
+                        //Create the new card
+                        Cartes temp = new Cartes(this.savedMain.get(finalI), this.carteMaxValue, this.gameContext);
+                        this.mainCartes.put(temp.getCarte(), temp);
+
+                        //Add the new card to the view and associates it to a listener
+                        temp.getCarte().setOnTouchListener(ecot);
+                        main.get(finalI).addView(temp.getCarte());
+                    }
+                },delay);
+                delay += delay;
+            }
         }
     }
 

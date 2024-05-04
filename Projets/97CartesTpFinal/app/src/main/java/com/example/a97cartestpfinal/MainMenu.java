@@ -37,9 +37,12 @@ public class MainMenu extends AppCompatActivity {
         this.buttonContinue.setOnClickListener(this.ec);
 
         //If there is no game to continue gray out the button
-        this.buttonContinue.setBackgroundColor(getResources().getColor(R.color.actual_grey));
-        this.buttonContinue.setTextColor(getResources().getColor(R.color.actual_grey_dark));
-        ((MaterialButton)this.buttonContinue).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.actual_grey_light)));
+        if(!this.instance.hasSavedGame())
+        {
+            this.buttonContinue.setBackgroundColor(getResources().getColor(R.color.actual_grey));
+            this.buttonContinue.setTextColor(getResources().getColor(R.color.actual_grey_dark));
+            ((MaterialButton)this.buttonContinue).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.actual_grey_light)));
+        }
 
         //Affiche le highest score
         this.highscore.setText("HighScore: " + this.instance.getHighestScore() + " points");
@@ -61,9 +64,9 @@ public class MainMenu extends AppCompatActivity {
                 {
                     startActivity(new Intent(MainMenu.this, MainActivity.class));
                 }
-                else if(v.equals(buttonContinue))
+                else if(v.equals(buttonContinue) && instance.hasSavedGame())
                 {
-
+                    startActivity(new Intent(MainMenu.this, MainActivity.class));
                 }
         }
     }

@@ -6,8 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.a97cartestpfinal.logique.Cartes;
 import com.example.a97cartestpfinal.logique.Partie;
 
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 public class Database extends SQLiteOpenHelper {
@@ -117,8 +121,9 @@ public class Database extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public void saveGame(int score, int nbCartes, String time, int[] cartes, int[] pilesMain)
+    public void saveGame(int score, int nbCartes, String time, List cartesValues, Collection cartes, Collection pilesMain)
     {
+        this.ouvrirConnexion();
         try
         {
             this.db.execSQL("DELETE FROM saved_game_info;");
@@ -146,12 +151,14 @@ public class Database extends SQLiteOpenHelper {
         try
         {
             ContentValues cv = new ContentValues();
-            for(int i : cartes)
+
+            for(Object i : cartesValues)
             {
                 cv.clear();
-                cv.put("valeur", i);
+                cv.put("valeur", (int) i);
                 this.db.insert("saved_game_ordre_cartes", null, cv);
             }
+
         }
         catch(NullPointerException npe)
         {
@@ -161,12 +168,24 @@ public class Database extends SQLiteOpenHelper {
         try
         {
             ContentValues cv = new ContentValues();
-            for(int i = 0; i < pilesMain.length; ++i)
+            int count = 0;
+
+            for(Object i : pilesMain)
             {
                 cv.clear();
-                cv.put("_id", i);
-                cv.put("valeur", pilesMain[i]);
+                cv.put("_id", count);
+                cv.put("valeur", ((Cartes) i).getValue());
                 this.db.insert("saved_game_pile_main", null, cv);
+                ++count;
+            }
+
+            for(Object i : cartes)
+            {
+                cv.clear();
+                cv.put("_id", count);
+                cv.put("valeur", ((Cartes) i).getValue());
+                this.db.insert("saved_game_pile_main", null, cv);
+                ++count;
             }
         }
         catch(NullPointerException npe)
@@ -246,15 +265,35 @@ public class Database extends SQLiteOpenHelper {
 
             while(c.moveToNext())
             {
+                System.out.println(c.getInt(0));
                 if(c.getInt(0) < 4)
                 {
                     partie.getPiles().getSavedPiles().add(c.getInt(1));
                 }
                 else
                 {
-                    partie.getSavedMain().add(c.getInt(0));
+                    partie.getSavedMain().add(c.getInt(1));
                 }
             }
         }
+    }
+
+    public boolean hasSavedGame()
+    {
+        try
+        {
+            Cursor c = this.db.rawQuery("SELECT COUNT(*) FROM saved_game_info", null);
+            c.moveToNext();
+            if(c.getInt(0) > 0)
+            {
+                return true;
+            }
+        }
+        catch (NullPointerException npe)
+        {
+            System.out.println("La connexion à la base de donnée est fermer! Impossible de compter le nombre de ligne dans saved_game_info!");
+        }
+
+        return false;
     }
 }
