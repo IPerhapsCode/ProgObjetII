@@ -18,7 +18,7 @@ public class Partie {
     private List<Integer> carteValues = new ArrayList<>();
     private Context gameContext;
     private Piles piles;
-    private final int carteMaxValue = 97;
+    private final int carteMaxValue = 10;
     private int nbCartes = carteMaxValue;
     private int count = 0;
     private int score = 0;

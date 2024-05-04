@@ -14,41 +14,41 @@ import com.google.android.material.button.MaterialButton;
 
 public class MainMenu extends AppCompatActivity {
 
-    Ecouteur ec;
-    Button buttonNewGame, buttonContinue;
-    TextView highscore;
-    Database instance;
+    private Ecouteur ec;
+    private Button buttonNewGame, buttonContinue;
+    private TextView highscore;
+    private Database instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
-        ec = new Ecouteur();
+        this.ec = new Ecouteur();
 
-        instance = Database.getInstance(this);
-        instance.ouvrirConnexion();
+        this.instance = Database.getInstance(this);
+        this.instance.ouvrirConnexion();
 
-        buttonNewGame = findViewById(R.id.button_new_game);
-        buttonContinue = findViewById(R.id.button_continue);
-        highscore = findViewById(R.id.textview_highscore);
+        this.buttonNewGame = findViewById(R.id.button_new_game);
+        this.buttonContinue = findViewById(R.id.button_continue);
+        this.highscore = findViewById(R.id.textview_highscore);
 
-        buttonNewGame.setOnClickListener(ec);
-        buttonContinue.setOnClickListener(ec);
+        this.buttonNewGame.setOnClickListener(this.ec);
+        this.buttonContinue.setOnClickListener(this.ec);
 
         //If there is no game to continue gray out the button
-        buttonContinue.setBackgroundColor(getResources().getColor(R.color.actual_grey));
-        buttonContinue.setTextColor(getResources().getColor(R.color.actual_grey_dark));
-        ((MaterialButton)buttonContinue).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.actual_grey_light)));
+        this.buttonContinue.setBackgroundColor(getResources().getColor(R.color.actual_grey));
+        this.buttonContinue.setTextColor(getResources().getColor(R.color.actual_grey_dark));
+        ((MaterialButton)this.buttonContinue).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.actual_grey_light)));
 
         //Affiche le highest score
-        highscore.setText("HighScore: " + instance.getHighestScore() + " points");
+        this.highscore.setText("HighScore: " + this.instance.getHighestScore() + " points");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        instance.fermerConnexion();
+        this.instance.fermerConnexion();
         this.finish();
     }
 

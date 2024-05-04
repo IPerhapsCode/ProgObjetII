@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.a97cartestpfinal.alertDialogsActivity.GameOver;
 import com.example.a97cartestpfinal.db.Database;
 import com.example.a97cartestpfinal.logique.Cartes;
 import com.example.a97cartestpfinal.logique.Partie;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Game related variables
     private Partie partie;
+    private GameOver gameOver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
         //Création des écouteurs
         this.ecot = new EcouteurOnTouch();
         this.ecod = new EcouteurOnDrag();
+
+        //Game over alert dialog creation
+        this.gameOver = new GameOver(this);
 
         //Obtient une référence à l'instance de la base de donnée
         this.instance = Database.getInstance(this);
@@ -111,12 +116,12 @@ public class MainActivity extends AppCompatActivity {
 
                     if(tag.matches("pile.*"))
                     {
-                        piles.add((LinearLayout) child);
-                        piles.lastElement().setOnDragListener(this.ecod);
+                        this.piles.add((LinearLayout) child);
+                        this.piles.lastElement().setOnDragListener(this.ecod);
                     }
                     else if(tag.matches("main"))
                     {
-                        main.add((LinearLayout) child);
+                        this.main.add((LinearLayout) child);
                     }
                 }
                 catch(Exception e)
@@ -134,12 +139,12 @@ public class MainActivity extends AppCompatActivity {
 
                     if(tag.matches("button.*"))
                     {
-                        buttons.put(child.getTag().toString(), child);
+                        this.buttons.put(child.getTag().toString(), child);
                         child.setOnTouchListener(this.ecot);
                     }
                     else if(tag.matches("ui.*"))
                     {
-                        ui.put(child.getTag().toString(), (TextView) child);
+                        this.ui.put(child.getTag().toString(), (TextView) child);
                         if(child.getTag().toString().contains("time"))
                         {
                             ((Chronometer)child).start();
@@ -357,7 +362,8 @@ public class MainActivity extends AppCompatActivity {
                         {
                             instance.ouvrirConnexion();
                             instance.saveHighscore(partie.getScore(), partie.getNbCartes(), ui.get("ui_time").getText().toString());
-                            startActivity(new Intent(MainActivity.this, HighScoresActivity.class));
+                            gameOver.setWinLose(partie.getMainCartes().size() == 0);
+                            gameOver.show();
                         }
                     }
                 }

@@ -12,13 +12,16 @@
         android:theme="@style/Theme.97CartesTpFinal"
         tools:targetApi="31">
         <activity
-            android:name=".MainMenu"
+            android:name=".GameOver"
+            android:exported="false" />
+        <activity
+            android:name=".HighScoresActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".HighScoresActivity"
+            android:name=".MainMenu"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

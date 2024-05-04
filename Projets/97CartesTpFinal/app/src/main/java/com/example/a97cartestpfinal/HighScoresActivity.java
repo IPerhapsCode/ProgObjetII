@@ -19,35 +19,36 @@ import com.example.a97cartestpfinal.db.Database;
 
 public class HighScoresActivity extends AppCompatActivity {
 
-    Ecouteur ec;
-    Database instance;
-    LinearLayout highscoreZone;
-    Button menu;
+    private Ecouteur ec;
+    private Database instance;
+    private LinearLayout highscoreZone;
+    private Button menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_high_scores);
 
-        ec = new Ecouteur();
+        this.ec = new Ecouteur();
 
-        highscoreZone = findViewById(R.id.highscore_zone);
-        menu = findViewById(R.id.button_menu);
+        this.highscoreZone = findViewById(R.id.highscore_zone);
+        this.menu = findViewById(R.id.button_menu);
 
-        menu.setOnClickListener(ec);
+        this.menu.setOnClickListener(this.ec);
 
         //Ouverture de l'instance de notre base de donnée
-        instance = Database.getInstance(this);
-        instance.ouvrirConnexion();
+        this.instance = Database.getInstance(this);
+        this.instance.ouvrirConnexion();
 
         //Création du leaderboard
-        this.createHighScoreTable(instance.getHighScores());
+        this.createHighScoreTable(this.instance.getHighScores());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        instance.fermerConnexion();
+        this.instance.fermerConnexion();
+        this.finish();
     }
 
     //Affiche les highscores du plus grand au plus petit
@@ -69,7 +70,7 @@ public class HighScoresActivity extends AppCompatActivity {
             scoreZone.setBackground(getResources().getDrawable(R.drawable.background_leaderboard_values));
             scoreZone.setOrientation(LinearLayout.HORIZONTAL);
             scoreZone.setLayoutParams(params);
-            highscoreZone.addView(scoreZone);
+            this.highscoreZone.addView(scoreZone);
 
             //Ajoute la position du score
             TextView position = new TextView(this);
