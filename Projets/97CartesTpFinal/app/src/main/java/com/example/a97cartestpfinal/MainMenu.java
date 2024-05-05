@@ -18,6 +18,7 @@ public class MainMenu extends AppCompatActivity {
     private Button buttonNewGame, buttonContinue;
     private TextView highscore;
     private Database instance;
+    private boolean dbState = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,6 @@ public class MainMenu extends AppCompatActivity {
         this.ec = new Ecouteur();
 
         this.instance = Database.getInstance(this);
-        this.instance.ouvrirConnexion();
 
         this.buttonNewGame = findViewById(R.id.button_new_game);
         this.buttonContinue = findViewById(R.id.button_continue);
@@ -51,7 +51,10 @@ public class MainMenu extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        this.instance.fermerConnexion();
+        if(dbState)
+        {
+            this.instance.fermerConnexion();
+        }
         this.finish();
     }
 
@@ -64,9 +67,14 @@ public class MainMenu extends AppCompatActivity {
                 {
                     startActivity(new Intent(MainMenu.this, MainActivity.class));
                 }
-                else if(v.equals(buttonContinue) && instance.hasSavedGame())
+                else if(v.equals(buttonContinue))
                 {
-                    startActivity(new Intent(MainMenu.this, MainActivity.class));
+                    dbState = instance.ouvrirConnexion();
+                    if(instance.hasSavedGame())
+                    {
+                        startActivity(new Intent(MainMenu.this, MainActivity.class));
+                    }
+                    dbState = instance.fermerConnexion();
                 }
         }
     }

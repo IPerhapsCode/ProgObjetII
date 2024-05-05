@@ -45,12 +45,13 @@ public class Database extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
-    public void ouvrirConnexion()
+    public boolean ouvrirConnexion()
     {
         this.db = this.getWritableDatabase();
+        return true;
     }
 
-    public void fermerConnexion()
+    public boolean fermerConnexion()
     {
         try
         {
@@ -60,9 +61,10 @@ public class Database extends SQLiteOpenHelper {
         {
             System.out.println("La connexion à la base de donnée est fermer! Impossible de fermer la connexion!");
         }
+        return false;
     }
 
-    public void saveHighscore(int score, int nbCartes, String time)
+    public void saveHighscore(int score, int nbCartes, String time, boolean saved)
     {
         ContentValues values = new ContentValues();
         values.put("score", score);
@@ -71,6 +73,13 @@ public class Database extends SQLiteOpenHelper {
         try
         {
             this.db.insert("highscore", null, values);
+            //Clears saved games once a highscore is saved while the saved game was loaded
+            if(saved)
+            {
+                this.db.rawQuery("DELETE FROM saved_game_info", null);
+                this.db.rawQuery("DELETE FROM saved_game_ordre_cartes", null);
+                this.db.rawQuery("DELETE FROM saved_game_pile_main", null);
+            }
         }
         catch(NullPointerException npe)
         {
@@ -111,7 +120,7 @@ public class Database extends SQLiteOpenHelper {
 
         try
         {
-            cursor = this.db.rawQuery("SELECT * FROM highscore ORDER BY score DESC", null);
+            cursor = this.db.rawQuery("SELECT score, nbCartes, time FROM highscore ORDER BY score DESC", null);
         }
         catch (NullPointerException npe)
         {
@@ -280,6 +289,7 @@ public class Database extends SQLiteOpenHelper {
 
     public boolean hasSavedGame()
     {
+        instance.ouvrirConnexion();
         try
         {
             Cursor c = this.db.rawQuery("SELECT COUNT(*) FROM saved_game_info", null);

@@ -111,13 +111,10 @@ public class Partie {
             {
                 //Expresssion used in lambda function need to be final?
                 int finalI = i;
-                System.out.println("man shit");
                 handler.postDelayed(()->{
                     //Make sure there are still enough values to create more cards
-                    System.out.println("bonjour");
                     if(this.count < this.carteValues.size())
                     {
-                        System.out.println("wtf");
                         //Make sure the linear layout is empty
                         main.get(finalI).removeAllViews();
 
@@ -257,5 +254,10 @@ public class Partie {
 
     public void setSavedMain(Vector<Integer> savedMain) {
         this.savedMain = savedMain;
+    }
+
+    public boolean isSavedGame()
+    {
+        return this.savedGame;
     }
 }

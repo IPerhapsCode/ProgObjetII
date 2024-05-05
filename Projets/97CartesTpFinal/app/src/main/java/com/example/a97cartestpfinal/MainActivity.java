@@ -2,7 +2,6 @@ package com.example.a97cartestpfinal;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.DragEvent;
@@ -23,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 //To do:
 //Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
+//Aussi quand on change d'activité, oncreate est call avant onstop de l'activité précédente, ce qui cause des problèmes pour ouvrir et fermer la base de données
 //Option de continue une partie si le joueur a précèdement save and quit (Présentement save and load ne remet pas les cartes au bonne place et les cartes dans les piles n'ont pas la couleur approprié, et le score n'est pas réellement sauvegarder?)
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private EcouteurOnTouch ecot;
     private EcouteurOnDrag ecod;
     private Database instance;
+    private boolean dbState = false;
 
     private LinearLayout parent;
     private Vector<LinearLayout> piles;
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Obtient une référence à l'instance de la base de donnée
         this.instance = Database.getInstance(this);
-        this.instance.ouvrirConnexion();
 
         //Zone de stockage des views manipulés lors de l'utilisation
         this.piles = new Vector<>(1, 1);
@@ -89,17 +89,23 @@ public class MainActivity extends AppCompatActivity {
         this.findChildren(parent);
 
         //Début de la partie
+        this.dbState = this.instance.ouvrirConnexion();
         this.partie = new Partie(this.piles, this, true);
+        this.dbState = this.instance.fermerConnexion();
         this.partie.gameStart(this.main, this.ecot);
         this.partie.setTurnStart(this.readTime(this.ui.get("ui_time").getText().toString()));
         this.ui.get("ui_cartes").setText(String.valueOf(this.partie.getNbCartes()));
         ((Chronometer)this.ui.get("ui_time")).setBase(SystemClock.elapsedRealtime() - this.readTime(this.partie.getBaseTime()) * 1000);
+        this.ui.get("ui_score").setText(String.valueOf(this.partie.getScore()));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        this.instance.fermerConnexion();
+        if(dbState)
+        {
+            this.instance.fermerConnexion();
+        }
         this.finish();
     }
 
@@ -251,11 +257,13 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             }
                             case "button_menu":{
+                                dbState = instance.ouvrirConnexion();
                                 instance.saveGame(partie.getScore(), partie.getNbCartes(),
                                         ui.get("ui_time").getText().toString(),
                                         partie.getCarteValues(),
                                         partie.getMainCartes().values(),
                                         partie.getPiles().getPilesCartes().values());
+                                dbState = instance.fermerConnexion();
                                 //startActivity(new Intent(MainActivity.this, MainMenu.class));
                                 break;
                             }
@@ -365,10 +373,12 @@ public class MainActivity extends AppCompatActivity {
                         //Faudrait ouvrir un alert dialogue qui offre au joueur d'aller voir les highscores ou de retourner au menu et qui le félicite feel me dog
                         if(partie.gameOver(piles))
                         {
-                            instance.ouvrirConnexion();
-                            instance.saveHighscore(partie.getScore(), partie.getNbCartes(), ui.get("ui_time").getText().toString());
+                            dbState = instance.ouvrirConnexion();
+                            instance.saveHighscore(partie.getScore(), partie.getNbCartes(), ui.get("ui_time").getText().toString(), partie.isSavedGame());
+                            dbState = instance.fermerConnexion();
                             gameOver.setWinLose(partie.getMainCartes().size() == 0);
                             gameOver.show();
+                            break;
                         }
                     }
                 }

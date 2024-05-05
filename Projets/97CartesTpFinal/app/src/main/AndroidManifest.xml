@@ -15,13 +15,13 @@
             android:name=".GameOver"
             android:exported="false" />
         <activity
-            android:name=".HighScoresActivity"
+            android:name=".MainMenu"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".MainMenu"
+            android:name=".HighScoresActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

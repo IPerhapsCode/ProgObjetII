@@ -21,6 +21,7 @@ public class HighScoresActivity extends AppCompatActivity {
 
     private Ecouteur ec;
     private Database instance;
+    private boolean dbState = false;
     private LinearLayout highscoreZone;
     private Button menu;
 
@@ -38,7 +39,7 @@ public class HighScoresActivity extends AppCompatActivity {
 
         //Ouverture de l'instance de notre base de donnée
         this.instance = Database.getInstance(this);
-        this.instance.ouvrirConnexion();
+        this.dbState = this.instance.ouvrirConnexion();
 
         //Création du leaderboard
         this.createHighScoreTable(this.instance.getHighScores());
@@ -47,7 +48,10 @@ public class HighScoresActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        this.instance.fermerConnexion();
+        if(this.dbState)
+        {
+            this.instance.fermerConnexion();
+        }
         this.finish();
     }
 
@@ -103,6 +107,7 @@ public class HighScoresActivity extends AppCompatActivity {
             }
             ++valeurPosition;
         }
+        this.dbState = instance.fermerConnexion();
     }
 
     private class Ecouteur implements View.OnClickListener
