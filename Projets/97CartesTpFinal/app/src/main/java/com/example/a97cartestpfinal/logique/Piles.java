@@ -1,6 +1,8 @@
 package com.example.a97cartestpfinal.logique;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -50,7 +52,7 @@ public class Piles {
         }
     }
 
-    public void loadSavedPiles(Vector<LinearLayout> zonePiles, Context context)
+    public void loadSavedPiles(Vector<LinearLayout> zonePiles, Context context, int maxValue)
     {
         for(int i = 0; i < this.savedPiles.size(); ++i)
         {
@@ -67,6 +69,12 @@ public class Piles {
                 temp = new Cartes(this.savedPiles.get(i), context, R.style.cartes_pile);
                 this.pilesCartes.put(temp.getCarte(), temp);
                 zonePiles.get(i).addView(temp.getCarte(), 0);
+            }
+
+            if(temp.getValue() != 0 && temp.getValue() != 100)
+            {
+                GradientDrawable background = (GradientDrawable) temp.getCarte().getBackground();
+                background.setColor(Color.rgb(255, 255 - (255 * temp.getValue() / maxValue), 0));
             }
         }
     }

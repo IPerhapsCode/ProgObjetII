@@ -53,7 +53,7 @@ public class Partie {
         else
         {
             Database.getInstance(context).loadGame(this);
-            this.piles.loadSavedPiles(piles, context);
+            this.piles.loadSavedPiles(piles, context, this.carteMaxValue);
         }
     }
 
@@ -107,6 +107,7 @@ public class Partie {
         }
         else
         {
+            System.out.println(main.size());
             for(int i = 0; i < this.savedMain.size(); ++i)
             {
                 //Expresssion used in lambda function need to be final?

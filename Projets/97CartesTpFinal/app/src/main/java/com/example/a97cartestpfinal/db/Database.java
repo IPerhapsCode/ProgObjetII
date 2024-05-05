@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.LinearLayout;
 
 import com.example.a97cartestpfinal.logique.Cartes;
 import com.example.a97cartestpfinal.logique.Partie;
@@ -177,24 +178,24 @@ public class Database extends SQLiteOpenHelper {
         try
         {
             ContentValues cv = new ContentValues();
-            int count = 0;
+            String count = "";
 
             for(Object i : pilesMain)
             {
+                count = ((LinearLayout) ((Cartes) i).getCarte().getParent()).getTag().toString();
                 cv.clear();
-                cv.put("_id", count);
+                cv.put("_id", Integer.parseInt(count.charAt(count.length() - 2) + String.valueOf(count.charAt(count.length() - 1))));
                 cv.put("valeur", ((Cartes) i).getValue());
                 this.db.insert("saved_game_pile_main", null, cv);
-                ++count;
             }
 
             for(Object i : cartes)
             {
+                count = ((LinearLayout) ((Cartes) i).getCarte().getParent()).getTag().toString();
                 cv.clear();
-                cv.put("_id", count);
+                cv.put("_id", Integer.parseInt(count.charAt(count.length() - 2) + String.valueOf(count.charAt(count.length() - 1))));
                 cv.put("valeur", ((Cartes) i).getValue());
                 this.db.insert("saved_game_pile_main", null, cv);
-                ++count;
             }
         }
         catch(NullPointerException npe)
@@ -267,7 +268,7 @@ public class Database extends SQLiteOpenHelper {
             System.out.println("La connexion à la base de donnée est fermer! Impossible de sélectionner les valeurs de la table saved_game_pile_main!");
         }
 
-        if(c != null)
+        if(c != null) //Il faudrait utiliser des hashtables qui aurait pour clé les id des valeurs, ce qui in term va nous permettre d'aller chercher les valeurs dans la hashtable uniquement pour les layout qui ont le bon chiffre dans leur tag
         {
             partie.setSavedMain(new Vector<>(1, 1));
             partie.getPiles().setSavedPiles(new Vector<>(1, 1));
@@ -275,7 +276,7 @@ public class Database extends SQLiteOpenHelper {
             while(c.moveToNext())
             {
                 System.out.println(c.getInt(0));
-                if(c.getInt(0) < 4)
+                if(c.getInt(0) < 4) //Magic number mais realisticly this should be fine
                 {
                     partie.getPiles().getSavedPiles().add(c.getInt(1));
                 }

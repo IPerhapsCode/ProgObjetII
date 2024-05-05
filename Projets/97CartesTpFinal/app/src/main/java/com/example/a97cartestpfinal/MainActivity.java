@@ -23,13 +23,15 @@ import java.util.Vector;
 //To do:
 //Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
 //Aussi quand on change d'activité, oncreate est call avant onstop de l'activité précédente, ce qui cause des problèmes pour ouvrir et fermer la base de données
-//Option de continue une partie si le joueur a précèdement save and quit (Présentement save and load ne remet pas les cartes au bonne place et les cartes dans les piles n'ont pas la couleur approprié, et le score n'est pas réellement sauvegarder?)
+//Présentement j'utilise un magic number pour le nombre de pile durant le loading dans la database, mais realisticly ça devrait être correcte
+//Option de continue une partie si le joueur a précèdement save and quit (Présentement save and load ne remet pas les cartes au bonne place et le compteur pour les valeurs des cartes n'est pas bien setup on a les mêmes cartes plusieurs fois)
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
 public class MainActivity extends AppCompatActivity {
     public static int[] marginsMain;
     public static int[] marginsPile;
     public static int[] marginsPileAlt;
+    public static boolean savedGame = false;
     public static int backgroundCartesCouleur;
     private EcouteurOnTouch ecot;
     private EcouteurOnDrag ecod;
@@ -86,11 +88,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Assignation des views à des écouteurs et mise en stockage
         this.parent = findViewById(R.id.parent);
-        this.findChildren(parent);
+        this.findChildren(this.parent);
 
         //Début de la partie
         this.dbState = this.instance.ouvrirConnexion();
-        this.partie = new Partie(this.piles, this, true);
+        this.partie = new Partie(this.piles, this, savedGame);
         this.dbState = this.instance.fermerConnexion();
         this.partie.gameStart(this.main, this.ecot);
         this.partie.setTurnStart(this.readTime(this.ui.get("ui_time").getText().toString()));
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(dbState)
+        if(this.dbState)
         {
             this.instance.fermerConnexion();
         }
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         this.piles.add((LinearLayout) child);
                         this.piles.lastElement().setOnDragListener(this.ecod);
                     }
-                    else if(tag.matches("main"))
+                    else if(tag.matches("main.*"))
                     {
                         this.main.add((LinearLayout) child);
                     }

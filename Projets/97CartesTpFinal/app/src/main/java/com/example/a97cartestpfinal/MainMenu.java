@@ -51,7 +51,7 @@ public class MainMenu extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(dbState)
+        if(this.dbState)
         {
             this.instance.fermerConnexion();
         }
@@ -65,6 +65,7 @@ public class MainMenu extends AppCompatActivity {
         public void onClick(View v) {
                 if(v.equals(buttonNewGame))
                 {
+                    MainActivity.savedGame = false;
                     startActivity(new Intent(MainMenu.this, MainActivity.class));
                 }
                 else if(v.equals(buttonContinue))
@@ -72,6 +73,7 @@ public class MainMenu extends AppCompatActivity {
                     dbState = instance.ouvrirConnexion();
                     if(instance.hasSavedGame())
                     {
+                        MainActivity.savedGame = true;
                         startActivity(new Intent(MainMenu.this, MainActivity.class));
                     }
                     dbState = instance.fermerConnexion();
