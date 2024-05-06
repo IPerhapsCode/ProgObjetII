@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:tag="button_menu"
-                android:text="Menu" />
+                android:text="Save &amp; Quit" />
         </LinearLayout>
     </LinearLayout>
 

@@ -2,6 +2,7 @@ package com.example.a97cartestpfinal;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.DragEvent;
@@ -23,8 +24,7 @@ import java.util.Vector;
 //To do:
 //Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
 //Aussi quand on change d'activité, oncreate est call avant onstop de l'activité précédente, ce qui cause des problèmes pour ouvrir et fermer la base de données
-//Présentement j'utilise un magic number pour le nombre de pile durant le loading dans la database, mais realisticly ça devrait être correcte
-//Option de continue une partie si le joueur a précèdement save and quit (Présentement save and load ne remet pas les cartes au bonne place et le compteur pour les valeurs des cartes n'est pas bien setup on a les mêmes cartes plusieurs fois)
+//Faire une custom exception qui est thrown par la database si la connection est fermer
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
 public class MainActivity extends AppCompatActivity {
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 catch(Exception e)
                 {
                     //Rien à faire si l'enfant n'est pas nécessaire
-                    System.out.println("Unecessary child");
+                    continue;
                 }
             }
         }
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
                                         partie.getMainCartes().values(),
                                         partie.getPiles().getPilesCartes().values());
                                 dbState = instance.fermerConnexion();
-                                //startActivity(new Intent(MainActivity.this, MainMenu.class));
+                                startActivity(new Intent(MainActivity.this, MainMenu.class));
                                 break;
                             }
                             case "button_redo":{

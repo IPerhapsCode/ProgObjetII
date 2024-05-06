@@ -11,9 +11,8 @@ import com.example.a97cartestpfinal.logique.Cartes;
 import com.example.a97cartestpfinal.logique.Partie;
 
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 public class Database extends SQLiteOpenHelper {
     private static Database instance;
@@ -270,20 +269,11 @@ public class Database extends SQLiteOpenHelper {
 
         if(c != null) //Il faudrait utiliser des hashtables qui aurait pour clé les id des valeurs, ce qui in term va nous permettre d'aller chercher les valeurs dans la hashtable uniquement pour les layout qui ont le bon chiffre dans leur tag
         {
-            partie.setSavedMain(new Vector<>(1, 1));
-            partie.getPiles().setSavedPiles(new Vector<>(1, 1));
+            partie.setSavedCartes(new Hashtable<>(1, 1));
 
             while(c.moveToNext())
             {
-                System.out.println(c.getInt(0));
-                if(c.getInt(0) < 4) //Magic number mais realisticly this should be fine
-                {
-                    partie.getPiles().getSavedPiles().add(c.getInt(1));
-                }
-                else
-                {
-                    partie.getSavedMain().add(c.getInt(1));
-                }
+                partie.getSavedCartes().put(c.getInt(0), c.getInt(1));
             }
         }
     }

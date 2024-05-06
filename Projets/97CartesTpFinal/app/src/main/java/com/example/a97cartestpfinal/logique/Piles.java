@@ -17,7 +17,6 @@ import java.util.Vector;
 public class Piles {
 
     private Hashtable<TextView, Cartes> pilesCartes;
-    private Vector<Integer> savedPiles;
 
     protected Piles(Vector<LinearLayout> zonePiles, Context context, boolean saved)
     {
@@ -52,23 +51,28 @@ public class Piles {
         }
     }
 
-    public void loadSavedPiles(Vector<LinearLayout> zonePiles, Context context, int maxValue)
+    public void loadSavedPiles(Vector<LinearLayout> zonePiles, Hashtable<Integer, Integer> savedCartes, Context context, int maxValue)
     {
-        for(int i = 0; i < this.savedPiles.size(); ++i)
-        {
-            Cartes temp;
+        Cartes temp;
+        String id;
 
-            if(zonePiles.get(i).getTag().toString().contains("alt"))
+        for(LinearLayout i : zonePiles)
+        {
+            //Retrieves the id of the cards value based on the tag of the linear layout which contained it
+            id = i.getTag().toString();
+            id = id.charAt(id.length() - 2) + String.valueOf(id.charAt(id.length() - 1));
+
+            if(i.getTag().toString().contains("alt"))
             {
-                temp = new Cartes(this.savedPiles.get(i), context, R.style.cartes_pile_alt);
+                temp = new Cartes(savedCartes.get(Integer.parseInt(id)), context, R.style.cartes_pile_alt);
                 this.pilesCartes.put(temp.getCarte(), temp);
-                zonePiles.get(i).addView(temp.getCarte());
+                i.addView(temp.getCarte());
             }
             else
             {
-                temp = new Cartes(this.savedPiles.get(i), context, R.style.cartes_pile);
+                temp = new Cartes(savedCartes.get(Integer.parseInt(id)), context, R.style.cartes_pile);
                 this.pilesCartes.put(temp.getCarte(), temp);
-                zonePiles.get(i).addView(temp.getCarte(), 0);
+                i.addView(temp.getCarte(), 0);
             }
 
             if(temp.getValue() != 0 && temp.getValue() != 100)
@@ -140,13 +144,5 @@ public class Piles {
 
     public Hashtable<TextView, Cartes> getPilesCartes() {
         return pilesCartes;
-    }
-
-    public Vector<Integer> getSavedPiles() {
-        return savedPiles;
-    }
-
-    public void setSavedPiles(Vector<Integer> savedPiles) {
-        this.savedPiles = savedPiles;
     }
 }

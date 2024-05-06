@@ -17,7 +17,7 @@ import java.util.Vector;
 public class Partie {
     private Hashtable<TextView, Cartes> mainCartes;
     private Hashtable<LinearLayout, Cartes> voidCartes;
-    private Vector<Integer> savedMain;
+    private Hashtable<Integer, Integer> savedCartes;
     private boolean savedGame;
     private List<Integer> carteValues;
     private Context gameContext;
@@ -53,7 +53,7 @@ public class Partie {
         else
         {
             Database.getInstance(context).loadGame(this);
-            this.piles.loadSavedPiles(piles, context, this.carteMaxValue);
+            this.piles.loadSavedPiles(piles, this.savedCartes, context, this.carteMaxValue);
         }
     }
 
@@ -68,6 +68,7 @@ public class Partie {
         {
             if(i.getChildCount() == 0 && this.count < this.carteValues.size())
             {
+                System.out.println(this.count);
                 Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
                 ++this.count;
                 this.mainCartes.put(temp.getCarte(), temp);
@@ -100,6 +101,7 @@ public class Partie {
                         //Add the new card to the view and associates it to a listener
                         temp.getCarte().setOnTouchListener(ecot);
                         i.addView(temp.getCarte());
+                        System.out.println("butch");
                     }
                 },delay);
                 delay += delay;
@@ -107,27 +109,28 @@ public class Partie {
         }
         else
         {
-            System.out.println(main.size());
-            for(int i = 0; i < this.savedMain.size(); ++i)
+            for(LinearLayout i : main)
             {
-                //Expresssion used in lambda function need to be final?
-                int finalI = i;
                 handler.postDelayed(()->{
-                    //Make sure there are still enough values to create more cards
-                    if(this.count < this.carteValues.size())
+                    //Obtains the id of the card within the tag of the layout
+                    String id = i.getTag().toString();
+                    id = id.charAt(id.length() - 2) + String.valueOf(id.charAt(id.length() - 1));
+
+                    if(this.savedCartes.containsKey(Integer.parseInt(id)))
                     {
                         //Make sure the linear layout is empty
-                        main.get(finalI).removeAllViews();
+                        i.removeAllViews();
 
                         //Create the new card
-                        Cartes temp = new Cartes(this.savedMain.get(finalI), this.carteMaxValue, this.gameContext);
+                        Cartes temp = new Cartes(this.savedCartes.get(Integer.parseInt(id)), this.carteMaxValue, this.gameContext);
                         this.mainCartes.put(temp.getCarte(), temp);
 
                         //Add the new card to the view and associates it to a listener
                         temp.getCarte().setOnTouchListener(ecot);
-                        main.get(finalI).addView(temp.getCarte());
+                        i.addView(temp.getCarte());
+                        ++count;
                     }
-                },delay);
+                        }, delay);
                 delay += delay;
             }
         }
@@ -249,12 +252,12 @@ public class Partie {
         this.count = count;
     }
 
-    public Vector<Integer> getSavedMain() {
-        return savedMain;
+    public Hashtable<Integer, Integer> getSavedCartes() {
+        return savedCartes;
     }
 
-    public void setSavedMain(Vector<Integer> savedMain) {
-        this.savedMain = savedMain;
+    public void setSavedCartes(Hashtable savedCartes) {
+        this.savedCartes = savedCartes;
     }
 
     public boolean isSavedGame()
