@@ -16,15 +16,16 @@ import android.widget.TextView;
 
 import com.example.a97cartestpfinal.alertDialogsActivity.GameOver;
 import com.example.a97cartestpfinal.db.Database;
+import com.example.a97cartestpfinal.exceptions.ExceptionDB;
 import com.example.a97cartestpfinal.logique.Cartes;
 import com.example.a97cartestpfinal.logique.Partie;
 
 import java.util.Hashtable;
 import java.util.Vector;
 //To do:
-//Bug a demander au prof: Si on clique sur le bouton retour et qu'on retourne dans l'activité après, les piles prennent la couleur qu'avait la dernière carte en mémoire lors de la fermeture de l'activité?
-//Aussi quand on change d'activité, oncreate est call avant onstop de l'activité précédente, ce qui cause des problèmes pour ouvrir et fermer la base de données
-//Faire une custom exception qui est thrown par la database si la connection est fermer
+//Quand on va dans le highscore plusieurs fois les activités précédentes reste ouverte? Aussi il y a plusieurs activité mainmenu
+//Pas de drag listener sur les cartes dans la main
+//Linear layout dans les classes de logique?
 //Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
 public class MainActivity extends AppCompatActivity {
@@ -93,7 +94,14 @@ public class MainActivity extends AppCompatActivity {
         //Début de la partie
         this.dbState = this.instance.ouvrirConnexion();
         this.partie = new Partie(this.piles, this, savedGame);
-        this.dbState = this.instance.fermerConnexion();
+        try
+        {
+            this.dbState = this.instance.fermerConnexion();
+        }
+        catch (ExceptionDB e)
+        {
+            System.out.println(e.getMessage());
+        }
         this.partie.gameStart(this.main, this.ecot);
         this.partie.setTurnStart(this.readTime(this.ui.get("ui_time").getText().toString()));
         this.ui.get("ui_cartes").setText(String.valueOf(this.partie.getNbCartes()));
@@ -106,9 +114,15 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         if(this.dbState)
         {
-            this.instance.fermerConnexion();
+            try
+            {
+                this.instance.fermerConnexion();
+            }
+            catch (ExceptionDB e) {
+                System.out.println(e.getMessage());
+            }
+
         }
-        this.finish();
     }
 
     private void findChildren(LinearLayout parent)
@@ -260,12 +274,28 @@ public class MainActivity extends AppCompatActivity {
                             }
                             case "button_menu":{
                                 dbState = instance.ouvrirConnexion();
-                                instance.saveGame(partie.getScore(), partie.getNbCartes(),
-                                        ui.get("ui_time").getText().toString(),
-                                        partie.getCarteValues(),
-                                        partie.getMainCartes().values(),
-                                        partie.getPiles().getPilesCartes().values());
-                                dbState = instance.fermerConnexion();
+                                try
+                                {
+                                    instance.saveGame(partie.getScore(), partie.getNbCartes(),
+                                            ui.get("ui_time").getText().toString(),
+                                            partie.getCarteValues(),
+                                            partie.getMainCartes().values(),
+                                            partie.getPiles().getPilesCartes().values());
+                                }
+                                catch (ExceptionDB e)
+                                {
+                                    System.out.println(e.getMessage());
+                                }
+
+                                try
+                                {
+                                    dbState = instance.fermerConnexion();
+                                }
+                                catch (ExceptionDB e)
+                                {
+                                    System.out.println(e.getMessage());
+                                }
+
                                 startActivity(new Intent(MainActivity.this, MainMenu.class));
                                 break;
                             }
@@ -376,8 +406,23 @@ public class MainActivity extends AppCompatActivity {
                         if(partie.gameOver(piles))
                         {
                             dbState = instance.ouvrirConnexion();
-                            instance.saveHighscore(partie.getScore(), partie.getNbCartes(), ui.get("ui_time").getText().toString(), partie.isSavedGame());
-                            dbState = instance.fermerConnexion();
+                            try
+                            {
+                                instance.saveHighscore(partie.getScore(), partie.getNbCartes(), ui.get("ui_time").getText().toString(), partie.isSavedGame());
+                            }
+                            catch (ExceptionDB e)
+                            {
+                                System.out.println(e.getMessage());
+                            }
+
+                            try
+                            {
+                                dbState = instance.fermerConnexion();
+                            }
+                            catch (ExceptionDB e)
+                            {
+                                System.out.println(e.getMessage());
+                            }
                             gameOver.setWinLose(partie.getMainCartes().size() == 0);
                             gameOver.show();
                             break;

@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.a97cartestpfinal.db.Database;
+import com.example.a97cartestpfinal.exceptions.ExceptionDB;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +53,14 @@ public class Partie {
         }
         else
         {
-            Database.getInstance(context).loadGame(this);
+            try
+            {
+                Database.getInstance(context).loadGame(this);
+            }
+            catch (ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
             this.piles.loadSavedPiles(piles, this.savedCartes, context, this.carteMaxValue);
         }
     }
@@ -68,7 +76,6 @@ public class Partie {
         {
             if(i.getChildCount() == 0 && this.count < this.carteValues.size())
             {
-                System.out.println(this.count);
                 Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
                 ++this.count;
                 this.mainCartes.put(temp.getCarte(), temp);
@@ -101,7 +108,6 @@ public class Partie {
                         //Add the new card to the view and associates it to a listener
                         temp.getCarte().setOnTouchListener(ecot);
                         i.addView(temp.getCarte());
-                        System.out.println("butch");
                     }
                 },delay);
                 delay += delay;

@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.a97cartestpfinal.db.Database;
+import com.example.a97cartestpfinal.exceptions.ExceptionDB;
 
 public class HighScoresActivity extends AppCompatActivity {
 
@@ -41,8 +42,38 @@ public class HighScoresActivity extends AppCompatActivity {
         this.instance = Database.getInstance(this);
         this.dbState = this.instance.ouvrirConnexion();
 
+        //Supprimer la partie sauvegarder si elle vient d'être complété
+        if(MainActivity.savedGame)
+        {
+            try
+            {
+                this.instance.deleteSavedGame();
+            }
+            catch(ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
+
+        }
+
         //Création du leaderboard
-        this.createHighScoreTable(this.instance.getHighScores());
+        try
+        {
+            this.createHighScoreTable(this.instance.getHighScores());
+        }
+        catch (ExceptionDB e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        try
+        {
+            this.dbState = instance.fermerConnexion();
+        }
+        catch (ExceptionDB e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -50,7 +81,14 @@ public class HighScoresActivity extends AppCompatActivity {
         super.onStop();
         if(this.dbState)
         {
-            this.instance.fermerConnexion();
+            try
+            {
+                this.instance.fermerConnexion();
+            }
+            catch (ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
         }
         this.finish();
     }
@@ -107,7 +145,6 @@ public class HighScoresActivity extends AppCompatActivity {
             }
             ++valeurPosition;
         }
-        this.dbState = instance.fermerConnexion();
     }
 
     private class Ecouteur implements View.OnClickListener

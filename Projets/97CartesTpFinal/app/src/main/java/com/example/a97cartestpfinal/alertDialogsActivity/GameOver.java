@@ -54,7 +54,8 @@ public class GameOver extends Dialog {
     @Override
     protected void onStop() {
         super.onStop();
-        this.context.startActivity(new Intent(this.context, HighScoresActivity.class));
+        this.dismiss();
+        this.context.startActivity(new Intent(this.context, HighScoresActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
     }
 
     public void setWinLose(boolean winLose)
@@ -69,10 +70,12 @@ public class GameOver extends Dialog {
         public void onClick(View v) {
             if(v.equals(buttonHighscores))
             {
-                context.startActivity(new Intent(context, HighScoresActivity.class));
+                dismiss();
+                context.startActivity(new Intent(context, HighScoresActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
             }
             else if(v.equals(buttonMenu))
             {
+                dismiss();
                 context.startActivity(new Intent(context, MainMenu.class));
             }
         }

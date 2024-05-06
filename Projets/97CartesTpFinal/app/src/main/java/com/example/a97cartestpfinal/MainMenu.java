@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.a97cartestpfinal.db.Database;
+import com.example.a97cartestpfinal.exceptions.ExceptionDB;
 import com.google.android.material.button.MaterialButton;
 
 public class MainMenu extends AppCompatActivity {
@@ -37,15 +38,39 @@ public class MainMenu extends AppCompatActivity {
         this.buttonContinue.setOnClickListener(this.ec);
 
         //If there is no game to continue gray out the button
-        if(!this.instance.hasSavedGame())
+        this.instance.ouvrirConnexion();
+        try
         {
-            this.buttonContinue.setBackgroundColor(getResources().getColor(R.color.actual_grey));
-            this.buttonContinue.setTextColor(getResources().getColor(R.color.actual_grey_dark));
-            ((MaterialButton)this.buttonContinue).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.actual_grey_light)));
+            if(!this.instance.hasSavedGame())
+            {
+                this.buttonContinue.setBackgroundColor(getResources().getColor(R.color.actual_grey));
+                this.buttonContinue.setTextColor(getResources().getColor(R.color.actual_grey_dark));
+                ((MaterialButton)this.buttonContinue).setStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.actual_grey_light)));
+            }
+        }
+        catch (ExceptionDB e)
+        {
+            System.out.println(e.getMessage());
         }
 
         //Affiche le highest score
-        this.highscore.setText("HighScore: " + this.instance.getHighestScore() + " points");
+        try
+        {
+            this.highscore.setText("HighScore: " + this.instance.getHighestScore() + " points");
+        }
+        catch (ExceptionDB e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        try
+        {
+            this.instance.fermerConnexion();
+        }
+        catch (ExceptionDB e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -53,9 +78,15 @@ public class MainMenu extends AppCompatActivity {
         super.onStop();
         if(this.dbState)
         {
-            this.instance.fermerConnexion();
+            try
+            {
+                this.instance.fermerConnexion();
+            }
+            catch (ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
         }
-        this.finish();
     }
 
     private class Ecouteur implements View.OnClickListener
@@ -66,17 +97,32 @@ public class MainMenu extends AppCompatActivity {
                 if(v.equals(buttonNewGame))
                 {
                     MainActivity.savedGame = false;
-                    startActivity(new Intent(MainMenu.this, MainActivity.class));
+                    startActivity(new Intent(MainMenu.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
                 }
                 else if(v.equals(buttonContinue))
                 {
                     dbState = instance.ouvrirConnexion();
-                    if(instance.hasSavedGame())
+                    try
                     {
-                        MainActivity.savedGame = true;
-                        startActivity(new Intent(MainMenu.this, MainActivity.class));
+                        if(instance.hasSavedGame())
+                        {
+                            MainActivity.savedGame = true;
+                            startActivity(new Intent(MainMenu.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+                        }
                     }
-                    dbState = instance.fermerConnexion();
+                    catch (ExceptionDB e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+
+                    try
+                    {
+                        dbState = instance.fermerConnexion();
+                    }
+                    catch (ExceptionDB e)
+                    {
+                        System.out.println(e.getMessage());
+                    }
                 }
         }
     }

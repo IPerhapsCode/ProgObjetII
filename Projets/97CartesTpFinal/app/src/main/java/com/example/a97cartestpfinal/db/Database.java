@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.LinearLayout;
 
+import com.example.a97cartestpfinal.exceptions.ExceptionDB;
 import com.example.a97cartestpfinal.logique.Cartes;
 import com.example.a97cartestpfinal.logique.Partie;
 
@@ -51,21 +52,19 @@ public class Database extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean fermerConnexion()
-    {
+    public boolean fermerConnexion() throws ExceptionDB {
         try
         {
             this.db.close();
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible de fermer la connexion!");
+            throw new ExceptionDB("Impossible de fermer la connexion!");
         }
         return false;
     }
 
-    public void saveHighscore(int score, int nbCartes, String time, boolean saved)
-    {
+    public void saveHighscore(int score, int nbCartes, String time, boolean saved) throws ExceptionDB {
         ContentValues values = new ContentValues();
         values.put("score", score);
         values.put("nbCartes", nbCartes);
@@ -83,12 +82,11 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible de compléter l'insertion!");
+            throw new ExceptionDB("Impossible de compléter l'insertion!");
         }
     }
 
-    public int getHighestScore()
-    {
+    public int getHighestScore() throws ExceptionDB {
         Cursor cursor = null;
         try
         {
@@ -96,7 +94,7 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible d'obtenir le highscore!");
+            throw new ExceptionDB("Impossible d'obtenir le highscore!");
         }
 
         try
@@ -108,14 +106,13 @@ public class Database extends SQLiteOpenHelper {
         }
         catch (NullPointerException npe)
         {
-            System.out.println("Le curseur n'a pas pu être initialisé!");
+            throw new ExceptionDB("Le curseur n'a pas pu être initialisé!");
         }
 
         return 0;
     }
 
-    public Cursor getHighScores()
-    {
+    public Cursor getHighScores() throws ExceptionDB {
         Cursor cursor = null;
 
         try
@@ -124,24 +121,20 @@ public class Database extends SQLiteOpenHelper {
         }
         catch (NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible d'obtenir les highscores!");
+            throw new ExceptionDB("Impossible d'obtenir les highscores!");
         }
 
         return cursor;
     }
 
-    public void saveGame(int score, int nbCartes, String time, List cartesValues, Collection cartes, Collection pilesMain)
-    {
-        this.ouvrirConnexion();
+    public void saveGame(int score, int nbCartes, String time, List cartesValues, Collection cartes, Collection pilesMain) throws ExceptionDB {
         try
         {
-            this.db.execSQL("DELETE FROM saved_game_info;");
-            this.db.execSQL("DELETE FROM saved_game_ordre_cartes");
-            this.db.execSQL("DELETE FROM saved_game_pile_main");
+            this.deleteSavedGame();
         }
-        catch(NullPointerException npe)
+        catch(ExceptionDB e)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible de vider les tables!");
+            System.out.println(e.getMessage());
         }
 
         try
@@ -154,7 +147,7 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible d'insérer des valeurs dans la table saved_game_info!");
+            throw new ExceptionDB("Impossible d'insérer des valeurs dans la table saved_game_info!");
         }
 
         try
@@ -171,7 +164,7 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible d'insérer des valeurs dans la table saved_game_ordre_cartes!");
+            throw new ExceptionDB("Impossible d'insérer des valeurs dans la table saved_game_ordre_cartes!");
         }
 
         try
@@ -199,12 +192,11 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible d'insérer des valeurs dans la table saved_game_pile_main!");
+            throw new ExceptionDB("Impossible d'insérer des valeurs dans la table saved_game_pile_main!");
         }
     }
 
-    public void loadGame(Partie partie)
-    {
+    public void loadGame(Partie partie) throws ExceptionDB {
         Cursor c = null;
         try
         {
@@ -212,7 +204,7 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible de sélectionner les valeurs de la table saved_game_info!");
+            throw new ExceptionDB("Impossible de sélectionner les valeurs de la table saved_game_info!");
         }
 
         if(c != null)
@@ -246,7 +238,7 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible de sélectionner les valeurs de la table saved_game_ordre_cartes!");
+            throw new ExceptionDB("Impossible de sélectionner les valeurs de la table saved_game_ordre_cartes!");
         }
 
         if(c != null)
@@ -264,10 +256,10 @@ public class Database extends SQLiteOpenHelper {
         }
         catch(NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible de sélectionner les valeurs de la table saved_game_pile_main!");
+            throw new ExceptionDB("Impossible de sélectionner les valeurs de la table saved_game_pile_main!");
         }
 
-        if(c != null) //Il faudrait utiliser des hashtables qui aurait pour clé les id des valeurs, ce qui in term va nous permettre d'aller chercher les valeurs dans la hashtable uniquement pour les layout qui ont le bon chiffre dans leur tag
+        if(c != null)
         {
             partie.setSavedCartes(new Hashtable<>(1, 1));
 
@@ -278,9 +270,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public boolean hasSavedGame()
-    {
-        instance.ouvrirConnexion();
+    public boolean hasSavedGame() throws ExceptionDB {
         try
         {
             Cursor c = this.db.rawQuery("SELECT COUNT(*) FROM saved_game_info", null);
@@ -292,9 +282,23 @@ public class Database extends SQLiteOpenHelper {
         }
         catch (NullPointerException npe)
         {
-            System.out.println("La connexion à la base de donnée est fermer! Impossible de compter le nombre de ligne dans saved_game_info!");
+            throw new ExceptionDB("Impossible de compter le nombre de ligne dans saved_game_info!");
         }
 
         return false;
     }
+
+    public void deleteSavedGame() throws ExceptionDB {
+        try
+        {
+            this.db.execSQL("DELETE FROM saved_game_info;");
+            this.db.execSQL("DELETE FROM saved_game_ordre_cartes");
+            this.db.execSQL("DELETE FROM saved_game_pile_main");
+        }
+        catch(NullPointerException npe)
+        {
+            throw new ExceptionDB("Impossible de vider les tables!");
+        }
+    }
 }
+
