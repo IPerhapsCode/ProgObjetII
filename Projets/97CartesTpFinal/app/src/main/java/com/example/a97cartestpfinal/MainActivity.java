@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -15,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.a97cartestpfinal.alertDialogsActivity.GameOver;
+import com.example.a97cartestpfinal.alertDialogsActivity.Parametres;
 import com.example.a97cartestpfinal.db.Database;
 import com.example.a97cartestpfinal.exceptions.ExceptionDB;
 import com.example.a97cartestpfinal.logique.Cartes;
@@ -24,7 +26,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 //To do:
 //Linear layout dans les classes de logique?
-//Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes C.Volume de la musique
+//Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups(Il reste à sauvegarder si il est on dans la table des préférences) B.Change la color pallete des cartes C.Volume de la musique
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
 //Animation lors de la pige des cartes?
 public class MainActivity extends AppCompatActivity {
@@ -32,13 +34,13 @@ public class MainActivity extends AppCompatActivity {
     public static int[] marginsPile;
     public static int[] marginsPileAlt;
     public static boolean savedGame = false;
-    public static int backgroundCartesCouleur;
     private EcouteurOnTouch ecot;
     private EcouteurOnDrag ecod;
     private Database instance;
     private boolean dbState = false;
 
     private LinearLayout parent;
+    private Vector<Cartes> helperSelectedCards;
     private Vector<LinearLayout> piles;
     private Vector<LinearLayout> main;
     private Hashtable<String, View> buttons;
@@ -47,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
     //Game related variables
     private Partie partie;
     private GameOver gameOver;
-    private boolean helper = true;
+    private Parametres parametres;
+    private boolean helper = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,20 +71,20 @@ public class MainActivity extends AppCompatActivity {
                 (int)(20 * densite),
                 (int)(20 * densite),
                 (int)(40 * densite)};
-        //Solution temporaire, faudrait trouver une autre solution
-        backgroundCartesCouleur = getResources().getColor(R.color.dark_grey);
 
         //Création des écouteurs
         this.ecot = new EcouteurOnTouch();
         this.ecod = new EcouteurOnDrag();
 
-        //Game over alert dialog creation
+        //Alert dialog creation
         this.gameOver = new GameOver(this);
+        this.parametres = new Parametres(this, this.helper);
 
         //Obtient une référence à l'instance de la base de donnée
         this.instance = Database.getInstance(this);
 
         //Zone de stockage des views manipulés lors de l'utilisation
+        this.helperSelectedCards = new Vector<>(1 ,1);
         this.piles = new Vector<>(1, 1);
         this.main = new Vector<>(1, 1);
         this.buttons = new Hashtable<>(1, 1);
@@ -107,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
         this.ui.get("ui_cartes").setText(String.valueOf(this.partie.getNbCartes()));
         ((Chronometer)this.ui.get("ui_time")).setBase(SystemClock.elapsedRealtime() - this.readTime(this.partie.getBaseTime()) * 1000);
         this.ui.get("ui_score").setText(String.valueOf(this.partie.getScore()));
+
+        if(this.helper)
+        {
+            this.helperAi();
+        }
     }
 
     @Override
@@ -246,10 +254,120 @@ public class MainActivity extends AppCompatActivity {
             //Adds the view back to their respective layouts and plays a little animation
             i.addView(carte.getCarte(), index);
             carte.getCarte().setAlpha(0);
-            carte.spawnAnim(5);
+            carte.spawnAnim(1);
+        }
+
+        if(this.helper)
+        {
+            this.helperAi();
         }
 
         return nbCartes;
+    }
+
+    //Trouve le meilleur coup à jouer selon l'intervalle entre les cartes et le score que le coup peu potentiellement apporter
+    public void helperAi()
+    {
+        Cartes main = null, pile = null, tempPile = null;
+        Vector<Cartes> oldCartes = new Vector<>(1, 1);
+        Vector<Cartes[]> pairs = new Vector<>(1, 1);
+        int index = 0, score = 0, tempScore = 0, intervalle = 100, tempIntervalle = 100;
+        boolean direction = true, jump = false, jumpTemp = false;
+
+        for(Cartes i : this.partie.getMainCartes().values())
+        {
+            //Vérifie si un bon de dix est présent dans la main du joueur pour plus tard déterminer l'ordre de jeu approprié
+            for(Cartes k : oldCartes)
+            {
+                if(Math.abs(i.getValue() - k.getValue()) == 10)
+                {
+                    pairs.add(new Cartes[2]);
+                    pairs.lastElement()[0] = i;
+                    pairs.lastElement()[1] = k;
+                }
+            }
+            oldCartes.add(i);
+
+            //Trouve le meilleur coup selon l'intervalle et le nombre de point que peut potentiellement apporté un coup
+            for(LinearLayout j : this.piles)
+            {
+                index = this.partie.valeurIndex(j);
+                tempPile = this.partie.findCard(this.partie.getPiles().getPilesCartes(), j.getChildAt(index));
+                direction = j.getTag().toString().contains("asc");
+
+                if((direction && tempPile.getValue() - i.getValue() == 10)
+                        || (!direction && i.getValue() - tempPile.getValue() == 10))
+                {
+                    tempScore = this.partie.calcLastScoreAddition(i.getValue(), tempPile.getValue(), true, false);
+                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
+                    jumpTemp = true;
+                }
+                else if(direction && tempPile.getValue() < i.getValue()
+                        || !direction && tempPile.getValue() > i.getValue())
+                {
+                    tempScore = this.partie.calcLastScoreAddition(i.getValue(), tempPile.getValue(), false, false);
+                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
+                    jumpTemp = false;
+                }
+
+                if((score < tempScore) || (score == tempScore && tempIntervalle < intervalle))
+                {
+                    score = tempScore;
+                    intervalle = tempIntervalle;
+                    jump = jumpTemp;
+                    main = i;
+                    pile = tempPile;
+                }
+            }
+        }
+
+        //Détermine l'ordre de jeu approprié si un bon de dix est présent dans la main du joueur et si une des cartes formant le bon est la prochaine carte à jouer
+        for(Cartes[] i: pairs)
+        {
+            index = (main == i[0] ? 1 : (main == i[1] ? 0 : -1));
+
+            if(index != -1)
+            {
+                main = (pile.getValue() > main.getValue() && main.getValue() > i[index].getValue() && !jump
+                        ? i[index]
+                        : (pile.getValue() < main.getValue() && main.getValue() < i[index].getValue() && !jump
+                        ? i[index]
+                        : main));
+            }
+        }
+
+        if(main != null && pile != null)
+        {
+            this.stopHelperAi();
+
+            this.helperSelectedCards.add(main);
+            this.helperSelectedCards.add(pile);
+
+            for(Cartes i : this.helperSelectedCards)
+            {
+                i.setHelperSelected(true);
+                if(this.partie.getMainCartes().values().contains(i))
+                {
+                    i.helperAnim(5, 0, new int[]{0, 0, 0});
+                }
+                else
+                {
+                    i.helperAnim(5, 1, new int[]{255, 255, 255});
+                }
+            }
+        }
+    }
+
+    public void stopHelperAi()
+    {
+        if(!this.helperSelectedCards.isEmpty())
+        {
+            for(Cartes i : helperSelectedCards)
+            {
+                i.setHelperSelected(false);
+            }
+            helperSelectedCards.clear();
+        }
     }
 
     private class EcouteurOnTouch implements View.OnTouchListener
@@ -271,6 +389,7 @@ public class MainActivity extends AppCompatActivity {
                         {
                             case "button_param":{
                                 System.out.println("param");
+                                parametres.show();
                                 break;
                             }
                             case "button_menu":{
@@ -403,7 +522,7 @@ public class MainActivity extends AppCompatActivity {
                             ((ImageView)buttons.get("button_redo")).setImageResource(R.drawable.redo_grey);
                         }
 
-                        //Faudrait ouvrir un alert dialogue qui offre au joueur d'aller voir les highscores ou de retourner au menu et qui le félicite feel me dog
+                        //Ouvre un alert dialog qui félicite le joueur et lui offre d'aller voir els highscore ou de retourner au menu
                         if(partie.gameOver(piles))
                         {
                             dbState = instance.ouvrirConnexion();
@@ -426,11 +545,12 @@ public class MainActivity extends AppCompatActivity {
                             }
                             gameOver.setWinLose(partie.getMainCartes().size() == 0);
                             gameOver.show();
+                            ((Chronometer)ui.get("ui_time")).stop();
                             break;
                         }
                         else if(helper)
                         {
-                            partie.helper(piles);
+                            helperAi();
                         }
                     }
                 }

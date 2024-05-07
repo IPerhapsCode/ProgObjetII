@@ -15,16 +15,20 @@ import com.example.a97cartestpfinal.R;
 
 public class Cartes {
     private int couleur;
+    private int[] couleurValeur;
     private int value;
+    private boolean helperSelected = false;
     private TextView carte;
     private Handler timer;
+    private float density;
 
     //Carte à jouer
     protected Cartes(int value, int maxValue, Context context)
     {
         //Initialises the card to be placed in the players hand
         this.value = value;
-        this.couleur = Color.rgb(255, 255 - (255 * value / maxValue), 0);
+        this.couleurValeur = new int[]{255, 255 - (255 * value / maxValue), 0};
+        this.couleur = Color.rgb(this.couleurValeur[0], this.couleurValeur[1], this.couleurValeur[2]);
         this.carte = new TextView(new ContextThemeWrapper(context, R.style.cartes_main));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.setMargins(MainActivity.marginsMain[0],
@@ -33,15 +37,17 @@ public class Cartes {
                 MainActivity.marginsMain[3]);
         this.carte.setLayoutParams(params);
         this.timer = new Handler();
+        this.density = context.getResources().getDisplayMetrics().density;
 
         //Change the color of the cards background and it's text value
         GradientDrawable background = (GradientDrawable) this.carte.getBackground();
         background.setColor(this.couleur);
+        background.setStroke((int)(3 * this.density), Color.rgb(0, 0, 0));
         this.carte.setText(String.valueOf(this.value));
 
         //Start the spawn animation
         this.carte.setAlpha(0);
-        this.spawnAnim(2);
+        this.spawnAnim(1);
     }
 
     //Cartes utilisées pour les piles par défaut
@@ -49,7 +55,9 @@ public class Cartes {
     {
         //Initialises the card to be placed as one of the initial piles
         this.value = value;
-        this.couleur = 0;
+        this.couleurValeur = new int[]{205, 199, 182};
+        this.couleur = Color.rgb(this.couleurValeur[0], this.couleurValeur[1], this.couleurValeur[2]);
+        this.density = context.getResources().getDisplayMetrics().density;
         this.carte = new TextView(new ContextThemeWrapper(context, style));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.7f);
         if(style == R.style.cartes_pile)
@@ -68,7 +76,8 @@ public class Cartes {
         }
         //On doit rechanger la couleur du background pour fix un bug qui reprend la dernière couleur mémoire pour toutes les piles
         GradientDrawable background = (GradientDrawable) this.carte.getBackground();
-        background.setColor(MainActivity.backgroundCartesCouleur);
+        background.setColor(this.couleur);
+        background.setStroke((int)(3 * this.density), Color.rgb(0, 0, 0));
 
         this.carte.setLayoutParams(params);
         this.carte.setText(String.valueOf(this.value));
@@ -87,11 +96,73 @@ public class Cartes {
         }, delay);
     }
 
+    //Lorsque le helper est actif, produit une animation sur les cartes affectées
+    public void helperAnim(int delay, int color, int[] actualColor)
+    {
+        if(actualColor.length == 3)
+        {
+            int[][] colors = {
+                    {0, 0, 0}, //Noir
+                    {255, 255, 255} //Blanc
+            };
+
+            if(color >= colors.length)
+            {
+                color = 0;
+            }
+
+            for(int i = 0; i < actualColor.length; ++i)
+            {
+                if(actualColor[i] < colors[color][i] && actualColor[i] < 255)
+                {
+                    actualColor[i] += 10;
+                    if(actualColor[i] > colors[color][i])
+                    {
+                        actualColor[i] = colors[color][i];
+                    }
+                }
+                else if(actualColor[i] > colors[color][i] && actualColor[i] > 0)
+                {
+                    actualColor[i] -= 10;
+                    if(actualColor[i] < colors[color][i])
+                    {
+                        actualColor[i] = colors[color][i];
+                    }
+                }
+            }
+
+            if(actualColor[0] == colors[color][0] && actualColor[1] == colors[color][1] && actualColor[2] == colors[color][2])
+            {
+                ++color;
+            }
+
+            int[][] finalColor = {{color}, actualColor};
+            this.timer.postDelayed(()->{
+                GradientDrawable background = (GradientDrawable) this.carte.getBackground();
+                //background.setColor(Color.rgb(finalColor[1][0], finalColor[1][1], finalColor[1][2]));
+                background.setStroke((int)(3 * this.density), Color.rgb(finalColor[1][0], finalColor[1][1], finalColor[1][2]));
+
+                if(this.helperSelected)
+                {
+                    this.helperAnim(delay, finalColor[0][0], finalColor[1]);
+                }
+                else
+                {
+                    background.setStroke((int)(3 * this.density), Color.rgb(0, 0, 0));
+                }
+            }, delay);
+        }
+    }
+
     public TextView getCarte() {
         return carte;
     }
 
     public int getValue() {
         return value;
+    }
+
+    public void setHelperSelected(boolean helperSelected) {
+        this.helperSelected = helperSelected;
     }
 }

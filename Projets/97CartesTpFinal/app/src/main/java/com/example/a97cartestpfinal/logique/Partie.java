@@ -90,57 +90,49 @@ public class Partie {
     //Opérations à faire lors du commencement d'une nouvelle partie
     public void gameStart(Vector<LinearLayout> main, View.OnTouchListener ecot)
     {
-        int delay = 5;
-        Handler handler = new Handler();
         if(!this.savedGame)
         {
             for(LinearLayout i : main)
             {
-                handler.postDelayed(()->{
-                    //Make sure there are still enough values to create more cards
-                    if(this.count < this.carteValues.size())
-                    {
-                        //Make sure the linear layout is empty
-                        i.removeAllViews();
+                //Make sure there are still enough values to create more cards
+                if(this.count < this.carteValues.size())
+                {
+                    //Make sure the linear layout is empty
+                    i.removeAllViews();
 
-                        //Create the new card
-                        Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
-                        this.mainCartes.put(temp.getCarte(), temp);
-                        ++this.count;
+                    //Create the new card
+                    Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
+                    this.mainCartes.put(temp.getCarte(), temp);
+                    ++this.count;
 
-                        //Add the new card to the view and associates it to a listener
-                        temp.getCarte().setOnTouchListener(ecot);
-                        i.addView(temp.getCarte());
-                    }
-                },delay);
-                delay += delay;
+                    //Add the new card to the view and associates it to a listener
+                    temp.getCarte().setOnTouchListener(ecot);
+                    i.addView(temp.getCarte());
+                }
             }
         }
         else
         {
             for(LinearLayout i : main)
             {
-                handler.postDelayed(()->{
-                    //Obtains the id of the card within the tag of the layout
-                    String id = i.getTag().toString();
-                    id = id.charAt(id.length() - 2) + String.valueOf(id.charAt(id.length() - 1));
+                //Obtains the id of the card within the tag of the layout
+                String id = i.getTag().toString();
+                id = id.charAt(id.length() - 2) + String.valueOf(id.charAt(id.length() - 1));
 
-                    if(this.savedCartes.containsKey(Integer.parseInt(id)))
-                    {
-                        //Make sure the linear layout is empty
-                        i.removeAllViews();
+                if(this.savedCartes.containsKey(Integer.parseInt(id)))
+                {
+                    //Make sure the linear layout is empty
+                    i.removeAllViews();
 
-                        //Create the new card
-                        Cartes temp = new Cartes(this.savedCartes.get(Integer.parseInt(id)), this.carteMaxValue, this.gameContext);
-                        this.mainCartes.put(temp.getCarte(), temp);
+                    //Create the new card
+                    Cartes temp = new Cartes(this.savedCartes.get(Integer.parseInt(id)), this.carteMaxValue, this.gameContext);
+                    this.mainCartes.put(temp.getCarte(), temp);
 
-                        //Add the new card to the view and associates it to a listener
-                        temp.getCarte().setOnTouchListener(ecot);
-                        i.addView(temp.getCarte());
-                        ++count;
-                    }
-                        }, delay);
-                delay += delay;
+                    //Add the new card to the view and associates it to a listener
+                    temp.getCarte().setOnTouchListener(ecot);
+                    i.addView(temp.getCarte());
+                    ++count;
+                }
             }
         }
     }
@@ -165,7 +157,7 @@ public class Partie {
         return this.score;
     }
 
-    private int calcLastScoreAddition(int valeurCarte, int valeurPile, boolean splitBonus, boolean timeMultiplier)
+    public int calcLastScoreAddition(int valeurCarte, int valeurPile, boolean splitBonus, boolean timeMultiplier)
     {
         int defaultBonus = 5000;
 
@@ -210,83 +202,106 @@ public class Partie {
     }
 
     //Trouve le meilleur coup à jouer selon l'intervalle entre les cartes et le score que le coup peu potentiellement apporter
-    public void helper(Vector<LinearLayout> zonePiles)
-    {
-        Cartes main = null, pile = null, tempPile = null;
-        Vector<Cartes> oldCartes = new Vector<>(1, 1);
-        Vector<Cartes[]> pairs = new Vector<>(1, 1);
-        int index = 0, score = 0, tempScore = 0, intervalle = 100, tempIntervalle = 100;
-        boolean direction = true, jump = false, jumpTemp = false;
-
-        for(Cartes i : this.mainCartes.values())
-        {
-            //Vérifie si un bon de dix est présent dans la main du joueur pour plus tard déterminer l'ordre de jeu approprié
-            for(Cartes k : oldCartes)
-            {
-                if(Math.abs(i.getValue() - k.getValue()) == 10)
-                {
-                    pairs.add(new Cartes[2]);
-                    pairs.lastElement()[0] = i;
-                    pairs.lastElement()[1] = k;
-                }
-            }
-            oldCartes.add(i);
-
-            //Trouve le meilleur coup selon l'intervalle et le nombre de point que peut potentiellement apporté un coup
-            for(LinearLayout j : zonePiles)
-            {
-                index = this.valeurIndex(j);
-                tempPile = this.findCard(this.getPiles().getPilesCartes(), j.getChildAt(index));
-                direction = j.getTag().toString().contains("asc");
-
-                if((direction && tempPile.getValue() - i.getValue() == 10)
-                        || (!direction && i.getValue() - tempPile.getValue() == 10))
-                {
-                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), true, false);
-                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
-                    jumpTemp = true;
-                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
-                }
-                else if(direction && tempPile.getValue() < i.getValue()
-                        || !direction && tempPile.getValue() > i.getValue())
-                {
-                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), false, false);
-                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
-                    jumpTemp = false;
-                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
-                }
-
-                if((score < tempScore) || (score == tempScore && tempIntervalle < intervalle))
-                {
-                    score = tempScore;
-                    intervalle = tempIntervalle;
-                    jump = jumpTemp;
-                    main = i;
-                    pile = tempPile;
-                }
-            }
-        }
-
-        //Détermine l'ordre de jeu approprié si un bon de dix est présent dans la main du joueur et si une des cartes formant le bon est la prochaine carte à jouer
-        for(Cartes[] i: pairs)
-        {
-            index = (main == i[0] ? 1 : (main == i[1] ? 0 : -1));
-
-            if(index != -1)
-            {
-                main = (pile.getValue() > main.getValue() && main.getValue() > i[index].getValue() && !jump
-                        ? i[index]
-                        : (pile.getValue() < main.getValue() && main.getValue() < i[index].getValue() && !jump
-                            ? i[index]
-                            : main));
-            }
-        }
-
-        if(main != null && pile != null)
-        {
-            System.out.println(main.getValue() + " " + pile.getValue());
-        }
-    }
+//    public void helper(Vector<LinearLayout> zonePiles)
+//    {
+//        Cartes main = null, pile = null, tempPile = null;
+//        Vector<Cartes> oldCartes = new Vector<>(1, 1);
+//        Vector<Cartes[]> pairs = new Vector<>(1, 1);
+//        int index = 0, score = 0, tempScore = 0, intervalle = 100, tempIntervalle = 100;
+//        boolean direction = true, jump = false, jumpTemp = false;
+//
+//        for(Cartes i : this.mainCartes.values())
+//        {
+//            //Vérifie si un bon de dix est présent dans la main du joueur pour plus tard déterminer l'ordre de jeu approprié
+//            for(Cartes k : oldCartes)
+//            {
+//                if(Math.abs(i.getValue() - k.getValue()) == 10)
+//                {
+//                    pairs.add(new Cartes[2]);
+//                    pairs.lastElement()[0] = i;
+//                    pairs.lastElement()[1] = k;
+//                }
+//            }
+//            oldCartes.add(i);
+//
+//            //Trouve le meilleur coup selon l'intervalle et le nombre de point que peut potentiellement apporté un coup
+//            for(LinearLayout j : zonePiles)
+//            {
+//                index = this.valeurIndex(j);
+//                tempPile = this.findCard(this.getPiles().getPilesCartes(), j.getChildAt(index));
+//                direction = j.getTag().toString().contains("asc");
+//
+//                if((direction && tempPile.getValue() - i.getValue() == 10)
+//                        || (!direction && i.getValue() - tempPile.getValue() == 10))
+//                {
+//                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), true, false);
+//                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
+//                    jumpTemp = true;
+//                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
+//                }
+//                else if(direction && tempPile.getValue() < i.getValue()
+//                        || !direction && tempPile.getValue() > i.getValue())
+//                {
+//                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), false, false);
+//                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
+//                    jumpTemp = false;
+//                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
+//                }
+//
+//                if((score < tempScore) || (score == tempScore && tempIntervalle < intervalle))
+//                {
+//                    score = tempScore;
+//                    intervalle = tempIntervalle;
+//                    jump = jumpTemp;
+//                    main = i;
+//                    pile = tempPile;
+//                }
+//            }
+//        }
+//
+//        //Détermine l'ordre de jeu approprié si un bon de dix est présent dans la main du joueur et si une des cartes formant le bon est la prochaine carte à jouer
+//        for(Cartes[] i: pairs)
+//        {
+//            index = (main == i[0] ? 1 : (main == i[1] ? 0 : -1));
+//
+//            if(index != -1)
+//            {
+//                main = (pile.getValue() > main.getValue() && main.getValue() > i[index].getValue() && !jump
+//                        ? i[index]
+//                        : (pile.getValue() < main.getValue() && main.getValue() < i[index].getValue() && !jump
+//                            ? i[index]
+//                            : main));
+//            }
+//        }
+//
+//        if(main != null && pile != null)
+//        {
+//            if(!this.helperSelectedCards.isEmpty())
+//            {
+//                for(Cartes i : this.helperSelectedCards)
+//                {
+//                    i.setHelperSelected(false);
+//                }
+//                this.helperSelectedCards.clear();
+//            }
+//
+//            this.helperSelectedCards.add(main);
+//            this.helperSelectedCards.add(pile);
+//
+//            for(Cartes i : this.helperSelectedCards)
+//            {
+//                i.setHelperSelected(true);
+//                if(this.mainCartes.values().contains(i))
+//                {
+//                    i.helperAnim(5, 0, new int[]{0, 0, 0});
+//                }
+//                else
+//                {
+//                    i.helperAnim(5, 1, new int[]{255, 255, 255});
+//                }
+//            }
+//        }
+//    }
 
     public void resetScore() {
         this.score -= this.lastScoreAddition;
