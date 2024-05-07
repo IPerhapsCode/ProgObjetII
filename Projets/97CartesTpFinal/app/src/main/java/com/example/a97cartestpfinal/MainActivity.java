@@ -23,11 +23,10 @@ import com.example.a97cartestpfinal.logique.Partie;
 import java.util.Hashtable;
 import java.util.Vector;
 //To do:
-//Quand on va dans le highscore plusieurs fois les activités précédentes reste ouverte? Aussi il y a plusieurs activité mainmenu
-//Pas de drag listener sur les cartes dans la main
 //Linear layout dans les classes de logique?
-//Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes
+//Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups B.Change la color pallete des cartes C.Volume de la musique
 //On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
+//Animation lors de la pige des cartes?
 public class MainActivity extends AppCompatActivity {
     public static int[] marginsMain;
     public static int[] marginsPile;
@@ -48,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     //Game related variables
     private Partie partie;
     private GameOver gameOver;
+    private boolean helper = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+        this.finish();
     }
 
     private void findChildren(LinearLayout parent)
@@ -296,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                                     System.out.println(e.getMessage());
                                 }
 
-                                startActivity(new Intent(MainActivity.this, MainMenu.class));
+                                startActivity(new Intent(MainActivity.this, MainMenu.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                                 break;
                             }
                             case "button_redo":{
@@ -426,6 +427,10 @@ public class MainActivity extends AppCompatActivity {
                             gameOver.setWinLose(partie.getMainCartes().size() == 0);
                             gameOver.show();
                             break;
+                        }
+                        else if(helper)
+                        {
+                            partie.helper(piles);
                         }
                     }
                 }

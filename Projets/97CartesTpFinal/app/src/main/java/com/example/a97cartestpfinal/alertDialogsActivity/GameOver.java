@@ -14,6 +14,8 @@ import com.example.a97cartestpfinal.HighScoresActivity;
 import com.example.a97cartestpfinal.MainActivity;
 import com.example.a97cartestpfinal.MainMenu;
 import com.example.a97cartestpfinal.R;
+import com.example.a97cartestpfinal.db.Database;
+import com.example.a97cartestpfinal.exceptions.ExceptionDB;
 
 public class GameOver extends Dialog {
 
@@ -21,8 +23,9 @@ public class GameOver extends Dialog {
 
     private Button buttonHighscores, buttonMenu;
     private TextView textGameOver, textLose;
-    private boolean winLose;
+    private boolean winLose, exited = false;
     private Context context;
+    private Database instance;
 
     public GameOver(@NonNull Context context) {
         super(context);
@@ -49,13 +52,43 @@ public class GameOver extends Dialog {
             this.textGameOver.setText("Félicitation");
             this.textLose.setText("Vous avez gagné!");
         }
+
+        this.instance = Database.getInstance(this.context);
+        this.instance.ouvrirConnexion();
+
+        if(MainActivity.savedGame)
+        {
+            try
+            {
+                this.instance.deleteSavedGame();
+            }
+            catch(ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
+            finally
+            {
+                try
+                {
+                    this.instance.fermerConnexion();
+                }
+                catch (ExceptionDB e)
+                {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        this.dismiss();
-        this.context.startActivity(new Intent(this.context, HighScoresActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+        if(!this.exited)
+        {
+            this.dismiss();
+            this.context.startActivity(new Intent(this.context, HighScoresActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+        }
     }
 
     public void setWinLose(boolean winLose)
@@ -70,13 +103,15 @@ public class GameOver extends Dialog {
         public void onClick(View v) {
             if(v.equals(buttonHighscores))
             {
+                exited = true;
                 dismiss();
                 context.startActivity(new Intent(context, HighScoresActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
             }
             else if(v.equals(buttonMenu))
             {
+                exited = true;
                 dismiss();
-                context.startActivity(new Intent(context, MainMenu.class));
+                context.startActivity(new Intent(context, MainMenu.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             }
         }
     }

@@ -42,20 +42,6 @@ public class HighScoresActivity extends AppCompatActivity {
         this.instance = Database.getInstance(this);
         this.dbState = this.instance.ouvrirConnexion();
 
-        //Supprimer la partie sauvegarder si elle vient d'être complété
-        if(MainActivity.savedGame)
-        {
-            try
-            {
-                this.instance.deleteSavedGame();
-            }
-            catch(ExceptionDB e)
-            {
-                System.out.println(e.getMessage());
-            }
-
-        }
-
         //Création du leaderboard
         try
         {
@@ -65,14 +51,16 @@ public class HighScoresActivity extends AppCompatActivity {
         {
             System.out.println(e.getMessage());
         }
-
-        try
+        finally
         {
-            this.dbState = instance.fermerConnexion();
-        }
-        catch (ExceptionDB e)
-        {
-            System.out.println(e.getMessage());
+            try
+            {
+                this.dbState = instance.fermerConnexion();
+            }
+            catch (ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -152,7 +140,7 @@ public class HighScoresActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(HighScoresActivity.this, MainMenu.class));
+            startActivity(new Intent(HighScoresActivity.this, MainMenu.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
     }
 }

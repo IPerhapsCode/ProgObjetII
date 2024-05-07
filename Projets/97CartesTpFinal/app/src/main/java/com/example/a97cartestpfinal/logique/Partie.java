@@ -65,11 +65,13 @@ public class Partie {
         }
     }
 
+    //Permet de retrouver une carte à partie de son textview
     public Cartes findCard(Hashtable<TextView, Cartes> emplacementCarte, View carte)
     {
         return emplacementCarte.get(carte);
     }
 
+    //Permet de piger des cartes
     public void drawCards(Vector<LinearLayout> main, View.OnTouchListener ecot)
     {
         for(LinearLayout i : main)
@@ -85,6 +87,7 @@ public class Partie {
         }
     }
 
+    //Opérations à faire lors du commencement d'une nouvelle partie
     public void gameStart(Vector<LinearLayout> main, View.OnTouchListener ecot)
     {
         int delay = 5;
@@ -142,18 +145,19 @@ public class Partie {
         }
     }
 
+    //Calcul le nouveau score du joueur suite à un coup
     public int calcNewScore(int valeurCarte, int valeurPile, boolean direction)
     {
-        int defaultBonus = 5000;
-
         if((direction && valeurPile - valeurCarte == 10)
                 || (!direction && valeurCarte - valeurPile == 10))
         {
-            this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * 20 * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+            //this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * 20 * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+            this.lastScoreAddition = this.calcLastScoreAddition(valeurCarte, valeurPile, true, true);
         }
         else
         {
-            this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile)) * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+            //this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile)) * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
+            this.lastScoreAddition = this.calcLastScoreAddition(valeurCarte, valeurPile, false, true);
         }
 
         this.score += this.lastScoreAddition;
@@ -161,6 +165,20 @@ public class Partie {
         return this.score;
     }
 
+    private int calcLastScoreAddition(int valeurCarte, int valeurPile, boolean splitBonus, boolean timeMultiplier)
+    {
+        int defaultBonus = 5000;
+
+        return (timeMultiplier
+                ? (splitBonus
+                    ? (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * 20 * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart))
+                    : (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile)) * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart)))
+                : (splitBonus
+                    ? (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * 20
+                    : (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile))));
+    }
+
+    //Vérifie si la partie est terminée
     public boolean gameOver(Vector<LinearLayout> pile)
     {
         for(Cartes i : this.getMainCartes().values())
@@ -189,6 +207,85 @@ public class Partie {
         }
 
         return 0;
+    }
+
+    //Trouve le meilleur coup à jouer selon l'intervalle entre les cartes et le score que le coup peu potentiellement apporter
+    public void helper(Vector<LinearLayout> zonePiles)
+    {
+        Cartes main = null, pile = null, tempPile = null;
+        Vector<Cartes> oldCartes = new Vector<>(1, 1);
+        Vector<Cartes[]> pairs = new Vector<>(1, 1);
+        int index = 0, score = 0, tempScore = 0, intervalle = 100, tempIntervalle = 100;
+        boolean direction = true, jump = false, jumpTemp = false;
+
+        for(Cartes i : this.mainCartes.values())
+        {
+            //Vérifie si un bon de dix est présent dans la main du joueur pour plus tard déterminer l'ordre de jeu approprié
+            for(Cartes k : oldCartes)
+            {
+                if(Math.abs(i.getValue() - k.getValue()) == 10)
+                {
+                    pairs.add(new Cartes[2]);
+                    pairs.lastElement()[0] = i;
+                    pairs.lastElement()[1] = k;
+                }
+            }
+            oldCartes.add(i);
+
+            //Trouve le meilleur coup selon l'intervalle et le nombre de point que peut potentiellement apporté un coup
+            for(LinearLayout j : zonePiles)
+            {
+                index = this.valeurIndex(j);
+                tempPile = this.findCard(this.getPiles().getPilesCartes(), j.getChildAt(index));
+                direction = j.getTag().toString().contains("asc");
+
+                if((direction && tempPile.getValue() - i.getValue() == 10)
+                        || (!direction && i.getValue() - tempPile.getValue() == 10))
+                {
+                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), true, false);
+                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
+                    jumpTemp = true;
+                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
+                }
+                else if(direction && tempPile.getValue() < i.getValue()
+                        || !direction && tempPile.getValue() > i.getValue())
+                {
+                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), false, false);
+                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
+                    jumpTemp = false;
+                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
+                }
+
+                if((score < tempScore) || (score == tempScore && tempIntervalle < intervalle))
+                {
+                    score = tempScore;
+                    intervalle = tempIntervalle;
+                    jump = jumpTemp;
+                    main = i;
+                    pile = tempPile;
+                }
+            }
+        }
+
+        //Détermine l'ordre de jeu approprié si un bon de dix est présent dans la main du joueur et si une des cartes formant le bon est la prochaine carte à jouer
+        for(Cartes[] i: pairs)
+        {
+            index = (main == i[0] ? 1 : (main == i[1] ? 0 : -1));
+
+            if(index != -1)
+            {
+                main = (pile.getValue() > main.getValue() && main.getValue() > i[index].getValue() && !jump
+                        ? i[index]
+                        : (pile.getValue() < main.getValue() && main.getValue() < i[index].getValue() && !jump
+                            ? i[index]
+                            : main));
+            }
+        }
+
+        if(main != null && pile != null)
+        {
+            System.out.println(main.getValue() + " " + pile.getValue());
+        }
     }
 
     public void resetScore() {

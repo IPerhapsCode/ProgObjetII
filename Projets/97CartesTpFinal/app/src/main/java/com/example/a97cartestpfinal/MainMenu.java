@@ -38,7 +38,7 @@ public class MainMenu extends AppCompatActivity {
         this.buttonContinue.setOnClickListener(this.ec);
 
         //If there is no game to continue gray out the button
-        this.instance.ouvrirConnexion();
+        this.dbState = this.instance.ouvrirConnexion();
         try
         {
             if(!this.instance.hasSavedGame())
@@ -62,14 +62,16 @@ public class MainMenu extends AppCompatActivity {
         {
             System.out.println(e.getMessage());
         }
-
-        try
+        finally
         {
-            this.instance.fermerConnexion();
-        }
-        catch (ExceptionDB e)
-        {
-            System.out.println(e.getMessage());
+            try
+            {
+                this.dbState = this.instance.fermerConnexion();
+            }
+            catch (ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -112,7 +114,7 @@ public class MainMenu extends AppCompatActivity {
                     }
                     catch (ExceptionDB e)
                     {
-                        throw new RuntimeException(e);
+                        System.out.println(e.getMessage());
                     }
 
                     try
