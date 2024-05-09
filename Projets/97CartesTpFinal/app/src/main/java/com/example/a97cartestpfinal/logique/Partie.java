@@ -63,7 +63,7 @@ public class Partie {
             {
                 System.out.println(e.getMessage());
             }
-            this.piles.loadSavedPiles(piles, this.savedCartes, context, this.carteMaxValue);
+            this.piles.loadSavedPiles(piles, this.savedCartes, context, this.carteMaxValue, this.color);
         }
     }
 

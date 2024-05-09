@@ -51,7 +51,7 @@ public class Piles {
         }
     }
 
-    public void loadSavedPiles(Vector<LinearLayout> zonePiles, Hashtable<Integer, Integer> savedCartes, Context context, int maxValue)
+    public void loadSavedPiles(Vector<LinearLayout> zonePiles, Hashtable<Integer, Integer> savedCartes, Context context, int maxValue, int color)
     {
         Cartes temp;
         String id;
@@ -77,8 +77,7 @@ public class Piles {
 
             if(temp.getValue() != 0 && temp.getValue() != 100)
             {
-                GradientDrawable background = (GradientDrawable) temp.getCarte().getBackground();
-                background.setColor(Color.rgb(255, 255 - (255 * temp.getValue() / maxValue), 0));
+                temp.setCouleur(color);
             }
         }
     }

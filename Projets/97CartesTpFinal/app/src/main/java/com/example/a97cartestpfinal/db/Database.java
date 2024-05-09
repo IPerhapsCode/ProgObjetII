@@ -35,7 +35,7 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE highscore(_id INTEGER PRIMARY KEY AUTOINCREMENT, score INTEGER, nbCartes INTEGER, time TEXT);");
-        db.execSQL("CREATE TABLE preference(valeur INTEGER);");
+        db.execSQL("CREATE TABLE preference(_id INTEGER PRIMARY KEY, valeur INTEGER);");
         db.execSQL("CREATE TABLE saved_game_info(score INTEGER, nbCartes INTEGER, time TEXT);");
         db.execSQL("CREATE TABLE saved_game_ordre_cartes(valeur INTEGER);");
         db.execSQL("CREATE TABLE saved_game_pile_main(_id INTEGER PRIMARY KEY, valeur INTEGER);");
@@ -298,6 +298,58 @@ public class Database extends SQLiteOpenHelper {
         catch(NullPointerException npe)
         {
             throw new ExceptionDB("Impossible de vider les tables!");
+        }
+    }
+
+    public void savePreferences(boolean helper, int color) throws ExceptionDB {
+        try
+        {
+            this.db.execSQL("DELETE FROM preference;");
+        }
+        catch(NullPointerException npe)
+        {
+            throw new ExceptionDB("Impossible de supprimer le contenu de la table préférence!");
+        }
+
+        ContentValues cv = new ContentValues();
+        try
+        {
+            for(int i = 0; i < 2; ++i) //We sure love some good old magic numbers
+            {
+                switch (i)
+                {
+                    case 0:
+                    {
+                        cv.clear();
+                        cv.put("_id", 0);
+                        cv.put("valeur", helper ? 1 : 0);
+                        break;
+                    }
+                    case 1:
+                    {
+                        cv.clear();
+                        cv.put("_id", 1);
+                        cv.put("valeur", color);
+                        break;
+                    }
+                }
+                this.db.insert("preference", null, cv);
+            }
+        }
+        catch(NullPointerException npe)
+        {
+            throw new ExceptionDB("Impossible de sauvegarder les préférences!");
+        }
+    }
+
+    public Cursor loadPreferences() throws ExceptionDB {
+        try
+        {
+            return this.db.rawQuery("SELECT * FROM preference", null);
+        }
+        catch (NullPointerException npe)
+        {
+            throw new ExceptionDB("Impossible d'obtenir les préférences!");
         }
     }
 }

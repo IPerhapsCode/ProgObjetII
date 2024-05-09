@@ -3,6 +3,7 @@ package com.example.a97cartestpfinal;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -77,10 +78,6 @@ public class MainActivity extends AppCompatActivity {
         this.ecot = new EcouteurOnTouch();
         this.ecod = new EcouteurOnDrag();
 
-        //Alert dialog creation
-        this.gameOver = new GameOver(this);
-        this.parametres = new Parametres(this, this.helper, this.couleurChoisi);
-
         //Obtient une référence à l'instance de la base de donnée
         this.instance = Database.getInstance(this);
 
@@ -97,6 +94,14 @@ public class MainActivity extends AppCompatActivity {
 
         //Début de la partie
         this.dbState = this.instance.ouvrirConnexion();
+        try
+        {
+            this.obtainPreferences(this.instance.loadPreferences());
+        }
+        catch (ExceptionDB e)
+        {
+            System.out.println(e.getMessage());
+        }
         this.partie = new Partie(this.piles, this, savedGame, this.couleurChoisi);
         try
         {
@@ -112,10 +117,15 @@ public class MainActivity extends AppCompatActivity {
         ((Chronometer)this.ui.get("ui_time")).setBase(SystemClock.elapsedRealtime() - this.readTime(this.partie.getBaseTime()) * 1000);
         this.ui.get("ui_score").setText(String.valueOf(this.partie.getScore()));
 
+        //Turns on the helper if necessary
         if(this.helper)
         {
             this.helperAi();
         }
+
+        //Alert dialog creation
+        this.gameOver = new GameOver(this);
+        this.parametres = new Parametres(this, this.helper, this.couleurChoisi);
     }
 
     @Override
@@ -396,6 +406,24 @@ public class MainActivity extends AppCompatActivity {
             if(i.getValue() != 0 && i.getValue() != 100)
             {
                 i.setCouleur(couleur);
+            }
+        }
+    }
+
+    public void obtainPreferences(Cursor preferences)
+    {
+        while(preferences.moveToNext())
+        {
+            switch(preferences.getInt(0))
+            {
+                case 0:
+                {
+                    this.helper = preferences.getInt(1) == 0 ? false : true;
+                }
+                case 1:
+                {
+                    this.couleurChoisi = preferences.getInt(1);
+                }
             }
         }
     }

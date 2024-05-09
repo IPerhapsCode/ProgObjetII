@@ -29,13 +29,6 @@ public class Cartes {
         //Initialises the card to be placed in the players hand
         this.value = value;
         this.maxValue = maxValue;
-//        switch(couleur)
-//        {
-//            case 1:this.couleurValeur = new int[]{255 - (255 * value / maxValue), 0, 255}; break; //Pink to dark blue
-//            case 2:this.couleurValeur = new int[]{0, 255, 255 - (255 * value / maxValue)}; break; //Turquoise to green
-//            default:this.couleurValeur = new int[]{255, 255 - (255 * value / maxValue), 0}; break; //Yellow to red
-//        }
-//        this.couleur = Color.rgb(this.couleurValeur[0], this.couleurValeur[1], this.couleurValeur[2]);
         this.density = context.getResources().getDisplayMetrics().density;
         this.carte = new TextView(new ContextThemeWrapper(context, R.style.cartes_main));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -48,9 +41,6 @@ public class Cartes {
 
         //Change the color of the cards background and it's text value
         this.setCouleur(couleur);
-//        GradientDrawable background = (GradientDrawable) this.carte.getBackground();
-//        background.setColor(this.couleur);
-//        background.setStroke((int)(3 * this.density), Color.rgb(0, 0, 0));
         this.carte.setText(String.valueOf(this.value));
 
         //Start the spawn animation
@@ -64,8 +54,6 @@ public class Cartes {
         //Initialises the card to be placed as one of the initial piles
         this.value = value;
         this.maxValue = maxValue;
-//        this.couleurValeur = new int[]{205, 199, 182};
-//        this.couleur = Color.rgb(this.couleurValeur[0], this.couleurValeur[1], this.couleurValeur[2]);
         this.density = context.getResources().getDisplayMetrics().density;
         this.carte = new TextView(new ContextThemeWrapper(context, style));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 0.7f);
@@ -85,9 +73,6 @@ public class Cartes {
         }
         //On doit rechanger la couleur du background pour fix un bug qui reprend la dernière couleur mémoire pour toutes les piles
         this.setCouleur(-1);
-//        GradientDrawable background = (GradientDrawable) this.carte.getBackground();
-//        background.setColor(this.couleur);
-//        background.setStroke((int)(3 * this.density), Color.rgb(0, 0, 0));
 
         this.carte.setLayoutParams(params);
         this.carte.setText(String.valueOf(this.value));
