@@ -36,6 +36,27 @@ public class MainMenu extends AppCompatActivity {
 
         this.buttonNewGame.setOnClickListener(this.ec);
         this.buttonContinue.setOnClickListener(this.ec);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(this.dbState)
+        {
+            try
+            {
+                this.instance.fermerConnexion();
+            }
+            catch (ExceptionDB e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         //If there is no game to continue gray out the button
         this.dbState = this.instance.ouvrirConnexion();
@@ -67,22 +88,6 @@ public class MainMenu extends AppCompatActivity {
             try
             {
                 this.dbState = this.instance.fermerConnexion();
-            }
-            catch (ExceptionDB e)
-            {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(this.dbState)
-        {
-            try
-            {
-                this.instance.fermerConnexion();
             }
             catch (ExceptionDB e)
             {

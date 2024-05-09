@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private GameOver gameOver;
     private Parametres parametres;
     private boolean helper = false;
+    private int couleurChoisi = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Alert dialog creation
         this.gameOver = new GameOver(this);
-        this.parametres = new Parametres(this, this.helper);
+        this.parametres = new Parametres(this, this.helper, this.couleurChoisi);
 
         //Obtient une référence à l'instance de la base de donnée
         this.instance = Database.getInstance(this);
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Début de la partie
         this.dbState = this.instance.ouvrirConnexion();
-        this.partie = new Partie(this.piles, this, savedGame);
+        this.partie = new Partie(this.piles, this, savedGame, this.couleurChoisi);
         try
         {
             this.dbState = this.instance.fermerConnexion();
@@ -370,6 +371,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setHelper(boolean helper) {
+        this.helper = helper;
+    }
+
+    public void changeCardColor(int couleur)
+    {
+        this.partie.setColor(couleur);
+        for(Cartes i : this.partie.getMainCartes().values())
+        {
+            i.setCouleur(couleur);
+        }
+
+        for(Cartes i : this.partie.getVoidCartes().values())
+        {
+            if(i.getValue() != 0 && i.getValue() != 100)
+            {
+                i.setCouleur(couleur);
+            }
+        }
+
+        for(Cartes i : this.partie.getPiles().getPilesCartes().values())
+        {
+            if(i.getValue() != 0 && i.getValue() != 100)
+            {
+                i.setCouleur(couleur);
+            }
+        }
+    }
+
     private class EcouteurOnTouch implements View.OnTouchListener
     {
 
@@ -388,7 +418,6 @@ public class MainActivity extends AppCompatActivity {
                         switch(v.getTag().toString())
                         {
                             case "button_param":{
-                                System.out.println("param");
                                 parametres.show();
                                 break;
                             }

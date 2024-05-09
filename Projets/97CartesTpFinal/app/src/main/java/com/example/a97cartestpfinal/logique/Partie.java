@@ -23,6 +23,7 @@ public class Partie {
     private List<Integer> carteValues;
     private Context gameContext;
     private Piles piles;
+    private int color;
     private final int carteMaxValue = 97;
     private int nbCartes = carteMaxValue;
     private int count = 0;
@@ -31,7 +32,7 @@ public class Partie {
     private int turnStart, turnEnd, oldTurnStart;
     private String baseTime = "00:00";
 
-    public Partie(Vector<LinearLayout> piles, Context context, boolean saved)
+    public Partie(Vector<LinearLayout> piles, Context context, boolean saved, int couleurChoisi)
     {
         //Initialise la partie en donnant des cartes initiales au joueur et en créant les piles
         this.mainCartes = new Hashtable<>(1, 1);
@@ -40,8 +41,9 @@ public class Partie {
 
         this.gameContext = context;
         this.savedGame = saved;
+        this.color = couleurChoisi;
 
-        this.piles = new Piles(piles, context, this.savedGame);
+        this.piles = new Piles(piles, context, this.savedGame, this.carteMaxValue);
 
         if(!this.savedGame)
         {
@@ -78,7 +80,7 @@ public class Partie {
         {
             if(i.getChildCount() == 0 && this.count < this.carteValues.size())
             {
-                Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
+                Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext, this.color);
                 ++this.count;
                 this.mainCartes.put(temp.getCarte(), temp);
                 temp.getCarte().setOnTouchListener(ecot);
@@ -101,7 +103,7 @@ public class Partie {
                     i.removeAllViews();
 
                     //Create the new card
-                    Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext);
+                    Cartes temp = new Cartes(this.carteValues.get(this.count), this.carteMaxValue, this.gameContext, this.color);
                     this.mainCartes.put(temp.getCarte(), temp);
                     ++this.count;
 
@@ -125,7 +127,7 @@ public class Partie {
                     i.removeAllViews();
 
                     //Create the new card
-                    Cartes temp = new Cartes(this.savedCartes.get(Integer.parseInt(id)), this.carteMaxValue, this.gameContext);
+                    Cartes temp = new Cartes(this.savedCartes.get(Integer.parseInt(id)), this.carteMaxValue, this.gameContext, this.color);
                     this.mainCartes.put(temp.getCarte(), temp);
 
                     //Add the new card to the view and associates it to a listener
@@ -200,108 +202,6 @@ public class Partie {
 
         return 0;
     }
-
-    //Trouve le meilleur coup à jouer selon l'intervalle entre les cartes et le score que le coup peu potentiellement apporter
-//    public void helper(Vector<LinearLayout> zonePiles)
-//    {
-//        Cartes main = null, pile = null, tempPile = null;
-//        Vector<Cartes> oldCartes = new Vector<>(1, 1);
-//        Vector<Cartes[]> pairs = new Vector<>(1, 1);
-//        int index = 0, score = 0, tempScore = 0, intervalle = 100, tempIntervalle = 100;
-//        boolean direction = true, jump = false, jumpTemp = false;
-//
-//        for(Cartes i : this.mainCartes.values())
-//        {
-//            //Vérifie si un bon de dix est présent dans la main du joueur pour plus tard déterminer l'ordre de jeu approprié
-//            for(Cartes k : oldCartes)
-//            {
-//                if(Math.abs(i.getValue() - k.getValue()) == 10)
-//                {
-//                    pairs.add(new Cartes[2]);
-//                    pairs.lastElement()[0] = i;
-//                    pairs.lastElement()[1] = k;
-//                }
-//            }
-//            oldCartes.add(i);
-//
-//            //Trouve le meilleur coup selon l'intervalle et le nombre de point que peut potentiellement apporté un coup
-//            for(LinearLayout j : zonePiles)
-//            {
-//                index = this.valeurIndex(j);
-//                tempPile = this.findCard(this.getPiles().getPilesCartes(), j.getChildAt(index));
-//                direction = j.getTag().toString().contains("asc");
-//
-//                if((direction && tempPile.getValue() - i.getValue() == 10)
-//                        || (!direction && i.getValue() - tempPile.getValue() == 10))
-//                {
-//                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), true, false);
-//                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
-//                    jumpTemp = true;
-//                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
-//                }
-//                else if(direction && tempPile.getValue() < i.getValue()
-//                        || !direction && tempPile.getValue() > i.getValue())
-//                {
-//                    tempScore = this.calcLastScoreAddition(i.getValue(), tempPile.getValue(), false, false);
-//                    tempIntervalle = Math.abs(i.getValue() - tempPile.getValue());
-//                    jumpTemp = false;
-//                    System.out.println("Carte: " + i.getValue() + " Pile: " + tempPile.getValue() + " New score: " + tempScore + " Old score: " + score);
-//                }
-//
-//                if((score < tempScore) || (score == tempScore && tempIntervalle < intervalle))
-//                {
-//                    score = tempScore;
-//                    intervalle = tempIntervalle;
-//                    jump = jumpTemp;
-//                    main = i;
-//                    pile = tempPile;
-//                }
-//            }
-//        }
-//
-//        //Détermine l'ordre de jeu approprié si un bon de dix est présent dans la main du joueur et si une des cartes formant le bon est la prochaine carte à jouer
-//        for(Cartes[] i: pairs)
-//        {
-//            index = (main == i[0] ? 1 : (main == i[1] ? 0 : -1));
-//
-//            if(index != -1)
-//            {
-//                main = (pile.getValue() > main.getValue() && main.getValue() > i[index].getValue() && !jump
-//                        ? i[index]
-//                        : (pile.getValue() < main.getValue() && main.getValue() < i[index].getValue() && !jump
-//                            ? i[index]
-//                            : main));
-//            }
-//        }
-//
-//        if(main != null && pile != null)
-//        {
-//            if(!this.helperSelectedCards.isEmpty())
-//            {
-//                for(Cartes i : this.helperSelectedCards)
-//                {
-//                    i.setHelperSelected(false);
-//                }
-//                this.helperSelectedCards.clear();
-//            }
-//
-//            this.helperSelectedCards.add(main);
-//            this.helperSelectedCards.add(pile);
-//
-//            for(Cartes i : this.helperSelectedCards)
-//            {
-//                i.setHelperSelected(true);
-//                if(this.mainCartes.values().contains(i))
-//                {
-//                    i.helperAnim(5, 0, new int[]{0, 0, 0});
-//                }
-//                else
-//                {
-//                    i.helperAnim(5, 1, new int[]{255, 255, 255});
-//                }
-//            }
-//        }
-//    }
 
     public void resetScore() {
         this.score -= this.lastScoreAddition;
@@ -381,5 +281,9 @@ public class Partie {
     public boolean isSavedGame()
     {
         return this.savedGame;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

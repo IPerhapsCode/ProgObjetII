@@ -18,7 +18,7 @@ public class Piles {
 
     private Hashtable<TextView, Cartes> pilesCartes;
 
-    protected Piles(Vector<LinearLayout> zonePiles, Context context, boolean saved)
+    protected Piles(Vector<LinearLayout> zonePiles, Context context, boolean saved, int maxValue)
     {
         this.pilesCartes = new Hashtable<>(1, 1);
 
@@ -37,13 +37,13 @@ public class Piles {
                 Cartes temp;
                 if(i.getTag().toString().contains("alt"))
                 {
-                    temp = new Cartes(value, context, R.style.cartes_pile_alt);
+                    temp = new Cartes(context, R.style.cartes_pile_alt, value, maxValue);
                     this.pilesCartes.put(temp.getCarte(), temp);
                     i.addView(temp.getCarte());
                 }
                 else
                 {
-                    temp = new Cartes(value, context, R.style.cartes_pile);
+                    temp = new Cartes(context, R.style.cartes_pile, value, maxValue);
                     this.pilesCartes.put(temp.getCarte(), temp);
                     i.addView(temp.getCarte(), 0);
                 }
@@ -64,13 +64,13 @@ public class Piles {
 
             if(i.getTag().toString().contains("alt"))
             {
-                temp = new Cartes(savedCartes.get(Integer.parseInt(id)), context, R.style.cartes_pile_alt);
+                temp = new Cartes(context, R.style.cartes_pile_alt, savedCartes.get(Integer.parseInt(id)), maxValue);
                 this.pilesCartes.put(temp.getCarte(), temp);
                 i.addView(temp.getCarte());
             }
             else
             {
-                temp = new Cartes(savedCartes.get(Integer.parseInt(id)), context, R.style.cartes_pile);
+                temp = new Cartes(context, R.style.cartes_pile, savedCartes.get(Integer.parseInt(id)), maxValue);
                 this.pilesCartes.put(temp.getCarte(), temp);
                 i.addView(temp.getCarte(), 0);
             }
