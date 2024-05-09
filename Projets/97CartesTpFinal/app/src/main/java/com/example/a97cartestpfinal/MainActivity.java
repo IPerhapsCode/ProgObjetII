@@ -27,9 +27,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 //To do:
 //Linear layout dans les classes de logique?
-//Un menu de settings dans lequel le joueur peut : A.Turn on un bot qui montre les meilleurs coups(Il reste à sauvegarder si il est on dans la table des préférences) B.Change la color pallete des cartes C.Volume de la musique
-//On pourrait rajouter de la musique genre du ai generated lofi, on pourrait alors changer le volume dans les settings
-//Animation lors de la pige des cartes?
 public class MainActivity extends AppCompatActivity {
     public static int[] marginsMain;
     public static int[] marginsPile;
@@ -487,6 +484,7 @@ public class MainActivity extends AppCompatActivity {
                                     partie.getVoidCartes().clear();
                                     partie.setTurnStart(partie.getOldTurnStart());
                                     partie.resetScore();
+                                    partie.resetVoidScore();
                                     ui.get("ui_score").setText(String.valueOf(partie.getScore()));
                                     ui.get("ui_cartes").setText(String.valueOf(partie.getNbCartes()));
                                 }
@@ -564,19 +562,21 @@ public class MainActivity extends AppCompatActivity {
                         pile.removeView(pile.getChildAt(index));
                         pile.addView(carte, index);
 
-                        //Change la couleur du bouton redo s'il manque exactement une carte à la main du joueur
-                        if(partie.getMainCartes().size() == main.size() - 1 || partie.getNbCartes() < main.size())
-                        {
-                            ((ImageView)buttons.get("button_redo")).setImageResource(R.drawable.redo_black);
-                        }
+
                         //Fait piger le joueur s'il leur manque deux cartes
-                        else if(partie.getMainCartes().size() == main.size() - 2 && partie.getNbCartes() >= main.size())
+                        if((partie.getMainCartes().size() == main.size() - 2 && partie.getNbCartes() >= main.size()) || partie.getNbCartes() == main.size())
                         {
                             partie.drawCards(main, ecot);
 
                             //Reset le bouton redo pour le prochain cycle
                             partie.getVoidCartes().clear();
+                            partie.resetVoidScore();
                             ((ImageView)buttons.get("button_redo")).setImageResource(R.drawable.redo_grey);
+                        }
+                        //Change la couleur du bouton redo s'il manque exactement une carte à la main du joueur
+                        else if (partie.getMainCartes().size() == main.size() - 1 || partie.getNbCartes() < main.size())
+                        {
+                            ((ImageView)buttons.get("button_redo")).setImageResource(R.drawable.redo_black);
                         }
 
                         //Ouvre un alert dialog qui félicite le joueur et lui offre d'aller voir els highscore ou de retourner au menu

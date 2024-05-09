@@ -24,11 +24,12 @@ public class Partie {
     private Context gameContext;
     private Piles piles;
     private int color;
-    private final int carteMaxValue = 97;
+    private final int carteMaxValue = 23;
     private int nbCartes = carteMaxValue;
     private int count = 0;
     private int score = 0;
     private int lastScoreAddition = 0;
+    private int voidScore = 0;
     private int turnStart, turnEnd, oldTurnStart;
     private String baseTime = "00:00";
 
@@ -51,6 +52,7 @@ public class Partie {
             {
                 this.carteValues.add(i);
             }
+            System.out.println(this.carteValues.size());
             Collections.shuffle(this.carteValues);
         }
         else
@@ -155,6 +157,7 @@ public class Partie {
         }
 
         this.score += this.lastScoreAddition;
+        this.voidScore += this.lastScoreAddition;
 
         return this.score;
     }
@@ -204,7 +207,11 @@ public class Partie {
     }
 
     public void resetScore() {
-        this.score -= this.lastScoreAddition;
+        this.score -= this.voidScore;
+    }
+    public void resetVoidScore()
+    {
+        this.voidScore = 0;
     }
 
     public int getScore() {
