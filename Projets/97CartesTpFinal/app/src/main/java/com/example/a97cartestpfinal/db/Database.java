@@ -19,11 +19,13 @@ public class Database extends SQLiteOpenHelper {
     private static Database instance;
     private SQLiteDatabase db;
 
+    //Création du singleton
     private Database(Context context)
     {
         super(context, "db", null, 1);
     }
 
+    //Appel de l'instance du singleton
     public static Database getInstance(Context context) {
         if(instance == null)
         {
@@ -32,6 +34,7 @@ public class Database extends SQLiteOpenHelper {
         return instance;
     }
 
+    //Création des bases de données
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE highscore(_id INTEGER PRIMARY KEY AUTOINCREMENT, score INTEGER, nbCartes INTEGER, time TEXT);");
@@ -46,12 +49,14 @@ public class Database extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
+    //Ouverture de la connexion vers la base de donnée
     public boolean ouvrirConnexion()
     {
         this.db = this.getWritableDatabase();
         return true;
     }
 
+    //Fermeture de la connexion vers la base de donnée
     public boolean fermerConnexion() throws ExceptionDB {
         try
         {
@@ -64,6 +69,7 @@ public class Database extends SQLiteOpenHelper {
         return false;
     }
 
+    //Permet de sauvegarder les highscores
     public void saveHighscore(int score, int nbCartes, String time, boolean saved) throws ExceptionDB {
         ContentValues values = new ContentValues();
         values.put("score", score);
@@ -86,6 +92,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    //Permet d'obtenir le plus haut score fait par un joueur dans la base de donnée
     public int getHighestScore() throws ExceptionDB {
         Cursor cursor = null;
         try
@@ -112,6 +119,7 @@ public class Database extends SQLiteOpenHelper {
         return 0;
     }
 
+    //Permet d'obtenir tout les highscores de la base de donnée
     public Cursor getHighScores() throws ExceptionDB {
         Cursor cursor = null;
 
@@ -127,6 +135,7 @@ public class Database extends SQLiteOpenHelper {
         return cursor;
     }
 
+    //Sauvegarde la partie courante dans la base de donnée
     public void saveGame(int score, int nbCartes, String time, List cartesValues, Collection cartes, Collection pilesMain) throws ExceptionDB {
         try
         {
@@ -196,6 +205,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    //Permet de charger la partie sauvegardé dans la base de donnée
     public void loadGame(Partie partie) throws ExceptionDB {
         Cursor c = null;
         try
@@ -270,6 +280,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    //Permet de confirmer si une partie est sauvegardé dans la base de donnée
     public boolean hasSavedGame() throws ExceptionDB {
         try
         {
@@ -288,6 +299,7 @@ public class Database extends SQLiteOpenHelper {
         return false;
     }
 
+    //Permet de supprimer une partie sauvegardé dans la base de donnée
     public void deleteSavedGame() throws ExceptionDB {
         try
         {
@@ -301,6 +313,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    //Permet de sauvegarder les préférences de l'utilisateur dans la base de donnée
     public void savePreferences(boolean helper, int color) throws ExceptionDB {
         try
         {
@@ -342,6 +355,7 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
+    //Permet de charger les préférences de l'utilisateur présente dans la base de donnée
     public Cursor loadPreferences() throws ExceptionDB {
         try
         {

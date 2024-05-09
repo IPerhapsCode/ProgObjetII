@@ -27,6 +27,7 @@ public class GameOver extends Dialog {
     private Context context;
     private Database instance;
 
+    //Obtention du contexte lors de l'ouverture de l'alert dialog
     public GameOver(@NonNull Context context) {
         super(context);
         this.context = context;
@@ -47,6 +48,7 @@ public class GameOver extends Dialog {
         this.buttonHighscores.setOnClickListener(this.ec);
         this.buttonMenu.setOnClickListener(this.ec);
 
+        //Changement du texte de l'alert dialog si l'utilisateur a gagné
         if(winLose)
         {
             this.textGameOver.setText("Félicitation");
@@ -56,6 +58,7 @@ public class GameOver extends Dialog {
         this.instance = Database.getInstance(this.context);
         this.instance.ouvrirConnexion();
 
+        //Supprime la partie sauvegarder le joueur vient de la complété
         if(MainActivity.savedGame)
         {
             try
@@ -81,6 +84,7 @@ public class GameOver extends Dialog {
         }
     }
 
+    //Ouvre les highscores si l'utilisateur fait simplement dismiss la boite de dialogue
     @Override
     protected void onStop() {
         super.onStop();
@@ -91,6 +95,7 @@ public class GameOver extends Dialog {
         }
     }
 
+    //Indique à l'alert dialogue si le joueur a gagné
     public void setWinLose(boolean winLose)
     {
         this.winLose = winLose;
@@ -98,15 +103,16 @@ public class GameOver extends Dialog {
 
     private class Ecouteur implements View.OnClickListener
     {
-
         @Override
         public void onClick(View v) {
+            //Envoie le joueur vers l'activité des highscores
             if(v.equals(buttonHighscores))
             {
                 exited = true;
                 dismiss();
                 context.startActivity(new Intent(context, HighScoresActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
             }
+            //Renvoie le joueur vers le menu principale
             else if(v.equals(buttonMenu))
             {
                 exited = true;

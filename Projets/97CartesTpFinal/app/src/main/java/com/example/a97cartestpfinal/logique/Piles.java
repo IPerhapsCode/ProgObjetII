@@ -22,9 +22,10 @@ public class Piles {
     {
         this.pilesCartes = new Hashtable<>(1, 1);
 
-        //Crée les piles initiales du jeu
+        //Crée les piles initiales du jeu si la partie n'est pas chargé à partir de la base de donnée
         if(!saved)
         {
+            //Pour chacune des piles place une carte soit de valeur 0 ou 100
             for(LinearLayout i : zonePiles)
             {
                 int value = 0;
@@ -51,6 +52,7 @@ public class Piles {
         }
     }
 
+    //À faire au lieu du code présent dans le constructeur si jamais la partie est chargé à partir de la base de donnée
     public void loadSavedPiles(Vector<LinearLayout> zonePiles, Hashtable<Integer, Integer> savedCartes, Context context, int maxValue, int color)
     {
         Cartes temp;
@@ -62,6 +64,7 @@ public class Piles {
             id = i.getTag().toString();
             id = id.charAt(id.length() - 2) + String.valueOf(id.charAt(id.length() - 1));
 
+            //Place les cartes avec leur valeur sauvegardé dans leur pile respective
             if(i.getTag().toString().contains("alt"))
             {
                 temp = new Cartes(context, R.style.cartes_pile_alt, savedCartes.get(Integer.parseInt(id)), maxValue);
@@ -75,6 +78,7 @@ public class Piles {
                 i.addView(temp.getCarte(), 0);
             }
 
+            //Change la couleur des cartes des piles si jamais ce n'est pas la couleur originale
             if(temp.getValue() != 0 && temp.getValue() != 100)
             {
                 temp.setCouleur(color);
@@ -82,6 +86,7 @@ public class Piles {
         }
     }
 
+    //Modifie la carte pour que celle-ci puisse être ajouté dans une pile
     public boolean addToPile(int main, LinearLayout pile, TextView carte, Partie partie)
     {
         //Trouve l'emplacement de l'ancienne carte
@@ -127,6 +132,7 @@ public class Piles {
         return false;
     }
 
+    //Permet de confirmer si le coup fait est possible
     protected boolean confirmAddition(Cartes pile, Cartes main, boolean direction)
     {
         //Si la pile est ascendante
@@ -141,6 +147,7 @@ public class Piles {
         }
     }
 
+    //Retourne la hashtabel contenant les piles de cartes
     public Hashtable<TextView, Cartes> getPilesCartes() {
         return pilesCartes;
     }

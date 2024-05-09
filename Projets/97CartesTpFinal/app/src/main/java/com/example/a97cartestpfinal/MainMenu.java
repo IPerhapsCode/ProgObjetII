@@ -26,6 +26,7 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        //Initialisation de l'écouteur, instance de la base de donnée, et des objets associés à l'écouteur
         this.ec = new Ecouteur();
 
         this.instance = Database.getInstance(this);
@@ -38,6 +39,7 @@ public class MainMenu extends AppCompatActivity {
         this.buttonContinue.setOnClickListener(this.ec);
     }
 
+    //Assure que la connection à la base de donnée est fermée lorsque l'activité est quitté
     @Override
     protected void onStop() {
         super.onStop();
@@ -54,6 +56,7 @@ public class MainMenu extends AppCompatActivity {
         }
     }
 
+    //Chaque fois que l'activité est redémarré, met à jour le menu en conséquence des actions de l'utilisateur
     @Override
     protected void onStart() {
         super.onStart();
@@ -101,27 +104,30 @@ public class MainMenu extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-                if(v.equals(buttonNewGame))
+            //Commence une nouvelle partie
+            if(v.equals(buttonNewGame))
+            {
+                MainActivity.savedGame = false;
+                startActivity(new Intent(MainMenu.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+            }
+            //Continue une partie existante
+            else if(v.equals(buttonContinue))
+            {
+                dbState = instance.ouvrirConnexion();
+                try
                 {
-                    MainActivity.savedGame = false;
-                    startActivity(new Intent(MainMenu.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+                    if(instance.hasSavedGame())
+                    {
+                        MainActivity.savedGame = true;
+                        startActivity(new Intent(MainMenu.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+                    }
                 }
-                else if(v.equals(buttonContinue))
+                catch (ExceptionDB e)
                 {
-                    dbState = instance.ouvrirConnexion();
-                    try
-                    {
-                        if(instance.hasSavedGame())
-                        {
-                            MainActivity.savedGame = true;
-                            startActivity(new Intent(MainMenu.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
-                        }
-                    }
-                    catch (ExceptionDB e)
-                    {
-                        System.out.println(e.getMessage());
-                    }
-
+                    System.out.println(e.getMessage());
+                }
+                finally
+                {
                     try
                     {
                         dbState = instance.fermerConnexion();
@@ -131,6 +137,7 @@ public class MainMenu extends AppCompatActivity {
                         System.out.println(e.getMessage());
                     }
                 }
+            }
         }
     }
 }

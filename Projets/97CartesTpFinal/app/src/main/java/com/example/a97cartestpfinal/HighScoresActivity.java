@@ -64,6 +64,7 @@ public class HighScoresActivity extends AppCompatActivity {
         }
     }
 
+    //Assure que la base de donnée est fermé lors de la fermeture de l'activité
     @Override
     protected void onStop() {
         super.onStop();
@@ -137,7 +138,7 @@ public class HighScoresActivity extends AppCompatActivity {
 
     private class Ecouteur implements View.OnClickListener
     {
-
+        //Permet à l'utilisateur de retourner au menu avec un bouton
         @Override
         public void onClick(View v) {
             startActivity(new Intent(HighScoresActivity.this, MainMenu.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));

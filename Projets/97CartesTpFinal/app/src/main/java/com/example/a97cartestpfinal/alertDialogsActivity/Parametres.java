@@ -29,10 +29,10 @@ public class Parametres extends Dialog {
     private boolean helperOn, dbState = false;
     private int couleurChoisi;
 
+    //Permet d'obtenir si le helper est on, la couleur de préférence ainsi que le contexte
     public Parametres(@NonNull Context context, boolean helperOn, int couleurChoisi) {
         super(context);
         this.context = context;
-        System.out.println(helperOn);
         this.helperOn = helperOn;
         this.couleurChoisi = couleurChoisi;
     }
@@ -52,6 +52,7 @@ public class Parametres extends Dialog {
         this.helper = findViewById(R.id.switch_helper);
         this.helper.setOnClickListener(this.ec);
 
+        //Obtient toutes les switchs de changement de couleur
         for(int i = 0; i < this.parentCouleurs.getChildCount(); ++i)
         {
             this.couleurs.add((Switch)this.parentCouleurs.getChildAt(i));
@@ -66,12 +67,14 @@ public class Parametres extends Dialog {
             }
         }
 
+        //Change visuellement si le helper est ouvert ou non
         if(this.helperOn)
         {
             this.helper.setChecked(true);
         }
     }
 
+    //Assure que la connexion à la base de donnée est fermée lors de la fermeture de l'alert dialog
     @Override
     protected void onStop() {
         super.onStop();
@@ -91,6 +94,7 @@ public class Parametres extends Dialog {
         this.dismiss();
     }
 
+    //Permet de sauvegarder les préférences si l'utilisateur change quelque chose dans le menu
     private void savePreferences()
     {
         this.dbState = this.instance.ouvrirConnexion();
@@ -120,6 +124,7 @@ public class Parametres extends Dialog {
 
         @Override
         public void onClick(View v) {
+            //Change si le helper est activé ou non
             if(v.equals(helper))
             {
                 helperOn = ((Switch) v).isChecked();
@@ -135,6 +140,7 @@ public class Parametres extends Dialog {
                     ((MainActivity) context).setHelper(helperOn);
                 }
             }
+            //Permet de choisir la couleur des cartes et assure qu'au moins une des switchs de couleur est sélectionnées
             else if(couleurs.contains(v))
             {
                 boolean oneChecked = false;

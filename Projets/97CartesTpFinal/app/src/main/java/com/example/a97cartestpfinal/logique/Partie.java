@@ -24,7 +24,7 @@ public class Partie {
     private Context gameContext;
     private Piles piles;
     private int color;
-    private final int carteMaxValue = 23;
+    private final int carteMaxValue = 97;
     private int nbCartes = carteMaxValue;
     private int count = 0;
     private int score = 0;
@@ -46,6 +46,7 @@ public class Partie {
 
         this.piles = new Piles(piles, context, this.savedGame, this.carteMaxValue);
 
+        //Initialise la partie de manière différente si jamais l'utilisateur a fait charger la partie courante
         if(!this.savedGame)
         {
             for(int i = 1; i <= this.carteMaxValue; ++i)
@@ -69,7 +70,7 @@ public class Partie {
         }
     }
 
-    //Permet de retrouver une carte à partie de son textview
+    //Permet de retrouver une carte à partir de son textview
     public Cartes findCard(Hashtable<TextView, Cartes> emplacementCarte, View carte)
     {
         return emplacementCarte.get(carte);
@@ -144,24 +145,28 @@ public class Partie {
     //Calcul le nouveau score du joueur suite à un coup
     public int calcNewScore(int valeurCarte, int valeurPile, boolean direction)
     {
+        //Calcul du score si jamais il y a un écart de 10 dans la direction opposé de la pile
         if((direction && valeurPile - valeurCarte == 10)
                 || (!direction && valeurCarte - valeurPile == 10))
         {
-            //this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * 20 * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
             this.lastScoreAddition = this.calcLastScoreAddition(valeurCarte, valeurPile, true, true);
         }
+        //Calcul du score normal
         else
         {
-            //this.lastScoreAddition = (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile)) * Math.max(1, 10 - Math.abs(this.turnEnd - this.turnStart));
             this.lastScoreAddition = this.calcLastScoreAddition(valeurCarte, valeurPile, false, true);
         }
 
+        //Ajout des points au score
         this.score += this.lastScoreAddition;
+
+        //Points a retirer si jamais le joueur utilise le bouton redo
         this.voidScore += this.lastScoreAddition;
 
         return this.score;
     }
 
+    //Permet de calculer les points à ajouter selon différent paramètres, tel que si le temps doit être pris en compte et si il y a un écrat de 10 dans la direction opposé de la pile
     public int calcLastScoreAddition(int valeurCarte, int valeurPile, boolean splitBonus, boolean timeMultiplier)
     {
         int defaultBonus = 5000;
@@ -175,7 +180,7 @@ public class Partie {
                     : (defaultBonus - (defaultBonus * this.nbCartes / (this.carteMaxValue + 1))) * Math.max(1, 11 - Math.abs(valeurCarte - valeurPile))));
     }
 
-    //Vérifie si la partie est terminée
+    //Vérifie si la partie est terminée, donc si il y a aucun coup possible a jouer
     public boolean gameOver(Vector<LinearLayout> pile)
     {
         for(Cartes i : this.getMainCartes().values())
@@ -206,90 +211,114 @@ public class Partie {
         return 0;
     }
 
+    //Remet le score à la valeur précédent le coup du joueur suite à l'utilisation du bouton redo
     public void resetScore() {
         this.score -= this.voidScore;
     }
+
+    //Réinitialise la valeur a retiré du score si jamais le joueur utilise le bouton redo
     public void resetVoidScore()
     {
         this.voidScore = 0;
     }
 
+    //Retourne le score du joueur
     public int getScore() {
-        return score;
+        return this.score;
     }
 
+    //Donne la valeur voulu au score du joueur
     public void setScore(int score) {
         this.score = score;
     }
 
+    //Sauvegarde l'ancien début de tour
     public void saveOldTurnStart() {
         this.oldTurnStart = this.turnStart;
     }
 
+    //Retourne l'ancien début de tour
     public int getOldTurnStart() {
-        return oldTurnStart;
+        return this.oldTurnStart;
     }
 
+    //Retourne les piles
     public Piles getPiles() {
-        return piles;
+        return this.piles;
     }
 
+    //Retourne la hashtable contenant les cartes dans la main du joueur
     public Hashtable<TextView, Cartes> getMainCartes() {
-        return mainCartes;
+        return this.mainCartes;
     }
 
+    //Retourne la hashtable contenant les cartes en limbo pour le bouton redo
     public Hashtable<LinearLayout, Cartes> getVoidCartes() {
-        return voidCartes;
+        return this.voidCartes;
     }
 
+    //Retourne le nombre de cartes restantes
     public int getNbCartes(){
         return this.nbCartes;
     }
+
+    //Change le nombre de carte restantes
     public void setNbCartes(int valeur) {
         this.nbCartes += valeur;
     }
 
+    //Sauvegarde le temp représentant le début du tour du joueur
     public void setTurnStart(int turnStart) {
         this.turnStart = turnStart;
     }
 
+    //Sauvegarde le moment où le tour fut terminé
     public void setTurnEnd(int turnEnd) {
         this.turnEnd = turnEnd;
     }
 
+    //Retourne le temps de début de la partie
     public String getBaseTime() {
-        return baseTime;
+        return this.baseTime;
     }
 
+    //Change le temps de départ du chronomètre
     public void setBaseTime(String baseTime) {
         this.baseTime = baseTime;
     }
 
+    //Retourne la valeur maximum d'une carte
     public int getCarteMaxValue() {
-        return carteMaxValue;
+        return this.carteMaxValue;
     }
 
+    //Retourne toutes les valeurs possibles des cartes
     public List<Integer> getCarteValues() {
-        return carteValues;
+        return this.carteValues;
     }
 
+    //Change la position courante dans la liste contenant les valeurs possibles des cartes
     public void setCount(int count) {
         this.count = count;
     }
 
+    //Retourne la hashtable contenant les cartes sauvegardées
     public Hashtable<Integer, Integer> getSavedCartes() {
-        return savedCartes;
+        return this.savedCartes;
     }
 
+    //Permet d'enregistrer dans une hashtbale les cartes à sauvegarder présente dans la pile et dans la main du joueur
     public void setSavedCartes(Hashtable savedCartes) {
         this.savedCartes = savedCartes;
     }
 
+    //Nous permet de savoir si la partie est présentement sauvegardée
     public boolean isSavedGame()
     {
         return this.savedGame;
     }
 
+    //Permet de changer la couleur des cartes
     public void setColor(int color) {
         this.color = color;
     }

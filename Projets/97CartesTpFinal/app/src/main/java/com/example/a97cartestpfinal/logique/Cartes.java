@@ -23,7 +23,7 @@ public class Cartes {
     private Handler timer;
     private float density;
 
-    //Carte à jouer
+    //Carte à jouer dans la main du joueur
     protected Cartes(int value, int maxValue, Context context, int couleur)
     {
         //Initialises the card to be placed in the players hand
@@ -96,16 +96,19 @@ public class Cartes {
     {
         if(actualColor.length == 3)
         {
+            //Couleurs que pourront prendre le cadre
             int[][] colors = {
                     {0, 0, 0}, //Noir
                     {255, 255, 255} //Blanc
             };
 
+            //Assure qu'on ne sorte pas du nombre de couleur possible
             if(color >= colors.length)
             {
                 color = 0;
             }
 
+            //Change les valeurs de couleurs que prendront le cadre
             for(int i = 0; i < actualColor.length; ++i)
             {
                 if(actualColor[i] < colors[color][i] && actualColor[i] < 255)
@@ -126,20 +129,25 @@ public class Cartes {
                 }
             }
 
+            //Si les valeurs de couleur sont égal à la couleur choisi, alors passe à la prochaine couleur
             if(actualColor[0] == colors[color][0] && actualColor[1] == colors[color][1] && actualColor[2] == colors[color][2])
             {
                 ++color;
             }
 
+            //Nécessaire que les vairables soit final pour être utilisé dans une fonction lambda
             int[][] finalColor = {{color}, actualColor};
             this.timer.postDelayed(()->{
+                //Change visuellement la couleur du couteur des cartes
                 GradientDrawable background = (GradientDrawable) this.carte.getBackground();
                 background.setStroke((int)(3 * this.density), Color.rgb(finalColor[1][0], finalColor[1][1], finalColor[1][2]));
 
+                //Rappele cette même fonction pour continuer l'animation si jamais le helper sélectionne encore cette carte
                 if(this.helperSelected)
                 {
                     this.helperAnim(delay, finalColor[0][0], finalColor[1]);
                 }
+                //Remet de le cadre de la carte à sa couleur initiale si le helper ne sélectionne plus cette carte
                 else
                 {
                     background.setStroke((int)(3 * this.density), Color.rgb(0, 0, 0));
@@ -148,6 +156,7 @@ public class Cartes {
         }
     }
 
+    //Change la couleur de la carte
     public void setCouleur(int couleur) {
         switch(couleur)
         {
@@ -162,14 +171,17 @@ public class Cartes {
         background.setStroke((int)(3 * this.density), Color.rgb(0, 0, 0));
     }
 
+    //Permet d'obtenir le textview représentant cette carte
     public TextView getCarte() {
         return carte;
     }
 
+    //Retourne la valeur de la carte
     public int getValue() {
         return value;
     }
 
+    //Permet au helper de sélectionner la carte
     public void setHelperSelected(boolean helperSelected) {
         this.helperSelected = helperSelected;
     }

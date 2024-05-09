@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Permet de créer et de déplacer les cartes sans que leur apparence ne change<
+        //Permet de créer et de déplacer les cartes sans que leur apparence ne change
         float densite = getResources().getDisplayMetrics().density;
         this.marginsMain = new int[]{(int)(22.5 * densite),
                 (int)(20 * densite),
@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         this.parametres = new Parametres(this, this.helper, this.couleurChoisi);
     }
 
+    //Assure que la base de donnée est fermée si l'activité est fermée
     @Override
     protected void onStop() {
         super.onStop();
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         this.finish();
     }
 
+    //Trouve tous les enfants que l'on aura besoin de manipulé au courant de l'activité
     private void findChildren(LinearLayout parent)
     {
         for(int i = 0; i < parent.getChildCount(); ++i)
@@ -220,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Donne l'ocasion au joueur d'annuler son dernier coup
     private int redo()
     {
         //Permet de savoir combien de cartes sont retournées dans la main du joueur
@@ -265,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
             carte.spawnAnim(1);
         }
 
+        //Rappele l'ia si jamais cela est nécessaire
         if(this.helper)
         {
             this.helperAi();
@@ -344,6 +348,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //Si le meilleur coup à jouer a été trouvé, le montrer au joueur
         if(main != null && pile != null)
         {
             this.stopHelperAi();
@@ -366,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Permet d'arrêter l'animation faite par le helper
     public void stopHelperAi()
     {
         if(!this.helperSelectedCards.isEmpty())
@@ -378,10 +384,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Indique à notre activité si le helper est actif
     public void setHelper(boolean helper) {
         this.helper = helper;
     }
 
+    //Nous permet de changer la couleur des cartes selon la préférence de l'utilisateur
     public void changeCardColor(int couleur)
     {
         this.partie.setColor(couleur);
@@ -407,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Nous permet d'obtenir les préférences de l'utilisateur
     public void obtainPreferences(Cursor preferences)
     {
         while(preferences.moveToNext())
@@ -432,8 +441,8 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
             switch(event.getAction())
             {
-                //Démare le drag and drop et rend la carte invisible
                 case MotionEvent.ACTION_DOWN:{
+                    //Démare le drag and drop
                     if(partie.getMainCartes().containsKey(v))
                     {
                         v.startDragAndDrop(null, new View.DragShadowBuilder(v), v, 0);
@@ -442,10 +451,12 @@ public class MainActivity extends AppCompatActivity {
                     {
                         switch(v.getTag().toString())
                         {
+                            //Affiche les paramètres
                             case "button_param":{
                                 parametres.show();
                                 break;
                             }
+                            //Sauvegarde la partie dans son état courant et retourne l'utilisateur au menu principal
                             case "button_menu":{
                                 dbState = instance.ouvrirConnexion();
                                 try
@@ -473,6 +484,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(new Intent(MainActivity.this, MainMenu.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                                 break;
                             }
+                            //Permet à l'utilisateur d'annuler son dernier coup
                             case "button_redo":{
                                 if(partie.getVoidCartes().size() >= 2)
                                 {
@@ -579,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
                             ((ImageView)buttons.get("button_redo")).setImageResource(R.drawable.redo_black);
                         }
 
-                        //Ouvre un alert dialog qui félicite le joueur et lui offre d'aller voir els highscore ou de retourner au menu
+                        //Ouvre un alert dialog qui félicite le joueur et lui offre d'aller voir les highscore ou de retourner au menu
                         if(partie.gameOver(piles))
                         {
                             dbState = instance.ouvrirConnexion();
@@ -605,6 +617,7 @@ public class MainActivity extends AppCompatActivity {
                             ((Chronometer)ui.get("ui_time")).stop();
                             break;
                         }
+                        //Rappele le helper pour le prochain coup si il est toujours actif
                         else if(helper)
                         {
                             helperAi();
