@@ -135,7 +135,7 @@ public class Cartes {
                 ++color;
             }
 
-            //Nécessaire que les vairables soit final pour être utilisé dans une fonction lambda
+            //Nécessaire que les variables soit final pour être utilisé dans une fonction lambda
             int[][] finalColor = {{color}, actualColor};
             this.timer.postDelayed(()->{
                 //Change visuellement la couleur du couteur des cartes

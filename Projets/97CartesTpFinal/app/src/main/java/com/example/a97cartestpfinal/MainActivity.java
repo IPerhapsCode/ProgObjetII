@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -25,8 +24,7 @@ import com.example.a97cartestpfinal.logique.Partie;
 
 import java.util.Hashtable;
 import java.util.Vector;
-//To do:
-//Linear layout dans les classes de logique?
+
 public class MainActivity extends AppCompatActivity {
     public static int[] marginsMain;
     public static int[] marginsPile;
