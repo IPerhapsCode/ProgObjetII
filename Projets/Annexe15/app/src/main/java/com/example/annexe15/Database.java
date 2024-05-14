@@ -72,7 +72,8 @@ public class Database extends SQLiteOpenHelper {
     {
         try
         {
-            Cursor c = this.db.rawQuery("SELECT COUNT(division) FROM EquipesLHJMQ WHERE division = ?;", new String[]{"Ouest"});
+            Cursor c = this.db.rawQuery("SELECT COUNT(division) FROM EquipesLHJMQ " +
+                    "WHERE division = 'Ouest';", null);
             c.moveToNext();
             return c.getInt(0);
         }

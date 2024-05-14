@@ -84,6 +84,7 @@ public class Database extends SQLiteOpenHelper {
                 this.db.rawQuery("DELETE FROM saved_game_info", null);
                 this.db.rawQuery("DELETE FROM saved_game_ordre_cartes", null);
                 this.db.rawQuery("DELETE FROM saved_game_pile_main", null);
+                this.db.rawQuery("SELECT Poids FROM Biscuits WHERE Nom = ?", null);
             }
         }
         catch(NullPointerException npe)
